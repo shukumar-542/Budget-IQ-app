@@ -1,4 +1,5 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../Constants/Colors';
 
 const LoginScreen = () => {
   return (
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#00794F',
+    color: Colors.primary,
     marginBottom: 20,
   },
   logo: {

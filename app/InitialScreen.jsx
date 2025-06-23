@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../Constants/Colors';
 
 const InitialScreen = () => {
   const router = useRouter()
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   button: {
-    backgroundColor: '#00C46A',
+    backgroundColor: Colors.primary,
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 8,
