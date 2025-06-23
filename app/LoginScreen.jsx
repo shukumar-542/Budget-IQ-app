@@ -1,7 +1,9 @@
+import { useRouter } from 'expo-router';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../Constants/Colors';
 
 const LoginScreen = () => {
+  const router = useRouter()
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log In</Text>
@@ -28,7 +30,7 @@ const LoginScreen = () => {
         <Text style={styles.forgotText}>Forgot password?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.loginButton}>
+      <TouchableOpacity onPress={() => router.replace('/(tabs)')} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Log In</Text>
       </TouchableOpacity>
 

@@ -8,6 +8,7 @@ export default function RootLayout() {
     <Stack.Screen name="InitialScreen" options={{ headerShown: false }}  />
     <Stack.Screen name="SecondScreen" options={{ headerShown: false }} />
     <Stack.Screen name="LoginScreen" options={{headerShown : false}} />
+    <Stack.Screen name="(tabs)" options={{headerShown : false}} />
   </Stack>
   </>;
 }
