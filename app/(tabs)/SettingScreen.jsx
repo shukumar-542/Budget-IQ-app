@@ -1,12 +1,14 @@
 import { AntDesign, Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../Constants/Colors';
 
 const SettingScreen = () => {
-  const navigate = useNavigation()
+  const [activeItem , setActiveItem] = useState(null)
+  const navigation = useNavigation()
   const user = {
     name: 'Shukumar Ghosh',
     email: 'shukumar@gmail.com'
@@ -46,8 +48,8 @@ const SettingScreen = () => {
   ];
 
   const handleItemPress = (item , index)=>{
-    console.log(index);
-    console.log(item?.name);
+    setActiveItem(index);
+    navigation.navigate(item.name)
   }
 
   return (
@@ -67,10 +69,10 @@ const SettingScreen = () => {
 
       {/* Menu List */}
       {menuItems.map((item, index) => (
-        <TouchableOpacity onPress={()=> handleItemPress(item , index)} key={index} style={styles.menuItem}>
+        <TouchableOpacity onPress={()=> handleItemPress(item , index)} key={index} style={[styles.menuItem , activeItem === index ? styles.activeBarColor : {}]}>
           {item.icon}
-          <Text style={styles.menuLabel}>{item.label}</Text>
-          <AntDesign name="right" size={18} color="black" style={{ marginLeft: 'auto' }} />
+          <Text style={[styles.menuLabel , activeItem === index ? {color : "#ffff"} : {}]}>{item.label}</Text>
+          <AntDesign name="right" size={18} color={activeItem === index ? "white" : "black"} style={{ marginLeft: 'auto' }} />
         </TouchableOpacity>
       ))}
 
@@ -112,6 +114,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
+    paddingHorizontal : 10,
     borderBottomWidth: 1,
     borderBottomColor: '#eaeaea'
   },
@@ -130,5 +133,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600'
+  },
+  activeBarColor : {
+    backgroundColor : Colors.primary,
+    color : '#ffff',
+    borderRadius : 10
   }
 });
