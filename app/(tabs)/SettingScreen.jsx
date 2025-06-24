@@ -58,7 +58,7 @@ const SettingScreen = () => {
       <Text style={styles.title}>Account</Text>
 
       {/* User Info */}
-      <TouchableOpacity style={styles.profileSection}>
+      <TouchableOpacity onPress={()=>navigation.navigate("AccountInformation")} style={styles.profileSection}>
         <Avatar.Icon icon="account" size={48} />
         <View style={{ marginLeft: 10 }}>
           <Text style={styles.profileName}>{user.name}</Text>

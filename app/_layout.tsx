@@ -9,6 +9,15 @@ export default function RootLayout() {
     <Stack.Screen name="SecondScreen" options={{ headerShown: false }} />
     <Stack.Screen name="LoginScreen" options={{headerShown : false}} />
     <Stack.Screen name="(tabs)" options={{headerShown : false}} />
+    <Stack.Screen name="AccountInformation"  options={{
+      title : "Account Information",
+      headerTitleStyle :{
+        fontWeight : '700',
+      },
+      headerShadowVisible: false,
+      
+      headerTitleAlign : 'center'
+    }} />
   </Stack>
   </>;
 }
