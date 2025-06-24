@@ -1,10 +1,11 @@
-import { Text, View } from 'react-native'
+import { Text } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const SettingScreen = () => {
   return (
-    <View>
+    <SafeAreaView>
       <Text>SettingScreen</Text>
-    </View>
+    </SafeAreaView>
   )
 }
 
