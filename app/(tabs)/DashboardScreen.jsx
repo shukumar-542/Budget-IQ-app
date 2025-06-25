@@ -1,3 +1,4 @@
+import { useNavigation } from "expo-router";
 import { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -7,6 +8,8 @@ import ExpenseIncome from "../../components/Charts/ExpenseIncome";
 import CostEarnList from "../../components/CostEarnList";
 import Button from "../../components/UI/Button";
 const DashboardScreen = () => {
+
+   const navigation = useNavigation();
   const [expense, setExpense] = useState("expense");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("month");
@@ -126,7 +129,7 @@ const DashboardScreen = () => {
           <ExpenseIncome expenseData={expenseData} />
           <View style={{ flex: 1 }}>
             <Text style={styles.listText}>Specific Cost</Text>
-            <CostEarnList data={expenseData} />
+            <CostEarnList data={expenseData}/>
           </View>
         </>
       ) : (
@@ -134,7 +137,7 @@ const DashboardScreen = () => {
           <ExpenseIncome expenseData={incomeData} />
           <View style={{ flex: 1 }}>
             <Text style={styles.listText}>Specific Earn</Text>
-            <CostEarnList data={incomeData} />
+            <CostEarnList data={incomeData}  />
           </View>
         </>
       )}

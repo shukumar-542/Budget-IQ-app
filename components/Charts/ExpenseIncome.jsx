@@ -1,14 +1,27 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../Constants/Colors";
 
 const ExpenseIncome = ({ expenseData }) => {
+  const router = useRouter()
   const CategoryItem = ({ item }) => (
     <View style={styles.categoryItem}>
+      <TouchableOpacity onPress={() =>
+        router.push({
+          pathname: "/IncrementDecrementAmount", // or your target screen
+          params: {
+            icon: item.icon,
+            amount: item.amount,
+            id: item.id,
+          },
+        })
+      }>
       <View style={styles.iconContainer}>
         <Ionicons name={item?.icon} size={25} color={Colors.primary} />
       </View>
       <Text style={styles.amountText}>{item?.amount}</Text>
+    </TouchableOpacity>
     </View>
   );
 
@@ -27,7 +40,7 @@ export default ExpenseIncome;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 5,
+    paddingHorizontal: 2,
   },
   listContainer: {
     flexDirection: "row",

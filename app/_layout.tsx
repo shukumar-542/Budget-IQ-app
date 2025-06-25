@@ -15,6 +15,7 @@ export default function RootLayout() {
         <Stack.Screen name="AccountVerification" options={{ headerShown: false }} />
         <Stack.Screen name="Otp" options={{ headerShown: false }} />
         <Stack.Screen name="NewPassword" options={{ headerShown: false }} />
+        <Stack.Screen name="IncrementDecrementAmount" options={{ headerShown: false }} />
         <Stack.Screen
           name="AccountInformation"
           options={{
