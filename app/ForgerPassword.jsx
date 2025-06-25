@@ -1,8 +1,10 @@
+import { useRouter } from "expo-router";
 import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import BackButton from "../components/UI/BackButton";
 import { Colors } from "../Constants/Colors";
 
 const ForgerPassword = () => {
+    const router = useRouter()
   return (
     <SafeAreaView style={styles.container}>
       <BackButton />
@@ -23,7 +25,7 @@ const ForgerPassword = () => {
               />
             </View>
 
-      <TouchableOpacity style={styles.verifyButton}>
+      <TouchableOpacity onPress={()=> router.push("/Otp")} style={styles.verifyButton}>
         <Text style={styles.verifyText}>Send</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffff",
     padding: 20,
-    paddingTop : 50
+    paddingTop : 20
   },
   title: {
     fontSize: 25,
