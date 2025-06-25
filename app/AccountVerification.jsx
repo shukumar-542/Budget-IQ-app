@@ -1,4 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
     StyleSheet,
@@ -15,6 +16,7 @@ const AccountVerification = () => {
   const [countdown, setCountdown] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const inputRefs = useRef([]);
+  const router = useRouter()
 
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
@@ -53,8 +55,8 @@ const AccountVerification = () => {
   const handleVerify = () => {
     const fullOtp = otp.join("");
     if (fullOtp.length === 6) {
-      navigation.navigate("ResetPassword");
     }
+   router.replace("/(tabs)");
   };
 
   return (
