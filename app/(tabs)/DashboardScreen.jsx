@@ -124,6 +124,8 @@ const DashboardScreen = () => {
           Income
         </Button>
       </View>
+
+      
       {expense === "expense" ? (
         <>
           <ExpenseIncome expenseData={expenseData} />
