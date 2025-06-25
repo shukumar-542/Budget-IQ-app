@@ -80,7 +80,7 @@ const Otp = () => {
       </View>
 
       <TouchableOpacity
-        onPress={() => router.push("/Otp")}
+        onPress={() => router.push("/NewPassword")}
         style={styles.verifyButton}
       >
         <Text style={styles.verifyText}>Send</Text>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     input: {
     width: 45,
     height: 50,
-    borderColor: "gray",
+    borderColor: Colors.primary,
     borderWidth: 1,
     borderRadius: 8,
     textAlign: "center",
