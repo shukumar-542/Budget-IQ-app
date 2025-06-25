@@ -1,11 +1,10 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../Constants/Colors';
 
 
 const SignUpScreen = () => {
-  const navigation = useNavigation()
   const router = useRouter()
   return (
     <SafeAreaView style={styles.container}>
@@ -63,12 +62,12 @@ const SignUpScreen = () => {
           style={styles.input}
           placeholder="********"
           placeholderTextColor="#888"
-          secureTextEntry // Hides text entered for password fields
+          secureTextEntry 
         />
       </View>
 
       {/* Sign Up Button */}
-      <TouchableOpacity style={styles.signUpButton} onPress={() => console.log('Sign Up Pressed')}>
+      <TouchableOpacity style={styles.signUpButton} onPress={() => router.push("/AccountVerification")}>
         <Text style={styles.signUpButtonText}>Sign Up</Text>
       </TouchableOpacity>
 

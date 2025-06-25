@@ -11,6 +11,8 @@ export default function RootLayout() {
         <Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="SignUpScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="ForgerPassword" options={{ headerShown: false }} />
+        <Stack.Screen name="AccountVerification" options={{ headerShown: false }} />
         <Stack.Screen
           name="AccountInformation"
           options={{
