@@ -10,6 +10,7 @@ export default function RootLayout() {
         <Stack.Screen name="SecondScreen" options={{ headerShown: false }} />
         <Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="SignUpScreen" options={{ headerShown: false }} />
         <Stack.Screen
           name="AccountInformation"
           options={{
@@ -32,6 +33,40 @@ export default function RootLayout() {
             headerTitleAlign: "center",
           }}
         />
+        <Stack.Screen
+          name="TermsAndPolicies"
+          options={{
+            title: "Terms & Policies",
+            headerTitleStyle: {
+              fontWeight: "600",
+            },
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="ExpenseCategories"
+          options={{
+            title: "Expense Categories",
+            headerTitleStyle: {
+              fontWeight: "600",
+            },
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="IncomeCategories"
+          options={{
+            title: "Income Categories",
+            headerTitleStyle: {
+              fontWeight: "600",
+            },
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
+      
       </Stack>
     </>
   );

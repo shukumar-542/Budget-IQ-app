@@ -1,9 +1,10 @@
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../Constants/Colors';
 
 const LoginScreen = () => {
   const router = useRouter()
+  const navigation = useNavigation()
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log In</Text>
@@ -26,7 +27,7 @@ const LoginScreen = () => {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.forgot}>
+      <TouchableOpacity style={styles.forgot}  onPress={()=> navigation.navigate('ForgerPassword')}>
         <Text style={styles.forgotText}>Forgot password?</Text>
       </TouchableOpacity>
 
@@ -36,7 +37,7 @@ const LoginScreen = () => {
 
       <View style={styles.signupContainer}>
         <Text>Don't have an account? </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=> router.push('/SignUpScreen')}>
           <Text style={styles.signupText}>Sign Up</Text>
         </TouchableOpacity>
       </View>

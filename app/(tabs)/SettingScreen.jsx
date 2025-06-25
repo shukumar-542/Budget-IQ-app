@@ -1,6 +1,6 @@
 import { AntDesign, Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -109,7 +109,10 @@ const SettingScreen = () => {
             activeItem === index ? styles.activeBarColor : {},
           ]}
         >
-          {item.icon}
+          {/* Conditionally change icon color here */}
+          {React.cloneElement(item.icon, {
+            color: activeItem === index ? "white" : "black", // Set color based on active state
+          })}
           <Text
             style={[
               styles.menuLabel,
