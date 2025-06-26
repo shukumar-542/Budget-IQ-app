@@ -1,35 +1,19 @@
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
-import { PieChart } from "react-native-chart-kit";
 import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/images/iq.png";
+import TotalSpentDonutChart from "../../components/Charts/TotalSpentDonutChart";
 import { Colors } from "../../Constants/Colors";
 
 const screenWidth = Dimensions.get("window").width;
 
 const Index = () => {
-  const data = [
-    {
-      name: "A",
-      population: 50,
-      color: "#fbd203",
-      legendFontColor: "#7F7F7F",
-      legendFontSize: 15,
-    },
-    {
-      name: "B",
-      population: 30,
-      color: "#ffb300",
-      legendFontColor: "#7F7F7F",
-      legendFontSize: 15,
-    },
-    {
-      name: "C",
-      population: 20,
-      color: "#ff9100",
-      legendFontColor: "#7F7F7F",
-      legendFontSize: 15,
-    },
+ 
+
+  const customChartData = [
+    { category: "Groceries", value: 333, color: "#7E49FF", icon: "food" }, // Different green
+    { category: "Car", value: 333, color: "#FF2D55", icon: "car" }, // Different purple
+    { category: "Home", value: 333, color: "#1BA26E", icon: "home" }, // Different red
   ];
 
   return (
@@ -49,21 +33,13 @@ const Index = () => {
         </Text>
       </View>
 
-      <View>
-        <PieChart
-          data={data}
-          width={screenWidth - 20}
-          height={220}
-          chartConfig={{
-            backgroundColor: "#ffffff",
-            backgroundGradientFrom: "#ffffff",
-            backgroundGradientTo: "#ffffff",
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-          }}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          absolute
+      <View style={styles.chartsContainer}>
+        <TotalSpentDonutChart
+          data={customChartData}
+          totalSpent={1300}
+          changeAmount={2000}
+          radius={150}
+          strokeWidth={60}
         />
       </View>
     </SafeAreaView>
@@ -78,6 +54,12 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
   },
+  chartsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -87,11 +69,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#B8E2D2",
     padding: 10,
     alignItems: "center",
-    marginTop: 15,
+    marginTop: 25,
     borderRadius: 50,
   },
   text: {
     fontSize: 16,
     fontWeight: "bold",
+  },
+  chartContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

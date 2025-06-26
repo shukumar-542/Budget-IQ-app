@@ -1,32 +1,40 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import PieChart from "react-native-pie-chart";
+import { StyleSheet, Text, View } from "react-native";
+import Svg, { Circle } from "react-native-svg";
 
-const DonutChart = () => {
-  const widthAndHeight = 250;
-
-  const series = [430, 321, 185, 123]; // values only
-  const sliceColor = ['#fbd203', '#ffb300', '#ff9100', '#ff6c00']; // colors only
+const DonutChart = ({ percentage = 75, radius = 80, strokeWidth = 20, color = "#fbd203" }) => {
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (circumference * percentage) / 100;
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Basic</Text>
-        <PieChart
-          widthAndHeight={widthAndHeight}
-          series={series}
-          sliceColor={sliceColor}
+    <View style={styles.container}>
+      <Svg width={radius * 2} height={radius * 2}>
+        <Circle
+          stroke="#eee"
+          fill="none"
+          cx={radius}
+          cy={radius}
+          r={radius}
+          strokeWidth={strokeWidth}
         />
-
-        <Text style={styles.title}>Doughnut</Text>
-        <PieChart
-          widthAndHeight={widthAndHeight}
-          series={series}
-          sliceColor={sliceColor}
-          coverRadius={0.45}
-          coverFill={'#FFF'}
+        <Circle
+          stroke={color}
+          fill="none"
+          cx={radius}
+          cy={radius}
+          r={radius}
+          strokeWidth={strokeWidth}
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          rotation="-90"
+          origin={`${radius}, ${radius}`}
         />
+      </Svg>
+      <View style={[StyleSheet.absoluteFillObject, styles.center]}>
+        <Text style={styles.percentage}>{percentage}%</Text>
+        <Text style={styles.totalLabel}>Total</Text>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -34,11 +42,20 @@ export default DonutChart;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 30,
   },
-  title: {
-    fontSize: 24,
-    margin: 10,
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  percentage: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  totalLabel: {
+    fontSize: 12,
+    color: "#888",
   },
 });
