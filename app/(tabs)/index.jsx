@@ -1,15 +1,13 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/images/iq.png";
 import TotalSpentDonutChart from "../../components/Charts/TotalSpentDonutChart";
 import { Colors } from "../../Constants/Colors";
 
-const screenWidth = Dimensions.get("window").width;
-
 const Index = () => {
- 
-
+  const router = useRouter()
   const customChartData = [
     { category: "Groceries", value: 333, color: "#7E49FF", icon: "food" }, // Different green
     { category: "Car", value: 333, color: "#FF2D55", icon: "car" }, // Different purple
@@ -20,11 +18,14 @@ const Index = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Image source={logo} />
-        <Avatar.Icon
-          icon="account"
-          size={40}
-          style={{ backgroundColor: Colors.primary }}
-        />
+
+        <Pressable onPress={()=>router.push("AccountInformation")}>
+          <Avatar.Icon
+            icon="account"
+            size={40}
+            style={{ backgroundColor: Colors.primary }}
+          />
+        </Pressable>
       </View>
 
       <View style={styles.tagLine}>

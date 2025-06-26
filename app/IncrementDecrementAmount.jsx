@@ -1,17 +1,20 @@
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation } from "expo-router";
 import { useState } from "react";
 import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../Constants/Colors";
 
 const IncrementDecrementAmount = () => {
+  const navigation  = useNavigation()
   const [amount, setAmount] = useState("-1000");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -23,7 +26,9 @@ const IncrementDecrementAmount = () => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="white" />
+        <Pressable onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </Pressable>
         <View style={styles.headerButtonText}>
           <FontAwesome5
             name="home"
@@ -105,11 +110,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-  headerButtonText : {
+  headerButtonText: {
     flex: 1,
-    flexDirection : 'row',
-    justifyContent : 'center',
-    alignItems : "center"
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   row: {
     flexDirection: "row",

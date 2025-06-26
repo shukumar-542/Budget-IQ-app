@@ -37,6 +37,13 @@ const SettingScreen = () => {
       ),
       label: "Terms & Policies",
     },
+    {
+      name: "PrivacyPolicy",
+      icon: (
+        <Ionicons name="shield-checkmark-outline" size={20} color="black" />
+      ),
+      label: "Privacy Policy",
+    },
     // {
     //   name: 'ReviewTheApp',
     //   icon: <AntDesign name="like1" size={20} color="black" />,

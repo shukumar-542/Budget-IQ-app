@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,6 +19,8 @@ const categories = [
 const CategorySelector = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
 
+  const router = useRouter()
+
   const toggleCategory = (id) => {
     setSelectedCategories(prev =>
       prev.includes(id)
@@ -30,6 +33,7 @@ const CategorySelector = () => {
 
   const handleSave = () => {
     console.log('Selected Categories:', selectedCategories);
+    router.push("/DashboardScreen")
     // Handle your submit logic here (API call, navigation, etc.)
   };
 

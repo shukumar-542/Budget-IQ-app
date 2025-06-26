@@ -162,9 +162,8 @@ const styles = StyleSheet.create({
   },
   dropdownContainers: {
     margin: 10,
-    padding: 10,
     zIndex: 1000,
-    width: 150,
+    width: 130,
   },
   dropdown: {
     borderColor: "#ccc",
