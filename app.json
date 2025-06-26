@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "budget-iq-app",
+    "name": "Budget IQ",
     "slug": "budget-iq-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -23,6 +23,11 @@
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/welcome.png"
+    },
+    "splash": {
+      "image": "./assets/images/welcome.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
       "expo-router",
