@@ -31,7 +31,7 @@ const LoginScreen = () => {
         <Text style={styles.forgotText}>Forgot password?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('/(tabs)')} style={styles.loginButton}>
+      <TouchableOpacity onPress={() => router.replace('/Subscriptions')} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Log In</Text>
       </TouchableOpacity>
 

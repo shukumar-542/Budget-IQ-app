@@ -17,6 +17,14 @@ export default function RootLayout() {
         <Stack.Screen name="Otp" options={{ headerShown: false }} />
         <Stack.Screen name="NewPassword" options={{ headerShown: false }} />
         <Stack.Screen name="IncrementDecrementAmount" options={{ headerShown: false }} />
+        <Stack.Screen name="Subscriptions" options={{
+          title : 'Subscriptions Plans',
+          headerTitleStyle: {
+              fontWeight: "700",
+            },
+          headerTitleAlign : 'center',
+          headerShadowVisible : false
+         }} />
         <Stack.Screen
           name="AccountInformation"
           options={{
