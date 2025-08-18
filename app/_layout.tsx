@@ -1,10 +1,11 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
-
-export default function RootLayout() {
+import { Provider } from "react-redux";
+import { store } from "../redux/store";
+const AppLayout = () => {
   return (
     <>
-      <StatusBar barStyle={"dark-content"} />
+
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="InitialScreen" options={{ headerShown: false }} />
@@ -18,13 +19,13 @@ export default function RootLayout() {
         <Stack.Screen name="NewPassword" options={{ headerShown: false }} />
         <Stack.Screen name="IncrementDecrementAmount" options={{ headerShown: false }} />
         <Stack.Screen name="Subscriptions" options={{
-          title : 'Subscriptions Plans',
+          title: 'Subscriptions Plans',
           headerTitleStyle: {
-              fontWeight: "700",
-            },
-          headerTitleAlign : 'center',
-          headerShadowVisible : false
-         }} />
+            fontWeight: "700",
+          },
+          headerTitleAlign: 'center',
+          headerShadowVisible: false
+        }} />
         <Stack.Screen
           name="AccountInformation"
           options={{
@@ -80,8 +81,19 @@ export default function RootLayout() {
             headerTitleAlign: "center",
           }}
         />
-      
+
       </Stack>
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <>
+      <Provider store={store}>
+        <StatusBar barStyle={"dark-content"} />
+        <AppLayout />
+      </Provider>
     </>
   );
 }
