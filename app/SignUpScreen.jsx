@@ -17,16 +17,16 @@ const SignUpScreen = () => {
 
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "majofa6249@namestal.com",
+    email: "dovat97762@namestal.com",
     contactNo: "",
     password: "",
     confirmPassword: "",
   });
 
-  const handleChange = (filed, value) => {
+  const handleChange = (field, value) => {
     setFormData({
       ...formData,
-      [filed]: value,
+      [field]: value,
     });
   };
 
@@ -47,7 +47,7 @@ const SignUpScreen = () => {
       console.log("Sign Up Success:", response);
       router.push({
         pathname: "/AccountVerification",
-        params: { email: formData.email },
+        params: { email: formData.email ,password: formData.password},
       });
       // Navigate to Account Verification Screen on success
     } catch (err) {
@@ -56,7 +56,7 @@ const SignUpScreen = () => {
     }
     // router.push({
     //   pathname: "/AccountVerification",
-    //   params: { email: formData.email },
+    //   params: { email: formData.email, password: formData.password },
     // });
   };
 

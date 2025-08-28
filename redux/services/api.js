@@ -1,10 +1,19 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 export const api = createApi({
-  reducerPath: "api", // key for caching
-  baseQuery: fetchBaseQuery({ baseUrl: "http://10.10.20.72:5000/api/v1" }),
+  reducerPath: "api",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://10.10.20.72:5000/api/v1",
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().auth.token; // ✅ get token from Redux
+      console.log("Token sent in header:", token); // debug
+      if (token) {
+        headers.set("authorization", `${token}`);
+      }
+      console.log(headers);
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
-    // Example POST request
     signUp: builder.mutation({
       query: (data) => ({
         url: "/users/sign-up",
@@ -19,6 +28,26 @@ export const api = createApi({
         body: data,
       }),
     }),
+    iqBuddy: builder.mutation({
+      query: (data) => ({
+        url: "/iqbuddy",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    signIn: builder.mutation({
+      query: (data) => ({
+        url: "/auth/sign-in",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
-export const { useSignUpMutation, useVerifyRegistrationMutation } = api;
+
+export const {
+  useSignUpMutation,
+  useVerifyRegistrationMutation,
+  useIqBuddyMutation,
+  useSignInMutation,
+} = api;

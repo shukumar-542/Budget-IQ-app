@@ -11,7 +11,10 @@ import { Colors } from "../Constants/Colors";
 import { useVerifyRegistrationMutation } from "../redux/services/api";
 import { useNavigation } from "@react-navigation/native";
 import { useSearchParams } from "expo-router";
-
+import { useSignInMutation } from "../redux/services/api";
+import { code, fingerPrint, mail } from "ionicons/icons";
+import { useDispatch } from "react-redux";
+import { setToken } from "../redux/slices/authSlice"; //
 const AccountVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(60);
@@ -21,14 +24,15 @@ const AccountVerification = () => {
   const params = useLocalSearchParams
     ? useLocalSearchParams()
     : useSearchParams()[0];
-  const email = params.email || params.get?.("email");
+  const { email } = useLocalSearchParams();
+  const { password } = useLocalSearchParams();
+  const dispatch = useDispatch(); // ✅ Add this
+
   const [oTP, { isLoading }] = useVerifyRegistrationMutation();
+  const [signIn, { isLoading: isSigningIn }] = useSignInMutation();
   const [formData, setFormData] = useState({
     email: email,
-    tokenCode: otp,
-    code: otp.join(""),
   });
-
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
 
@@ -62,19 +66,36 @@ const AccountVerification = () => {
     setIsResendDisabled(true);
     // Add resend logic here
   };
-
+  // Handle OTP verification and sign in
   const handleVerify = async () => {
-    console.log("Verification code entered:", otp.join(""));
     try {
+      // First, verify the OTP with the backend
       const response = await oTP({
         email: email,
         tokenCode: otp.join(""),
       }).unwrap();
-      console.log("Verification Success:", response);
-      router.replace("/(tabs)");
+      await new Promise((res) => setTimeout(res, 500)); // wait half second
+      // If OTP verification is successful, perform the sign-in
+      if (response) {
+        const signInResponse = await signIn({
+          email: email,
+          password: password, // Assuming password is available in formData
+        }).unwrap();
+        console.log(
+          "Sign-in successful:",
+          signInResponse,
+          signInResponse.accessToken
+        );
+
+        const token = signInResponse.data.accessToken;
+
+        console.log("Token being dispatched:", token);
+        if (token) dispatch(setToken(token));
+        router.replace("/(tabs)");
+      }
     } catch (err) {
-      console.error("Verification Error:", err);
-      alert("Verification failed. Please try again.");
+      console.error("Verification or Sign-in Error:", err);
+      alert("Verification failed or Sign-in failed. Please try again.");
     }
   };
 
@@ -132,6 +153,8 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 100,
     alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
   },
   title: {
     fontSize: 25,
