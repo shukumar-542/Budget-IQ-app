@@ -1,28 +1,34 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Colors } from '../Constants/Colors';
-import { useSignUpMutation } from '../redux/services/api';
-
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Colors } from "../Constants/Colors";
+import { useSignUpMutation } from "../redux/services/api";
 
 const SignUpScreen = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [signUp, { isLoading, isError, data, error }] = useSignUpMutation();
 
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
+    email: "majofa6249@namestal.com",
     contactNo: "",
     password: "",
     confirmPassword: "",
   });
 
-  const  handleChange = (filed, value)=>{
+  const handleChange = (filed, value) => {
     setFormData({
       ...formData,
       [filed]: value,
     });
-  }
+  };
 
   const handleSignUp = async () => {
     if (formData.password !== formData.confirmPassword) {
@@ -30,7 +36,7 @@ const SignUpScreen = () => {
       return;
     }
 
-    console.log(formData)
+    console.log(formData);
     try {
       const response = await signUp({
         fullName: formData.fullName,
@@ -39,14 +45,20 @@ const SignUpScreen = () => {
         password: formData.password,
       }).unwrap();
       console.log("Sign Up Success:", response);
-      router.push('/LoginScreen'); // Navigate to Login Screen on success
+      router.push({
+        pathname: "/AccountVerification",
+        params: { email: formData.email },
+      });
+      // Navigate to Account Verification Screen on success
     } catch (err) {
       console.error("Sign Up Error:", err);
       alert("Sign Up failed. Please try again.");
     }
-
-  }
-
+    // router.push({
+    //   pathname: "/AccountVerification",
+    //   params: { email: formData.email },
+    // });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -87,7 +99,7 @@ const SignUpScreen = () => {
           placeholder="Enter your phone number"
           placeholderTextColor="#888"
           keyboardType="phone-pad"
-            value={formData.contactNo}
+          value={formData.contactNo}
           onChangeText={(val) => handleChange("contactNo", val)}
         />
       </View>
@@ -121,8 +133,15 @@ const SignUpScreen = () => {
       {/* /AccountVerification */}
 
       {/* Sign Up Button */}
-      <TouchableOpacity style={styles.signUpButton}  onPress={handleSignUp} disabled={isLoading}>
-        <Text style={styles.signUpButtonText}> {isLoading ? "Signing Up..." : "Sign Up"}</Text>
+      <TouchableOpacity
+        style={styles.signUpButton}
+        onPress={handleSignUp}
+        disabled={isLoading}
+      >
+        <Text style={styles.signUpButtonText}>
+          {" "}
+          {isLoading ? "Signing Up..." : "Sign Up"}
+        </Text>
       </TouchableOpacity>
 
       {/* Social Sign-Up Buttons (Apple & Google) */}
@@ -140,11 +159,13 @@ const SignUpScreen = () => {
       {/* Login Link */}
       <View style={styles.loginTextContainer}>
         <Text style={styles.loginText}>I have an account? </Text>
-        <TouchableOpacity onPress={() => router.push('/LoginScreen')}>
+        <TouchableOpacity onPress={() => router.push("/LoginScreen")}>
           <Text style={styles.loginLink}>Log in</Text>
         </TouchableOpacity>
       </View>
-       {isError && <Text style={{ color: "red", marginTop: 10 }}>Signup failed!</Text>}
+      {isError && (
+        <Text style={{ color: "red", marginTop: 10 }}>Signup failed!</Text>
+      )}
     </SafeAreaView>
   );
 };
@@ -152,88 +173,88 @@ const SignUpScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 20,
     paddingTop: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.primary,
     marginBottom: 30,
   },
   inputGroup: {
-    width: '100%',
+    width: "100%",
     marginBottom: 15,
   },
   label: {
     fontSize: 16,
     color: Colors.primary,
     marginBottom: 5,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 45,
     borderColor: Colors.primary,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 15,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   signUpButton: {
     backgroundColor: Colors.primary,
-    width: '100%',
+    width: "100%",
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
   signUpButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   socialButtonsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 30,
-    width: '60%',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    width: "60%",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   socialButton: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     borderRadius: 15,
     width: 60,
     height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
   loginTextContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 30,
   },
   loginText: {
     fontSize: 16,
-    color: '#555',
+    color: "#555",
   },
   loginLink: {
     fontSize: 16,
     color: Colors.primary,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
