@@ -1,60 +1,60 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import BackButton from "../components/UI/BackButton";
 import { Colors } from "../Constants/Colors";
-
+import { useResetPasswordMutation } from "../redux/services/api";
 const Otp = () => {
-    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-      const [countdown, setCountdown] = useState(60);
-      const [isResendDisabled, setIsResendDisabled] = useState(true);
-      const inputRefs = useRef([]);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [countdown, setCountdown] = useState(60);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const inputRefs = useRef([]);
   const router = useRouter();
+  const [reset] = useResetPasswordMutation();
+  const handleOtpChange = (index, value) => {
+    if (value.length > 1) return;
 
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
 
-    const handleOtpChange = (index, value) => {
-      if (value.length > 1) return;
-  
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-  
-      if (value && index < 5) {
-        inputRefs.current[index + 1]?.focus();
-      }
-    };
-  
-    const handleKeyPress = (index, key) => {
-      if (key === "Backspace" && !otp[index] && index > 0) {
-        inputRefs.current[index - 1]?.focus();
-      }
-    };
-  
-    useEffect(() => {
-      let timer;
-      if (countdown > 0) {
-        timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      } else {
-        setIsResendDisabled(false);
-      }
-      return () => clearTimeout(timer);
-    }, [countdown]);
-  
-    const handleResendOtp = () => {
-      setCountdown(60);
-      setIsResendDisabled(true);
-      // Add resend logic here
-    };
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyPress = (index, key) => {
+    if (key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+  const handleNext = async () => {};
+
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else {
+      setIsResendDisabled(false);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
+  const handleResendOtp = () => {
+    setCountdown(60);
+    setIsResendDisabled(true);
+    // Add resend logic here
+  };
   return (
     <SafeAreaView style={styles.container}>
-      <BackButton />
+      <BackButton style={styles.backButton} />
       <Text style={styles.title}>OTP</Text>
       <Text style={styles.subTitle}>
         To reset you account, please enter the verification code you get on your
@@ -80,7 +80,9 @@ const Otp = () => {
       </View>
 
       <TouchableOpacity
-        onPress={() => router.push("/NewPassword")}
+        onPress={() => {
+          handleNext;
+        }}
         style={styles.verifyButton}
       >
         <Text style={styles.verifyText}>Send</Text>
@@ -111,15 +113,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffff",
     padding: 20,
     paddingTop: 20,
+    alignContent: "center",
+    justifyContent: "center",
   },
   title: {
     fontSize: 25,
     fontWeight: "bold",
     marginTop: 20,
+    textAlign: "center", // <-- center text
   },
+
   subTitle: {
     marginVertical: 15,
-    fontSize: 16,
+    fontSize: 16, // <-- center text
   },
   inputGroup: {
     width: "100%",
@@ -132,7 +138,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 20,
   },
-    input: {
+  input: {
     width: 45,
     height: 50,
     borderColor: Colors.primary,
@@ -152,18 +158,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
   },
- inputContainer: {
+  inputContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 16,
     gap: 10,
   },
-   resendCode : {
-    flexDirection : "row",
-    alignItems : 'center',
-    marginTop : 20,
-    gap : 10,
-    justifyContent : 'center'
-
-  }
+  resendCode: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+    gap: 10,
+    justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    marginTop: 10,
+  },
 });

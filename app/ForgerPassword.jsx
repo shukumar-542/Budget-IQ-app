@@ -1,75 +1,106 @@
 import { useRouter } from "expo-router";
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import BackButton from "../components/UI/BackButton";
 import { Colors } from "../Constants/Colors";
+import { useForgetPasswordMutation } from "../redux/services/api";
+const ForgotPassword = () => {
+  const [email, setEmail] = useState("");
+  const router = useRouter();
+  const [forgetPassword] = useForgetPasswordMutation();
 
-const ForgerPassword = () => {
-    const router = useRouter()
+  const handleNext = async () => {
+    try {
+      const response = await forgetPassword({
+        email: email,
+      }).unwrap();
+      router.push("/Otp");
+    } catch (e) {
+      console.log("from forgetpassword page", e);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <BackButton />
-      <Text style={styles.title}>Forgot Password</Text>
-      <Text style={styles.subTitle}>
-        To reset your password, Please enter the email address that is
-        associated with the account. You’ll get the link in your e-mail.
-      </Text>
+      <BackButton style={styles.backButton} />
+      <View style={styles.content}>
+        <Text style={styles.title}>Forgot Password</Text>
+        <Text style={styles.subTitle}>
+          To reset your password, Please enter the email address that is
+          associated with the account. You’ll get the link in your e-mail.
+        </Text>
 
-      <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="consultme@gmail.com"
-                placeholderTextColor="#888"
-                keyboardType="email-address"
-                autoCapitalize="none" 
-              />
-            </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="consultme@gmail.com"
+            placeholderTextColor="#888"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+        </View>
 
-      <TouchableOpacity onPress={()=> router.push("/Otp")} style={styles.verifyButton}>
-        <Text style={styles.verifyText}>Send</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleNext} style={styles.verifyButton}>
+          <Text style={styles.verifyText}>Send</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
 
-export default ForgerPassword;
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffff",
     padding: 20,
-    paddingTop : 20
+    paddingTop: 20,
+    justifyContent: "center",
+    paddingHorizontal: 10,
   },
   title: {
     fontSize: 25,
     fontWeight: "bold",
+    textAlign: "center", // ✅ correct
     marginTop: 20,
   },
   subTitle: {
-    marginVertical: 15,
     fontSize: 16,
+
+    marginVertical: 15,
   },
-    inputGroup: {
-    width: '100%', 
-    marginBottom: 15, 
+
+  inputGroup: {
+    width: "100%",
+    marginBottom: 15,
   },
   label: {
     fontSize: 16,
-    color: Colors.primary, 
+    color: Colors.primary,
     marginBottom: 5,
-    fontWeight: '500',
-    marginTop : 20
+    fontWeight: "500",
+    marginTop: 20,
   },
   input: {
-    width: '100%',
-    height: 45, 
+    width: "100%",
+    height: 45,
     borderColor: Colors.primary,
     borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 15, 
+    paddingHorizontal: 15,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   verifyButton: {
     backgroundColor: Colors.primary,
@@ -81,5 +112,23 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     textAlign: "center",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+    paddingTop: 20,
+  },
+  backButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    marginTop: 10,
+    zIndex: 1,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

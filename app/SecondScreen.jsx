@@ -1,30 +1,55 @@
-import { useRouter } from 'expo-router';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Colors } from '../Constants/Colors';
-
+import { useRouter } from "expo-router";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Colors } from "../Constants/Colors";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { loadTokenFromStorage } from "../redux/slices/authSlice";
+import { getToken } from "../utils/secureStore";
+import { useState } from "react";
 const SecondScreen = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const [token, setToken] = useState(null);
 
+  useEffect(() => {
+    const loadToken = async () => {
+      const storedToken = await getToken();
+      if (storedToken) {
+        dispatch(loadTokenFromStorage(storedToken));
+        setToken(storedToken); // save to state
+      }
+      console.log("Loaded token from second screen:", storedToken);
+    };
+    loadToken();
+  }, [dispatch]);
+
+  const handleNext = () => {
+    // if (token) {
+    //   router.push("/Subscriptions");
+    //   console.log("Token exists, navigating to Subscriptions");
+    // } else {
+      router.push("/LoginScreen");
+      console.log("No token, navigating to LoginScreen");
+    // }
+  };
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/images/budget.png')} 
+        source={require("../assets/images/budget.png")}
         style={styles.image}
         resizeMode="contain"
       />
 
       <Text style={styles.heading}>
-        Best Budgeting Tools for{'\n'}Home Finances
+        Best Budgeting Tools for{"\n"}Home Finances
       </Text>
 
       <Text style={styles.description}>
-        Easily log in or sign up to connect with BUDGET IQ and calculate your daily cost
+        Easily log in or sign up to connect with BUDGET IQ and calculate your
+        daily cost
       </Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/LoginScreen')} 
-      >
+      <TouchableOpacity style={styles.button} onPress={() => handleNext()}>
         <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>
 
@@ -41,25 +66,25 @@ export default SecondScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 24,
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 250,
   },
   heading: {
     fontSize: 20,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: '#000',
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#000",
   },
   description: {
     fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
     marginTop: 10,
   },
   button: {
@@ -67,17 +92,17 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 8,
-    width: '100%',
+    width: "100%",
     marginTop: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    textAlign: 'center',
-    fontWeight: '600',
+    textAlign: "center",
+    fontWeight: "600",
   },
   pagination: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 20,
     gap: 8,
   },
@@ -85,9 +110,9 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
   },
   activeDot: {
-    backgroundColor: '#00C46A',
+    backgroundColor: "#00C46A",
   },
 });

@@ -28,13 +28,6 @@ export const api = createApi({
         body: data,
       }),
     }),
-    iqBuddy: builder.mutation({
-      query: (data) => ({
-        url: "/iqbuddy",
-        method: "POST",
-        body: data,
-      }),
-    }),
     signIn: builder.mutation({
       query: (data) => ({
         url: "/auth/sign-in",
@@ -49,6 +42,27 @@ export const api = createApi({
         body: data,
       }),
     }),
+    forgetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/forget-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    iqBuddy: builder.mutation({
+      query: (data) => ({
+        url: "/iqbuddy",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -57,4 +71,6 @@ export const {
   useVerifyRegistrationMutation,
   useIqBuddyMutation,
   useSignInMutation,
+  useForgetPasswordMutation,
+  useResetPasswordMutation,
 } = api;

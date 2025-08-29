@@ -10,12 +10,13 @@ import {
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
 import { useState } from "react";
+import { saveAuthData } from "../utils/secureStore";
 const LoginScreen = () => {
   const router = useRouter();
   const navigation = useNavigation();
   const [signIn, { isLoading, isError }] = useSignInMutation();
   const [formData, setFormData] = useState({
-    email: "rihorop272@skateru.com",
+    email: "wobev31698@skateru.com",
     password: "11112222",
   });
   const handleChange = (field, value) => {
@@ -28,6 +29,13 @@ const LoginScreen = () => {
     try {
       const response = await signIn(formData).unwrap();
       console.log("Login successful:", response);
+      // Save token and email before navigation
+      if (response?.data.accessToken && formData?.email) {
+        await saveAuthData(response.data.accessToken, formData.email);
+        console.log("Token and email saved successfully");
+      } else {
+        console.warn("Token or email missing");
+      }
       router.replace("/Subscriptions");
     } catch (error) {
       console.error("Login failed:", error);
