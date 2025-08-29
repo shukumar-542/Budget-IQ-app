@@ -74,8 +74,6 @@ const AccountVerification = () => {
         email: email,
         tokenCode: otp.join(""),
       }).unwrap();
-      await new Promise((res) => setTimeout(res, 500)); // wait half second
-      // If OTP verification is successful, perform the sign-in
       if (response) {
         const signInResponse = await signIn({
           email: email,
@@ -91,11 +89,11 @@ const AccountVerification = () => {
 
         console.log("Token being dispatched:", token);
         if (token) dispatch(setToken(token));
-        router.replace("/(tabs)");
+        router.replace("/LoginScreen");
       }
     } catch (err) {
-      console.error("Verification or Sign-in Error:", err);
-      alert("Verification failed or Sign-in failed. Please try again.");
+      console.error("Sign-in Error:", err);
+      alert("Sign-in failed. Please try again.");
     }
   };
 

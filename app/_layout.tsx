@@ -5,7 +5,6 @@ import { store } from "../redux/store";
 const AppLayout = () => {
   return (
     <>
-
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="InitialScreen" options={{ headerShown: false }} />
@@ -14,18 +13,30 @@ const AppLayout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="SignUpScreen" options={{ headerShown: false }} />
         <Stack.Screen name="ForgerPassword" options={{ headerShown: false }} />
-        <Stack.Screen name="AccountVerification" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="AccountVerification"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Otp" options={{ headerShown: false }} />
         <Stack.Screen name="NewPassword" options={{ headerShown: false }} />
-        <Stack.Screen name="IncrementDecrementAmount" options={{ headerShown: false }} />
-        <Stack.Screen name="Subscriptions" options={{
-          title: 'Subscriptions Plans',
-          headerTitleStyle: {
-            fontWeight: "700",
-          },
-          headerTitleAlign: 'center',
-          headerShadowVisible: false
-        }} />
+        <Stack.Screen
+          name="IncrementDecrementAmount"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Subscriptions"
+          options={{
+            title: "Subscriptions Plans",
+            headerTitleStyle: {
+              fontWeight: "700",
+              color: "#000",
+            },
+            headerTitleAlign: "center",
+            headerShadowVisible: false,
+            headerBackVisible: false, // hides the back arrow
+          }}
+        />
+
         <Stack.Screen
           name="AccountInformation"
           options={{
@@ -81,11 +92,10 @@ const AppLayout = () => {
             headerTitleAlign: "center",
           }}
         />
-
       </Stack>
     </>
   );
-}
+};
 
 export default function RootLayout() {
   return (

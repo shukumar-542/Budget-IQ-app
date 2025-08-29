@@ -17,7 +17,7 @@ const SignUpScreen = () => {
 
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "dovat97762@namestal.com",
+    email: "rihorop272@skateru.com",
     contactNo: "",
     password: "",
     confirmPassword: "",
