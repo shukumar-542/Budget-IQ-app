@@ -6,17 +6,25 @@ import { useDispatch } from "react-redux";
 import { loadTokenFromStorage } from "../redux/slices/authSlice";
 import { getToken } from "../utils/secureStore";
 import { useState } from "react";
+import {
+  loadLastViewTime,
+  saveCurrentViewTime,
+} from "../redux/slices/SubscriptionSlice";
+import { useSelector } from "react-redux";
 const SecondScreen = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [token, setToken] = useState(null);
-
+  const lastViewTime = useSelector((state) => state.subscription.lastViewTime);
   useEffect(() => {
+    // Load last view time immediately
+    dispatch(loadLastViewTime());
+    // Load token
     const loadToken = async () => {
       const storedToken = await getToken();
       if (storedToken) {
         dispatch(loadTokenFromStorage(storedToken));
-        setToken(storedToken); // save to state
+        setToken(storedToken); // save to local state
       }
       console.log("Loaded token from second screen:", storedToken);
     };
@@ -24,13 +32,21 @@ const SecondScreen = () => {
   }, [dispatch]);
 
   const handleNext = () => {
-    // if (token) {
-    //   router.push("/Subscriptions");
-    //   console.log("Token exists, navigating to Subscriptions");
-    // } else {
+    const currentTime = new Date().getTime();
+    if (token) {
+      if (lastViewTime) {
+        const hoursDiff = (currentTime - lastViewTime) / (1000 * 60 * 60); // ms → hours
+        if (hoursDiff > 12) {
+          router.push("/Subscriptions");
+          console.log("Token exists,12 hours left navigating to Subscriptions");
+        } else {
+          router.replace("/(tabs)");
+        }
+      }
+    } else {
       router.push("/LoginScreen");
       console.log("No token, navigating to LoginScreen");
-    // }
+    }
   };
   return (
     <View style={styles.container}>

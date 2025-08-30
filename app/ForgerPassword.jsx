@@ -21,10 +21,15 @@ const ForgotPassword = () => {
       const response = await forgetPassword({
         email: email,
       }).unwrap();
-      router.push("/Otp");
+         router.push({
+        pathname: "/Otp",
+        params: { email: email
+        },
+      });
     } catch (e) {
       console.log("from forgetpassword page", e);
     }
+    // router.push("/Otp");
   };
 
   return (

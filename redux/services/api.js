@@ -5,11 +5,9 @@ export const api = createApi({
     baseUrl: "http://10.10.20.72:5000/api/v1",
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token; // ✅ get token from Redux
-      console.log("Token sent in header:", token); // debug
       if (token) {
         headers.set("authorization", `${token}`);
       }
-      console.log(headers);
       return headers;
     },
   }),
@@ -63,6 +61,20 @@ export const api = createApi({
         body: data,
       }),
     }),
+    verifyCode: builder.mutation({
+      query: (data) => ({
+        url: "/auth/verify-code",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    resentOtp: builder.mutation({
+      query: (data) => ({
+        url: "/auth/resend-otp",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -73,4 +85,6 @@ export const {
   useSignInMutation,
   useForgetPasswordMutation,
   useResetPasswordMutation,
+  useVerifyCodeMutation,
+  useResentOtpMutation,
 } = api;

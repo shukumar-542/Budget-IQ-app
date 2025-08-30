@@ -1,23 +1,49 @@
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
 // Save token and email
 export const saveAuthData = async (token, email) => {
-  await SecureStore.setItemAsync('accessToken', token);
-  await SecureStore.setItemAsync('userEmail', email);
+  await SecureStore.setItemAsync("accessToken", token);
+  await SecureStore.setItemAsync("userEmail", email);
 };
 
 // Get token
 export const getToken = async () => {
-  return await SecureStore.getItemAsync('accessToken');
+  return await SecureStore.getItemAsync("accessToken");
 };
 
 // Get email
 export const getEmail = async () => {
-  return await SecureStore.getItemAsync('userEmail');
+  return await SecureStore.getItemAsync("userEmail");
 };
 
 // Delete all auth data
 export const deleteAuthData = async () => {
-  await SecureStore.deleteItemAsync('accessToken');
-  await SecureStore.deleteItemAsync('userEmail');
+  await SecureStore.deleteItemAsync("accessToken");
+  await SecureStore.deleteItemAsync("userEmail");
+};
+
+// ===================== SUBSCRIPTION =====================
+
+// Save last subscription view time
+export const saveSubscriptionViewTime = async () => {
+  try {
+    const timestamp = new Date().getTime(); // current time in ms
+    await SecureStore.setItemAsync(
+      "subscriptionTimestamp",
+      timestamp.toString()
+    );
+  } catch (error) {
+    console.error("Error saving subscription timestamp:", error);
+  }
+};
+
+// Get last subscription view time
+export const getSubscriptionViewTime = async () => {
+  try {
+    const ts = await SecureStore.getItemAsync("subscriptionTimestamp");
+    return ts ? parseInt(ts, 10) : null;
+  } catch (error) {
+    console.error("Error getting subscription timestamp:", error);
+    return null;
+  }
 };

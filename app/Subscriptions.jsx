@@ -5,11 +5,24 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loadLastViewTime,
+  saveCurrentViewTime,
+} from "../redux/slices/SubscriptionSlice";
+
 import { router } from "expo-router";
 const Subscriptions = () => {
+  const dispatch = useDispatch();
   const [textWidths, setTextWidths] = useState({});
+  useEffect(() => {
+    // Load previous timestamp when component mounts
+    dispatch(loadLastViewTime());
 
+    // Save current time automatically when screen is viewed
+    dispatch(saveCurrentViewTime());
+  }, [dispatch]);
   const plans = [
     {
       name: "Free Trial",

@@ -16,11 +16,11 @@ const SignUpScreen = () => {
   const [signUp, { isLoading, isError, data, error }] = useSignUpMutation();
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "wobev31698@skateru.com",
-    contactNo: "",
-    password: "",
-    confirmPassword: "",
+    fullName: "1",
+    email: "majelek286@skateru.com",
+    contactNo: "1",
+    password: "11111111",
+    confirmPassword: "11111111",
   });
 
   const handleChange = (field, value) => {
@@ -47,7 +47,12 @@ const SignUpScreen = () => {
       console.log("Sign Up Success:", response);
       router.push({
         pathname: "/AccountVerification",
-        params: { email: formData.email ,password: formData.password},
+        params: {
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.fullName,
+          contactNo: formData.contactNo,
+        },
       });
       // Navigate to Account Verification Screen on success
     } catch (err) {

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,30 +9,27 @@ import {
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { useVerifyRegistrationMutation } from "../redux/services/api";
-import { useNavigation } from "@react-navigation/native";
 import { useSearchParams } from "expo-router";
-import { useSignInMutation } from "../redux/services/api";
-import { code, fingerPrint, mail } from "ionicons/icons";
 import { useDispatch } from "react-redux";
 import { setToken } from "../redux/slices/authSlice"; //
+import { useSignUpMutation } from "../redux/services/api";
+import { useSignInMutation } from "../redux/services/api";
+import { useResentOtpMutation } from "../redux/services/api";
 const AccountVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const inputRefs = useRef([]);
   const router = useRouter();
-  const params = useLocalSearchParams
-    ? useLocalSearchParams()
-    : useSearchParams()[0];
   const { email } = useLocalSearchParams();
   const { password } = useLocalSearchParams();
+  const { fullName } = useLocalSearchParams();
+  const { contactNo } = useLocalSearchParams();
   const dispatch = useDispatch(); // ✅ Add this
 
   const [oTP, { isLoading }] = useVerifyRegistrationMutation();
-  const [signIn, { isLoading: isSigningIn }] = useSignInMutation();
-  const [formData, setFormData] = useState({
-    email: email,
-  });
+  const [resentOtp] = useResentOtpMutation();
+  const [signIn] = useSignInMutation();
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
 
@@ -61,10 +58,17 @@ const AccountVerification = () => {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     setCountdown(60);
     setIsResendDisabled(true);
-    // Add resend logic here
+
+    try {
+      const response = await resentOtp({
+        email: email,
+      }).unwrap();
+    } catch (e) {
+      console.log("accountverification -> resent otp ", e);
+    }
   };
   // Handle OTP verification and sign in
   const handleVerify = async () => {
@@ -74,6 +78,7 @@ const AccountVerification = () => {
         email: email,
         tokenCode: otp.join(""),
       }).unwrap();
+      console.log(response);
       if (response) {
         const signInResponse = await signIn({
           email: email,
@@ -82,7 +87,7 @@ const AccountVerification = () => {
         console.log(
           "Sign-in successful:",
           signInResponse,
-          signInResponse.accessToken
+          signInResponse.data.accessToken
         );
 
         const token = signInResponse.data.accessToken;
