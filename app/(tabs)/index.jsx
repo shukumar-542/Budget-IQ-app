@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -152,10 +153,35 @@ const Index = () => {
                 placeholder="Message IQ Buddy"
                 style={styles.input}
                 value={inputText}
-                onChangeText={setInputText}
+                onChangeText={(text) => {
+                  if (text.trim() !== "") {
+                    setInputText(text);
+                  } else {
+                    setInputText(""); // optional: allow clearing the field completely
+                  }
+                }}
               />
-              <TouchableOpacity onPress={handleSend}>
-                <Text style={styles.sendIcon}>➤</Text>
+              <TouchableOpacity
+                onPress={handleSend}
+                disabled={inputText.trim() === "" || isTyping}
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: 10,
+                }}
+              >
+                {isTyping ? (
+                  <ActivityIndicator size="small" color="#28a745" />
+                ) : (
+                  <Text
+                    style={[
+                      styles.sendIcon,
+                      inputText.trim() === "" && { opacity: 0.3 },
+                    ]}
+                  >
+                    ➤
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>

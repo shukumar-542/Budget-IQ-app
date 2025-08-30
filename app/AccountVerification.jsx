@@ -9,10 +9,9 @@ import {
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { useVerifyRegistrationMutation } from "../redux/services/api";
-import { useSearchParams } from "expo-router";
 import { useDispatch } from "react-redux";
 import { setToken } from "../redux/slices/authSlice"; //
-import { useSignUpMutation } from "../redux/services/api";
+
 import { useSignInMutation } from "../redux/services/api";
 import { useResentOtpMutation } from "../redux/services/api";
 const AccountVerification = () => {
@@ -23,8 +22,6 @@ const AccountVerification = () => {
   const router = useRouter();
   const { email } = useLocalSearchParams();
   const { password } = useLocalSearchParams();
-  const { fullName } = useLocalSearchParams();
-  const { contactNo } = useLocalSearchParams();
   const dispatch = useDispatch(); // ✅ Add this
 
   const [oTP, { isLoading }] = useVerifyRegistrationMutation();

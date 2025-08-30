@@ -75,6 +75,20 @@ export const api = createApi({
         body: data,
       }),
     }),
+    deleteUser: builder.mutation({
+      query: (data) => ({
+        url: "/users/delete-user",
+        method: "DELETE",
+        body: data,
+      }),
+    }),
+    userInfoUpdate: builder.mutation({
+      query: (data) => ({
+        url: "/users/update-user",
+        method: "PATCH",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -87,4 +101,6 @@ export const {
   useResetPasswordMutation,
   useVerifyCodeMutation,
   useResentOtpMutation,
+  useDeleteUserMutation,
+  useUserInfoUpdateMutation,
 } = api;

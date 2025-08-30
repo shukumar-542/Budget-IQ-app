@@ -1,17 +1,46 @@
 import { AntDesign, Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../Constants/Colors";
-
+import { deleteAuthData } from "../../utils/secureStore";
+import { router } from "expo-router";
+import { useDeleteUserMutation } from "../../redux/services/api";
+import * as SecureStore from "expo-secure-store";
 const SettingScreen = () => {
+  const [deleteUser] = useDeleteUserMutation();
+  const [userImage, setUserImage] = useState(null);
+
   const [activeItem, setActiveItem] = useState(null);
   const navigation = useNavigation();
   const user = {
     name: "Shukumar Ghosh",
     email: "shukumar@gmail.com",
+  };
+  useEffect(() => {
+    const loadUserImage = async () => {
+      try {
+        const storedImage = await SecureStore.getItemAsync("userImage");
+        if (storedImage) {
+          setUserImage(storedImage);
+        }
+      } catch (error) {
+        console.log("Failed to load user image from SecureStore:", error);
+      }
+    };
+    loadUserImage();
+  }, []);
+
+  const handleLogOut = async () => {
+    try {
+      await deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
+      console.log("Token removed from SecureStore only");
+      router.push("/LoginScreen");
+    } catch (e) {
+      console.log("from setting screen", e);
+    }
   };
 
   const menuItems = [
@@ -69,8 +98,14 @@ const SettingScreen = () => {
           {
             text: "Delete",
             style: "destructive",
-            onPress: () => {
-              navigation.navigate("LoginScreen");
+            onPress: async () => {
+              try {
+                const response = await deleteUser({}).unwrap();
+                console.log(response);
+                router.replace("/LoginScreen");
+              } catch (e) {
+                console.log("from setting screen delete account :", e);
+              }
             },
           },
         ],
@@ -93,7 +128,12 @@ const SettingScreen = () => {
         onPress={() => navigation.navigate("AccountInformation")}
         style={styles.profileSection}
       >
-        <Avatar.Icon icon="account" size={48} />
+        {userImage ? (
+          <Avatar.Image size={48} source={{ uri: userImage }} />
+        ) : (
+          <Avatar.Icon icon="account" size={48} />
+        )}
+
         <View style={{ marginLeft: 10 }}>
           <Text style={styles.profileName}>{user.name}</Text>
           <Text style={styles.profileEmail}>{user.email}</Text>
@@ -138,7 +178,10 @@ const SettingScreen = () => {
       ))}
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton}>
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => handleLogOut()}
+      >
         <Text style={styles.logoutText}>LOG OUT</Text>
       </TouchableOpacity>
     </SafeAreaView>

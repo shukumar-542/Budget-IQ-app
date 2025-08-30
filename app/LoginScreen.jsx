@@ -16,7 +16,7 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const [signIn, { isLoading, isError }] = useSignInMutation();
   const [formData, setFormData] = useState({
-    email: "majelek286@skateru.com",
+    email: "ririjo6950@noidem.com",
     password: "11111111",
   });
   const handleChange = (field, value) => {

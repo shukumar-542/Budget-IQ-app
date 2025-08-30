@@ -17,7 +17,7 @@ const SignUpScreen = () => {
 
   const [formData, setFormData] = useState({
     fullName: "1",
-    email: "majelek286@skateru.com",
+    email: "ririjo6950@noidem.com",
     contactNo: "1",
     password: "11111111",
     confirmPassword: "11111111",
@@ -50,8 +50,6 @@ const SignUpScreen = () => {
         params: {
           email: formData.email,
           password: formData.password,
-          fullName: formData.fullName,
-          contactNo: formData.contactNo,
         },
       });
       // Navigate to Account Verification Screen on success
