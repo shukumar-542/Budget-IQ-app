@@ -1,5 +1,8 @@
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router"; // ✅ correct
+import * as SecureStore from "expo-secure-store";
+import { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -10,17 +13,11 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { Colors } from "../Constants/Colors";
-
-import { useDispatch } from "react-redux";
 import { useUserInfoUpdateMutation } from "../redux/services/api";
-import { updateUserInfo } from "../redux/slices/userSlice";
-import { useEffect, useState } from "react";
-import * as SecureStore from "expo-secure-store";
-import { router } from "expo-router";
 // import {route}
 const AccountInformation = () => {
+  router = useRouter();
   const [image, setImage] = useState(null);
-
   useEffect(() => {
     const loadImage = async () => {
       try {
@@ -36,11 +33,19 @@ const AccountInformation = () => {
     loadImage();
   }, []);
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState(null);
   const [email, setEmail] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const validateEmail = (text) => {
+    setEmail(text);
+    // Basic email regex
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsEmailValid(regex.test(text));
+  };
+
   const user = useSelector((state) => state.user);
-  const dispatch = useDispatch();
-  const [triggerUpdateUserApi] = useUserInfoUpdateMutation();
+  const [userInfoUpdate, { isLoading }] = useUserInfoUpdateMutation();
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -63,22 +68,35 @@ const AccountInformation = () => {
     }
   };
 
-  const handleSaveChanges = () => {
-    const formData = new FormData();
-    formData.append("fullName", name);
-    formData.append("email", email);
-    formData.append("contactNo", "");
+  const handleSaveChanges = async () => {
+    let contactNo = await SecureStore.getItemAsync("userContactNo");
 
+    let storedName = await SecureStore.getItemAsync("userFullName");
+    let storedEmail = await SecureStore.getItemAsync("userEmail");
+
+    const finalName = name || storedName || "";
+    const finalEmail = email || storedEmail || "";
+
+    const formData = new FormData();
+    formData.append(
+      "data",
+      JSON.stringify({ fullName: finalName, email: finalEmail, contactNo })
+    );
     if (image) {
+      const filename = image.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image`;
+
       formData.append("file", {
         uri: image,
-        type: "image/jpeg", // adjust if needed
-        name: "profile.jpg",
+        name: filename,
+        type,
       });
     }
-
-    // Dispatch the thunk to update Redux + SecureStore + API
-    dispatch(updateUserInfo({ formData, triggerUpdateUserApi }));
+    const response = await userInfoUpdate(formData).unwrap();
+    await SecureStore.setItemAsync("userFullName", finalName);
+    await SecureStore.setItemAsync("userEmail", finalEmail);
+    console.log(response);
     router.replace("/SettingScreen");
   };
 
@@ -114,16 +132,31 @@ const AccountInformation = () => {
           <AntDesign name="mail" size={20} color="#555" />
           <TextInput
             style={styles.in}
-            value={email} // connects to state
-            onChangeText={setEmail} // updates state when typing
+            value={email}
+            onChangeText={validateEmail} // use validation function
             placeholder="example@gmail.com"
             placeholderTextColor="#999"
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
         </View>
+        {!isEmailValid && (
+          <Text style={{ color: "red", marginTop: 5 }}>
+            Please enter a valid email
+          </Text>
+        )}
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleSaveChanges}>
+
+      <TouchableOpacity
+        style={[
+          styles.button,
+          (isLoading || !isEmailValid) && { opacity: 0.6 },
+        ]}
+        onPress={handleSaveChanges}
+        disabled={isLoading || !isEmailValid}
+      >
         <Text style={styles.buttonText}>
-          {user.status === "loading" ? "Saving..." : "Save Changes"}
+          {isLoading ? "Saving..." : "Save Changes"}
         </Text>
       </TouchableOpacity>
     </View>

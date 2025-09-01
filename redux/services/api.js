@@ -89,6 +89,13 @@ export const api = createApi({
         body: data,
       }),
     }),
+    userGetMe: builder.mutation({
+      query: (data) => ({
+        url: "/users/get-me",
+        method: "GET",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -103,4 +110,5 @@ export const {
   useResentOtpMutation,
   useDeleteUserMutation,
   useUserInfoUpdateMutation,
+  useUserGetMeMutation,
 } = api;

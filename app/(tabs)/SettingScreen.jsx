@@ -5,26 +5,38 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../Constants/Colors";
-import { deleteAuthData } from "../../utils/secureStore";
 import { router } from "expo-router";
 import { useDeleteUserMutation } from "../../redux/services/api";
 import * as SecureStore from "expo-secure-store";
+import { useDispatch } from "react-redux";
+import { clearToken } from "../../redux/slices/authSlice"; // adjust the path
+import { deleteAuthData } from "../../utils/secureStore";
+
 const SettingScreen = () => {
+  const dispatch = useDispatch();
+
   const [deleteUser] = useDeleteUserMutation();
   const [userImage, setUserImage] = useState(null);
+  const [userFullName, setUserFullName] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
 
   const [activeItem, setActiveItem] = useState(null);
   const navigation = useNavigation();
-  const user = {
-    name: "Shukumar Ghosh",
-    email: "shukumar@gmail.com",
-  };
   useEffect(() => {
     const loadUserImage = async () => {
       try {
         const storedImage = await SecureStore.getItemAsync("userImage");
+        const storedFullName = await SecureStore.getItemAsync("userFullName");
+        const storedEmail = await SecureStore.getItemAsync("userEmail");
+        console.log(storedEmail, storedFullName);
         if (storedImage) {
           setUserImage(storedImage);
+        }
+        if (storedFullName) {
+          setUserFullName(storedFullName);
+        }
+        if (storedEmail) {
+          setUserEmail(storedEmail);
         }
       } catch (error) {
         console.log("Failed to load user image from SecureStore:", error);
@@ -35,7 +47,7 @@ const SettingScreen = () => {
 
   const handleLogOut = async () => {
     try {
-      await deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
+      deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
       console.log("Token removed from SecureStore only");
       router.push("/LoginScreen");
     } catch (e) {
@@ -101,6 +113,7 @@ const SettingScreen = () => {
             onPress: async () => {
               try {
                 const response = await deleteUser({}).unwrap();
+                dispatch(clearToken());
                 console.log(response);
                 router.replace("/LoginScreen");
               } catch (e) {
@@ -135,8 +148,8 @@ const SettingScreen = () => {
         )}
 
         <View style={{ marginLeft: 10 }}>
-          <Text style={styles.profileName}>{user.name}</Text>
-          <Text style={styles.profileEmail}>{user.email}</Text>
+          <Text style={styles.profileName}>{userFullName}</Text>
+          <Text style={styles.profileEmail}>{userEmail}</Text>
         </View>
         <AntDesign
           name="right"

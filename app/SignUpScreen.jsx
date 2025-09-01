@@ -10,14 +10,22 @@ import {
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { useSignUpMutation } from "../redux/services/api";
-
+import * as SecureStore from "expo-secure-store";
 const SignUpScreen = () => {
   const router = useRouter();
+  const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const validateEmail = (text) => {
+    handleChange("email", text);
+    // Basic email regex
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsEmailValid(regex.test(text));
+  };
   const [signUp, { isLoading, isError, data, error }] = useSignUpMutation();
 
   const [formData, setFormData] = useState({
     fullName: "1",
-    email: "ririjo6950@noidem.com",
+    email: "tecop55077@noidem.com",
     contactNo: "1",
     password: "11111111",
     confirmPassword: "11111111",
@@ -44,6 +52,11 @@ const SignUpScreen = () => {
         contactNo: formData.contactNo,
         password: formData.password,
       }).unwrap();
+
+      await SecureStore.setItemAsync("userFullName", formData.fullName);
+      await SecureStore.setItemAsync("userEmail", formData.email);
+      await SecureStore.setItemAsync("userContactNo", formData.contactNo);
+
       console.log("Sign Up Success:", response);
       router.push({
         pathname: "/AccountVerification",
@@ -86,7 +99,7 @@ const SignUpScreen = () => {
         <TextInput
           style={styles.input}
           value={formData.email}
-          onChangeText={(val) => handleChange("email", val)}
+          onChangeText={validateEmail}
           placeholder="consultme@gmail.com"
           placeholderTextColor="#888"
           keyboardType="email-address"
@@ -137,9 +150,12 @@ const SignUpScreen = () => {
 
       {/* Sign Up Button */}
       <TouchableOpacity
-        style={styles.signUpButton}
+        style={[
+          styles.signUpButton,
+          (isLoading || !isEmailValid) && { opacity: 0.6 },
+        ]}
         onPress={handleSignUp}
-        disabled={isLoading}
+        disabled={isLoading || !isEmailValid}
       >
         <Text style={styles.signUpButtonText}>
           {" "}

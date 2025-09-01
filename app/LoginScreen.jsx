@@ -1,4 +1,5 @@
 import { useNavigation, useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -9,14 +10,21 @@ import {
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
-import { useState } from "react";
 import { saveAuthData } from "../utils/secureStore";
 const LoginScreen = () => {
+  const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const validateEmail = (text) => {
+ handleChange("email", text);
+    // Basic email regex
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsEmailValid(regex.test(text));
+  };
   const router = useRouter();
   const navigation = useNavigation();
   const [signIn, { isLoading, isError }] = useSignInMutation();
   const [formData, setFormData] = useState({
-    email: "ririjo6950@noidem.com",
+    email: "hosifiy709@skateru.com",
     password: "11111111",
   });
   const handleChange = (field, value) => {
@@ -58,7 +66,7 @@ const LoginScreen = () => {
         placeholder="consultme@gmail.com"
         keyboardType="email-address"
         autoCapitalize="none"
-        onChangeText={(text) => handleChange("email", text)}
+        onChangeText={validateEmail}
       />
 
       <Text style={styles.label}>Password</Text>
@@ -79,9 +87,15 @@ const LoginScreen = () => {
 
       <TouchableOpacity
         onPress={() => handleLogin()}
-        style={styles.loginButton}
+        style={[
+          styles.loginButton,
+          (isLoading || !isEmailValid) && { opacity: 0.6 },
+        ]}
+        disabled={isLoading || !isEmailValid}
       >
-        <Text style={styles.loginButtonText}>Log In</Text>
+        <Text style={styles.loginButtonText}>
+          {isLoading ? "Signing in..." : "Sign Up"}
+        </Text>
       </TouchableOpacity>
 
       <View style={styles.signupContainer}>

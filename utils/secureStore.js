@@ -19,7 +19,6 @@ export const getEmail = async () => {
 // Delete all auth data
 export const deleteAuthData = async () => {
   await SecureStore.deleteItemAsync("accessToken");
-  await SecureStore.deleteItemAsync("userEmail");
 };
 
 // ===================== SUBSCRIPTION =====================
