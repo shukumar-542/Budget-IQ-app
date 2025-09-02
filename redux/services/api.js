@@ -89,10 +89,54 @@ export const api = createApi({
         body: data,
       }),
     }),
-    userGetMe: builder.mutation({
-      query: (data) => ({
+    userGetMe: builder.query({
+      query: () => ({
         url: "/users/get-me",
         method: "GET",
+      }),
+    }),
+    getAllMemberShipPlan: builder.query({
+      query: () => ({
+        url: "/membership-plan",
+        method: "GET",
+      }),
+    }),
+    getMembership: builder.mutation({
+      query: (id) => ({
+        url: `/membership/${id}`, // dynamic URL
+        method: "POST",
+      }),
+    }),
+    getAllCategories: builder.query({
+      query: (type) => ({
+        url: `/category?type=${type}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => {
+        const resultWithFullImage = response.result.map((cat) => ({
+          ...cat,
+          categoryImage: `http://10.10.20.72:5000${cat.categoryImage}`, // prepend server
+        }));
+        return { ...response, result: resultWithFullImage };
+      },
+    }),
+    getAllCategoriesWithSum: builder.query({
+      query: () => ({
+        url: "/category/with-sum",
+        method: "GET",
+      }),
+      transformResponse: (response) => {
+        const resultWithFullImage = response.result.map((cat) => ({
+          ...cat,
+          categoryImage: `http://10.10.20.72:5000${cat.categoryImage}`, // prepend server
+        }));
+        return { ...response, result: resultWithFullImage };
+      },
+    }),
+    createTransaction: builder.mutation({
+      query: (data) => ({
+        url: "/transaction/create",
+        method: "POST",
         body: data,
       }),
     }),
@@ -110,5 +154,10 @@ export const {
   useResentOtpMutation,
   useDeleteUserMutation,
   useUserInfoUpdateMutation,
-  useUserGetMeMutation,
+  useUserGetMeQuery,
+  useGetAllMemberShipPlanQuery,
+  useGetMembershipMutation,
+  useGetAllCategoriesQuery,
+  useGetAllCategoriesWithSumQuery,
+  useCreateTransactionMutation,
 } = api;

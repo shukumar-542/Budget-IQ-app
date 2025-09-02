@@ -11,21 +11,26 @@ import {
   loadLastViewTime,
   saveCurrentViewTime,
 } from "../redux/slices/SubscriptionSlice";
-
+import {
+  useGetAllMemberShipPlanQuery,
+  useGetMembershipMutation,
+} from "../redux/services/api";
 import { router } from "expo-router";
 const Subscriptions = () => {
+  const { data: allPlans } = useGetAllMemberShipPlanQuery();
+  const [getMembership, { isLoading }] = useGetMembershipMutation();
   const dispatch = useDispatch();
   const [textWidths, setTextWidths] = useState({});
-  useEffect(() => {
-    // Load previous timestamp when component mounts
-    dispatch(loadLastViewTime());
+  // useEffect(() => {
+  //   // Load previous timestamp when component mounts
+  //   dispatch(loadLastViewTime());
 
-    // Save current time automatically when screen is viewed
-    dispatch(saveCurrentViewTime());
-  }, [dispatch]);
+  //   // Save current time automatically when screen is viewed
+  //   dispatch(saveCurrentViewTime());
+  // }, [dispatch]);
   const plans = [
     {
-      name: "Free Trial",
+      name: "Free-Trial",
       duration: "7 Days",
       price: "free",
       buttonText: "Select",
@@ -47,14 +52,56 @@ const Subscriptions = () => {
     setTextWidths((prev) => ({ ...prev, [name]: width }));
   };
 
-  const handleSubscription = (plan) => {
-    if (plan.price.toLowerCase() === "free") {
-      console.log("Free plan selected");
+  const handleSubscription = async (plan) => {
+    try {
+      // // 1️⃣ Check if plans are loaded
+      // if (!allPlans?.result || allPlans.result.length === 0) {
+      //   alert("No membership plans available. Please try again later.");
+      //   return;
+      // }
+
+      // // 2️⃣ Find the plan from API that matches clicked plan name
+      // const matchedPlan = allPlans.result.find(
+      //   (p) => p.name.toLowerCase() === plan.name.toLowerCase()
+      // );
+
+      // if (!matchedPlan) {
+      //   alert(`The plan "${plan.name}" was not found. Please try again.`);
+      //   return;
+      // }
+
+      // const selectedPlanId = matchedPlan._id;
+      // console.log("Selected Plan ID:", selectedPlanId);
+
+      // // 3️⃣ Call API to get the selected membership
+      // const response = await getMembership(selectedPlanId).unwrap();
+      // console.log("Membership response:", response);
+
+      // // 4️⃣ Check if response is valid
+      // if (!response || !response.result) {
+      //   alert("Failed to fetch membership details. Please try again.");
+      //   return;
+      // }
+
+      // // 5️⃣ Successful subscription
       router.push("/(tabs)");
-    } else {
-      window.alert(`Subscribed to the ${plan.name} plan!`);
+      alert(`Subscribed to the ${plan.name} plan successfully!`);
+    } catch (err) {
+      // 6️⃣ Handle known RTK Query errors
+      if (err?.status === 404) {
+        alert("Membership plan not found (404).");
+      } else if (err?.status === 401) {
+        alert("Unauthorized access. Please login again.");
+      } else if (err?.status === 500) {
+        alert("Server error. Please try again later.");
+      } else if (err?.name === "TypeError") {
+        alert("Network error. Please check your internet connection.");
+      } else {
+        alert("An unexpected error occurred. Please try again.");
+      }
     }
   };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}></Text>

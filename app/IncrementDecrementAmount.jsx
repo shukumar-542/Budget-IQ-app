@@ -9,18 +9,34 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../Constants/Colors";
-
+import { useLocalSearchParams } from "expo-router";
+import { useCreateTransactionMutation } from "../redux/services/api";
 const IncrementDecrementAmount = () => {
-  const navigation  = useNavigation()
+  const [createTransactions] = useCreateTransactionMutation();
+  const navigation = useNavigation();
   const [amount, setAmount] = useState("-1000");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-
+  const { id, name, image } = useLocalSearchParams();
+  console.log(id, name, image);
   const formatDate = (d) =>
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
+
+  const createTransaction = async () => {
+    try {
+      await createTransactions({
+        amount,
+        date,
+        categoryId: id,
+      });
+    } catch (error) {
+      console.error("Error creating transaction:", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,13 +46,12 @@ const IncrementDecrementAmount = () => {
           <Ionicons name="arrow-back" size={24} color="white" />
         </Pressable>
         <View style={styles.headerButtonText}>
-          <FontAwesome5
-            name="home"
-            size={16}
-            color="white"
-            style={{ marginHorizontal: 6 }}
+          <Image
+            source={{ uri: image }}
+            resizeMode="cover"
+            style={styles.iconImage}
           />
-          <Text style={styles.headerText}>Home Rent</Text>
+          <Text style={styles.headerText}>{name}</Text>
         </View>
       </View>
 
@@ -81,7 +96,7 @@ const IncrementDecrementAmount = () => {
       )}
 
       {/* Add Transaction Button */}
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={createTransaction}>
         <Text style={styles.buttonText}>ADD TRANSACTION</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -153,9 +168,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "#2E8B57",
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
     textAlign: "right",
     width: 100,
+  },
+  iconImage: {
+    width: 40,
+    height: 40,
+    // makes it round (optional)
+    marginRight: 8, // spacing between image and name
   },
 });

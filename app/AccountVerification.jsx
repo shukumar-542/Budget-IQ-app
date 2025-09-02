@@ -56,46 +56,115 @@ const AccountVerification = () => {
   }, [countdown]);
 
   const handleResendOtp = async () => {
+    if (!email) {
+      Alert.alert("Error", "Email is missing. Cannot resend OTP.");
+      return;
+    }
+
     setCountdown(60);
     setIsResendDisabled(true);
 
     try {
-      const response = await resentOtp({
-        email: email,
-      }).unwrap();
+      const response = await resentOtp({ email }).unwrap();
+      console.log("OTP resent successfully:", response);
+      Alert.alert("Success", "A new OTP has been sent to your email.");
     } catch (e) {
-      console.log("accountverification -> resent otp ", e);
+      console.error("Resend OTP Error:", e);
+
+      const statusCode = e?.status;
+      const message = e?.data?.message || "Unable to resend OTP.";
+
+      if (statusCode === 429) {
+        Alert.alert(
+          "Too Many Requests",
+          "Please wait before requesting again."
+        );
+      } else if (statusCode === 500) {
+        Alert.alert("Server Error", "Please try again later.");
+      } else {
+        Alert.alert("Error", message);
+      }
+
+      // ✅ Allow user to retry after failure
+      setIsResendDisabled(false);
     }
   };
+
   // Handle OTP verification and sign in
   const handleVerify = async () => {
+    // ✅ 1. Check if OTP is complete
+    if (otp.join("").length < 6) {
+      Alert.alert("Invalid OTP", "Please enter the complete 6-digit code.");
+      return;
+    }
+
+    if (!email || !password) {
+      Alert.alert(
+        "Missing Data",
+        "Email or password is missing. Please restart the process."
+      );
+      return;
+    }
+
     try {
-      // First, verify the OTP with the backend
-      const response = await oTP({
+      // ✅ 2. Verify OTP
+      const verifyResponse = await oTP({
         email: email,
         tokenCode: otp.join(""),
       }).unwrap();
-      console.log(response);
-      if (response) {
+
+      console.log("OTP Verified:", verifyResponse);
+
+      // ✅ 3. Proceed to Sign-in
+      try {
         const signInResponse = await signIn({
           email: email,
-          password: password, // Assuming password is available in formData
+          password: password,
         }).unwrap();
-        console.log(
-          "Sign-in successful:",
-          signInResponse,
-          signInResponse.data.accessToken
-        );
 
-        const token = signInResponse.data.accessToken;
+        console.log("Sign-in successful:", signInResponse);
 
-        console.log("Token being dispatched:", token);
-        if (token) dispatch(setToken(token));
-        router.replace("/LoginScreen");
+        const token = signInResponse?.data?.accessToken;
+        if (token) {
+          dispatch(setToken(token));
+          router.replace("/LoginScreen");
+        } else {
+          Alert.alert("Sign-in Error", "Token is missing. Please try again.");
+        }
+      } catch (signInError) {
+        console.error("Sign-in Error:", signInError);
+
+        const statusCode = signInError?.status;
+        const message =
+          signInError?.data?.message || "Sign-in failed. Please try again.";
+
+        if (statusCode === 401) {
+          Alert.alert("Authentication Failed", "Invalid credentials.");
+        } else if (statusCode === 500) {
+          Alert.alert("Server Error", "Unable to sign in. Try again later.");
+        } else {
+          Alert.alert("Error", message);
+        }
       }
     } catch (err) {
-      console.error("Sign-in Error:", err);
-      alert("Sign-in failed. Please try again.");
+      console.error("OTP Verification Error:", err);
+
+      const statusCode = err?.status;
+      const message = err?.data?.message || "Failed to verify OTP.";
+
+      if (statusCode === 400) {
+        Alert.alert("Invalid OTP", "Please check the code and try again.");
+      } else if (statusCode === 401) {
+        Alert.alert("OTP Expired", "Please request a new OTP.");
+      } else if (statusCode === 404) {
+        Alert.alert("User Not Found", "This email is not registered.");
+      } else if (statusCode === 500) {
+        Alert.alert("Server Error", "Something went wrong. Please try again.");
+      } else if (err.name === "TypeError") {
+        Alert.alert("Network Error", "Please check your internet connection.");
+      } else {
+        Alert.alert("Error", message);
+      }
     }
   };
 

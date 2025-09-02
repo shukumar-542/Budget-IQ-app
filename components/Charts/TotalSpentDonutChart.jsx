@@ -1,15 +1,20 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons'; // Example icon library
-import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, G, Path } from 'react-native-svg'; // G for grouping, Path for arcs
-
+import { MaterialCommunityIcons } from "@expo/vector-icons"; // Example icon library
+import { StyleSheet, Text, View } from "react-native";
+import Svg, { Circle, G, Path } from "react-native-svg"; // G for grouping, Path for arcs
 // Data structure for segments
 const chartData = [
-  { category: 'Car', value: 500, color: '#6A1B9A', icon: 'car' }, // Purple
-  { category: 'Home', value: 400, color: '#EF5350', icon: 'home' }, // Red
-  { category: 'Groceries', value: 400, color: '#4CAF50', icon: 'food' }, // Green
+  { category: "Car", value: 500, color: "#6A1B9A", icon: "car" }, // Purple
+  { category: "Home", value: 400, color: "#EF5350", icon: "home" }, // Red
+  { category: "Groceries", value: 400, color: "#4CAF50", icon: "food" }, // Green
 ];
 
-const TotalSpentDonutChart = ({ data = chartData, radius = 100, strokeWidth = 30, totalSpent = 1300, changeAmount = 2000 }) => {
+const TotalSpentDonutChart = ({
+  data = chartData,
+  radius = 100,
+  strokeWidth = 30,
+  totalSpent = 1300,
+  changeAmount = 2000,
+}) => {
   const circumference = 2 * Math.PI * radius;
   const innerRadius = radius - strokeWidth / 2; // For drawing arcs in the center of the stroke
 
@@ -22,22 +27,31 @@ const TotalSpentDonutChart = ({ data = chartData, radius = 100, strokeWidth = 30
     const start = polarToCartesian(x, y, r, endAngle);
     const end = polarToCartesian(x, y, r, startAngle);
 
-    const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
 
     const d = [
-      'M', start.x, start.y,
-      'A', r, r, 0, largeArcFlag, 0, end.x, end.y
-    ].join(' ');
+      "M",
+      start.x,
+      start.y,
+      "A",
+      r,
+      r,
+      0,
+      largeArcFlag,
+      0,
+      end.x,
+      end.y,
+    ].join(" ");
 
     return d;
   };
 
   const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
-    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; // Adjust for SVG's 0 degree at 3 o'clock
+    const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0; // Adjust for SVG's 0 degree at 3 o'clock
 
     return {
-      x: centerX + (radius * Math.cos(angleInRadians)),
-      y: centerY + (radius * Math.sin(angleInRadians))
+      x: centerX + radius * Math.cos(angleInRadians),
+      y: centerY + radius * Math.sin(angleInRadians),
     };
   };
 
@@ -59,11 +73,22 @@ const TotalSpentDonutChart = ({ data = chartData, radius = 100, strokeWidth = 30
           const segmentAngle = (segmentPercentage / 100) * 360;
           const endAngle = currentAngle + segmentAngle;
 
-          const arcPath = describeArc(radius, radius, innerRadius, currentAngle, endAngle);
+          const arcPath = describeArc(
+            radius,
+            radius,
+            innerRadius,
+            currentAngle,
+            endAngle
+          );
 
           // Calculate position for the icon
-          const iconAngle = currentAngle + (segmentAngle / 2);
-          const iconPosition = polarToCartesian(radius, radius, radius - strokeWidth / 2, iconAngle - 120); // Adjust icon position
+          const iconAngle = currentAngle + segmentAngle / 2;
+          const iconPosition = polarToCartesian(
+            radius,
+            radius,
+            radius - strokeWidth / 2,
+            iconAngle - 120
+          ); // Adjust icon position
 
           currentAngle = endAngle; // Update angle for the next segment
 
@@ -81,9 +106,9 @@ const TotalSpentDonutChart = ({ data = chartData, radius = 100, strokeWidth = 30
                 size={radius / 4} // Adjust icon size based on radius
                 color="white"
                 style={{
-                  position: 'absolute',
-                  left: iconPosition.x - (radius / 8), // Adjust for icon centering
-                  top: iconPosition.y - (radius / 8), // Adjust for icon centering
+                  position: "absolute",
+                  left: iconPosition.x - radius / 8, // Adjust for icon centering
+                  top: iconPosition.y - radius / 8, // Adjust for icon centering
                 }}
               />
             </G>
@@ -96,8 +121,10 @@ const TotalSpentDonutChart = ({ data = chartData, radius = 100, strokeWidth = 30
         <Text style={styles.totalSpentLabel}>Total Spent</Text>
         <Text style={styles.totalSpentValue}>${totalSpent}</Text>
         <Text style={styles.changeAmount}>
-          {changeAmount > 0 ? `+$${changeAmount}` : `-$${Math.abs(changeAmount)}`}
-          {changeAmount > 0 ? ' ↑' : ' ↓'}
+          {changeAmount > 0
+            ? `+$${changeAmount}`
+            : `-$${Math.abs(changeAmount)}`}
+          {changeAmount > 0 ? " ↑" : " ↓"}
         </Text>
       </View>
     </View>
@@ -108,26 +135,26 @@ export default TotalSpentDonutChart;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 30,
   },
   center: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   totalSpentLabel: {
     fontSize: 16,
-    color: '#888',
+    color: "#888",
   },
   totalSpentValue: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 5,
   },
   changeAmount: {
     fontSize: 18,
-    color: '#4CAF50', // Green for increase, you might want to dynamically change this
-    fontWeight: 'bold',
+    color: "#4CAF50", // Green for increase, you might want to dynamically change this
+    fontWeight: "bold",
   },
 });

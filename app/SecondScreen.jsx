@@ -33,16 +33,9 @@ const SecondScreen = () => {
 
   const handleNext = () => {
     const currentTime = new Date().getTime();
+    console.log("Current time:", currentTime);
     if (token) {
-      if (lastViewTime) {
-        const hoursDiff = (currentTime - lastViewTime) / (1000 * 60 * 60); // ms → hours
-        if (hoursDiff > 12) {
-          router.push("/Subscriptions");
-          console.log("Token exists,12 hours left navigating to Subscriptions");
-        } else {
-          router.replace("/(tabs)");
-        }
-      }
+      router.push("/Subscriptions");
     } else {
       router.push("/LoginScreen");
       console.log("No token, navigating to LoginScreen");

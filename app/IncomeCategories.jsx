@@ -6,22 +6,23 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
-const categories = [
-  { id: "home", name: "Home", icon: "home" },
-  { id: "CompanySalary", name: "Company Salary", icon: "cash-outline" },
-  { id: "shop", name: "Shop", icon: "cart" },
-  { id: "gift", name: "Gift", icon: "gift" },
-  { id: "entertainment", name: "Entertainment", icon: "drama-masks" },
-  { id: "car", name: "Car", icon: "car" },
-  { id: "beauty", name: "Beauty", icon: "flower" },
-];
+import { useGetAllCategoriesQuery } from "../redux/services/api";
+import { FullWindowOverlay } from "react-native-screens";
 
 const IncomeCategories = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const router = useRouter()
+  const router = useRouter();
+
+  // Fetch categories from API
+  const {
+    data: incomeCategories,
+    isLoading,
+    isError,
+  } = useGetAllCategoriesQuery("income");
 
   const toggleCategory = (id) => {
     setSelectedCategories((prev) =>
@@ -34,22 +35,29 @@ const IncomeCategories = () => {
   const handleSave = () => {
     console.log("Selected Categories:", selectedCategories);
     router.push("/DashboardScreen");
-    // Handle your submit logic here (API call, navigation, etc.)
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => toggleCategory(item.id)}
+      onPress={() => {
+        toggleCategory(item._id);
+        console.log("Category toggled:", item._id);
+      }}
       style={styles.item}
       activeOpacity={0.7}
     >
       <View style={styles.iconContainer}>
-        <Icon name={item.icon} size={24} color="#20a074" />
+        <Image
+          source={{ uri: item.categoryImage }}
+          onLoadStart={() => console.log("Loading image from URL:", item.categoryImage)}
+          style={{ width: "100%", height: "100%", borderRadius: 4 }}
+          resizeMode="cover"
+        />
       </View>
       <Text style={styles.label}>{item.name}</Text>
       <Icon
         name={
-          isSelected(item.id) ? "checkbox-marked" : "checkbox-blank-outline"
+          isSelected(item._id) ? "checkbox-marked" : "checkbox-blank-outline"
         }
         size={24}
         color="#20a074"
@@ -58,11 +66,27 @@ const IncomeCategories = () => {
     </TouchableOpacity>
   );
 
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#20a074" />
+      </View>
+    );
+  }
+
+  if (isError || !incomeCategories?.result) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: "#333" }}>Failed to load categories.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={categories}
-        keyExtractor={(item) => item.id}
+        data={incomeCategories.result}
+        keyExtractor={(item) => item._id}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
       />
@@ -75,6 +99,7 @@ const IncomeCategories = () => {
 };
 
 export default IncomeCategories;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

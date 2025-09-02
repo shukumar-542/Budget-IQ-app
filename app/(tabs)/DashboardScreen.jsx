@@ -7,9 +7,15 @@ import logo from "../../assets/images/iq.png";
 import ExpenseIncome from "../../components/Charts/ExpenseIncome";
 import CostEarnList from "../../components/CostEarnList";
 import Button from "../../components/UI/Button";
+import { useGetAllCategoriesWithSumQuery } from "../../redux/services/api";
+import { useEffect } from "react";
+import { create } from "ionicons/icons";
 const DashboardScreen = () => {
-
-   const navigation = useNavigation();
+  const { data: allCategoriesWithSum } = useGetAllCategoriesWithSumQuery();
+  useEffect(() => {
+    console.log(allCategoriesWithSum);
+  }, [allCategoriesWithSum]);
+  const navigation = useNavigation();
   const [expense, setExpense] = useState("expense");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("month");
@@ -19,74 +25,31 @@ const DashboardScreen = () => {
     { label: "This Year", value: "year" },
   ]);
 
-  const expenseData = [
-    {
-      id: "1",
-      name: "Home Rent",
-      icon: "home",
-      amount: "$500",
-      date: "2025-06-01",
-    },
-    {
-      id: "2",
-      name: "Groceries",
-      icon: "fast-food",
-      amount: "$450",
-      date: "2025-06-01",
-    },
-    { id: "3", name: "Car", icon: "car", amount: "$350", date: "2025-06-01" },
-    {
-      id: "4",
-      name: "Leisure",
-      icon: "flower-outline",
-      amount: "$00",
-      date: "2025-06-01",
-    },
-    {
-      id: "5",
-      name: "Health",
-      icon: "videocam",
-      amount: "$00",
-      date: "2025-06-01",
-    },
-    {
-      id: "6",
-      name: "Entertainment",
-      icon: "medkit",
-      amount: "$00",
-      date: "2025-06-01",
-    },
-    {
-      id: "7",
-      name: "Education",
-      icon: "school",
-      amount: "$00",
-      date: "2025-06-01",
-    },
-    { id: "8", name: "Gifts", icon: "gift", amount: "$00", date: "2025-06-01" },
-    {
-      id: "9",
-      name: "Shopping",
-      icon: "cart",
-      amount: "$00",
-      date: "2025-06-01",
-    },
-    {
-      id: "10",
-      name: "Travel",
-      icon: "airplane",
-      amount: "$00",
-      date: "2025-06-01",
-    },
-  ];
+  const expenseData =
+    allCategoriesWithSum?.result
+      .filter((cat) => cat.type === "expenses")
+      .map((cat) => ({
+        transactionId: cat._id,
+        name: cat.name,
+        icon: cat.categoryImage, // use the API image here
+        amount: `$${cat.totalAmount}`,
+        userId: cat.userId,
+        createdAt: cat.createdAt,
+        updatedAt: cat.updatedAt,
+      })) || [];
 
-  const incomeData = [
-    { id: "2", name: "Groceries", icon: "fast-food", amount: "$450" ,date: "2025-06-01" },
-    { id: "1", name: "Home", icon: "home", amount: "$500" },
-    { id: "4", name: "Leisure", icon: "flower-outline", amount: "$00" ,date: "2025-06-01"},
-    { id: "3", name: "Car", icon: "car", amount: "$350",date: "2025-06-01" },
-  ];
-
+  const incomeData =
+    allCategoriesWithSum?.result
+      .filter((cat) => cat.type === "income")
+      .map((cat) => ({
+        transactionId: cat._id,
+        name: cat.name,
+        icon: cat.categoryImage, // use the API image here
+        amount: `$${cat.totalAmount}`,
+        userId: cat.userId,
+        createdAt: cat.createdAt,
+        updatedAt: cat.updatedAt,
+      })) || [];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -125,13 +88,12 @@ const DashboardScreen = () => {
         </Button>
       </View>
 
-      
       {expense === "expense" ? (
         <>
           <ExpenseIncome expenseData={expenseData} />
           <View style={{ flex: 1 }}>
             <Text style={styles.listText}>Specific Cost</Text>
-            <CostEarnList data={expenseData}/>
+            <CostEarnList data={expenseData} />
           </View>
         </>
       ) : (
@@ -139,7 +101,7 @@ const DashboardScreen = () => {
           <ExpenseIncome expenseData={incomeData} />
           <View style={{ flex: 1 }}>
             <Text style={styles.listText}>Specific Earn</Text>
-            <CostEarnList data={incomeData}  />
+            <CostEarnList data={incomeData} />
           </View>
         </>
       )}

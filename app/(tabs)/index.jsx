@@ -27,6 +27,8 @@ const Index = () => {
   const [iqBuddy] = useIqBuddyMutation();
   const [isTyping, setIsTyping] = useState(false);
 
+
+
   const handleSend = async () => {
     const userMessage = { text: inputText, sender: "user" };
     setMessages((prev) => [...prev, userMessage]);

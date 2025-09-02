@@ -11,11 +11,12 @@ import {
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
 import { saveAuthData } from "../utils/secureStore";
+import { Alert } from "react-native";
 const LoginScreen = () => {
   const [isEmailValid, setIsEmailValid] = useState(true);
 
   const validateEmail = (text) => {
- handleChange("email", text);
+    handleChange("email", text);
     // Basic email regex
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setIsEmailValid(regex.test(text));
@@ -24,7 +25,7 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const [signIn, { isLoading, isError }] = useSignInMutation();
   const [formData, setFormData] = useState({
-    email: "hosifiy709@skateru.com",
+    email: "babop65077@noidem.com",
     password: "11111111",
   });
   const handleChange = (field, value) => {
@@ -33,22 +34,47 @@ const LoginScreen = () => {
       [field]: value,
     });
   };
+
   const handleLogin = async () => {
     try {
       const response = await signIn(formData).unwrap();
       console.log("Login successful:", response);
-      // Save token and email before navigation
-      if (response?.data.accessToken && formData?.email) {
+
+      // ✅ Save token and email before navigation
+      if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response.data.accessToken, formData.email);
         console.log("Token and email saved successfully");
       } else {
         console.warn("Token or email missing");
       }
+
       router.replace("/Subscriptions");
     } catch (error) {
       console.error("Login failed:", error);
+
+      // ✅ Handle error properly
+      const statusCode = error?.status || error?.originalStatus;
+      const message = error?.data?.message || "Something went wrong";
+
+      if (statusCode === 404) {
+        // ✅ User not found case
+        Alert.alert(
+          "Login Failed",
+          "User not found. Please check your email.",
+          [
+            { text: "OK", style: "default" },
+          ]
+        );
+      } else if (statusCode === 401) {
+        // ✅ Wrong password case
+        Alert.alert("Login Failed", "Incorrect password. Please try again.");
+      } else {
+        // ✅ Other errors
+        Alert.alert("Error", message);
+      }
     }
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log In</Text>
@@ -94,7 +120,7 @@ const LoginScreen = () => {
         disabled={isLoading || !isEmailValid}
       >
         <Text style={styles.loginButtonText}>
-          {isLoading ? "Signing in..." : "Sign Up"}
+          {isLoading ? "Signing in..." : "Sign In"}
         </Text>
       </TouchableOpacity>
 
