@@ -185,6 +185,12 @@ export const api = createApi({
         method: "GET",
       }),
     }),
+    getMessageWithTotalTransaction: builder.query({
+      query: () => ({
+        url: "/motivational-message/message",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -208,4 +214,5 @@ export const {
   useGetSpecificTransactionRecentQuery,
   useGetPrivacyPolicyQuery,
   useGetTermsAndConditionsQuery,
+  useGetMessageWithTotalTransactionQuery,
 } = api;

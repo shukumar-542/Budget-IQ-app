@@ -20,6 +20,7 @@ import { ScrollView } from "react-native";
 import { useIqBuddyMutation } from "../../redux/services/api";
 import * as SecureStore from "expo-secure-store";
 import { useUserGetMeQuery } from "../../redux/services/api";
+import { useGetMessageWithTotalTransactionQuery } from "../../redux/services/api";
 const Index = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -30,11 +31,32 @@ const Index = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [storedImage, setStoredImage] = useState(null);
   const { data, isSuccess } = useUserGetMeQuery();
+  const { data: messageData } = useGetMessageWithTotalTransactionQuery();
+  const [motivationalMessage, setMotivationalMessage] = useState(null);
+  const [totalIncome, setTotalIncome] = useState(null);
+  const [totalExpenses, setTotalExpenses] = useState(null);
+
   useEffect(() => {
+    // Update message and transaction info when messageData changes
+    if (messageData?.data) {
+      const message = messageData.data.motivationalMessage?.message;
+      const income = messageData.data.totalIncomeAndExpenses?.totalIncome;
+      const expenses = messageData.data.totalIncomeAndExpenses?.totalExpenses;
+
+      setMotivationalMessage(message);
+      setTotalIncome(income);
+      setTotalExpenses(expenses);
+
+      console.log("Motivational Message:", message);
+      console.log("Total Income:", income);
+      console.log("Total Expenses:", expenses);
+    }
+
+    // Update profile image if user data is available
     if (data?.data) {
       setStoredImage(data?.data?.profileImageUrl);
     }
-  }, [data]);
+  }, [messageData, data]);
 
   const handleSend = async () => {
     const userMessage = { text: inputText, sender: "user" };
@@ -97,16 +119,14 @@ const Index = () => {
       </View>
 
       <View style={styles.tagLine}>
-        <Text style={styles.text}>
-          “Skipping one coffee = $5 closer to your goal”
-        </Text>
+        <Text style={styles.text}>{motivationalMessage}</Text>
       </View>
 
       <View style={styles.chartsContainer}>
         <TotalSpentDonutChart
           data={customChartData}
-          totalSpent={1300}
-          changeAmount={2000}
+          totalSpent={totalExpenses}
+          changeAmount={totalIncome - totalExpenses}
           radius={150}
           strokeWidth={60}
         />
