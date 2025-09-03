@@ -14,16 +14,27 @@ import {
 import { useSelector } from "react-redux";
 import { Colors } from "../Constants/Colors";
 import { useUserInfoUpdateMutation } from "../redux/services/api";
+import { useUserGetMeQuery } from "../redux/services/api";
 // import {route}
 const AccountInformation = () => {
-  router = useRouter();
+  const { data, refetch } = useUserGetMeQuery();
+  const router = useRouter();
   const [image, setImage] = useState(null);
   useEffect(() => {
     const loadImage = async () => {
       try {
-        const storedImage = await SecureStore.getItemAsync("userImage");
+        console.log(data?.data?.profileImageUrl);
+        const storedImage = data?.data?.profileImageUrl;
+        const storedName = data?.data?.fullName;
+        const storedEmail = data?.data?.email;
         if (storedImage) {
           setImage(storedImage); // use stored image
+        }
+        if (storedName) {
+          setName(storedName);
+        }
+        if (storedEmail) {
+          setEmail(storedEmail);
         }
       } catch (error) {
         console.error("Failed to load image from SecureStore", error);
@@ -31,9 +42,9 @@ const AccountInformation = () => {
     };
 
     loadImage();
-  }, []);
+  }, [data]);
 
-  const [name, setName] = useState(null);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(true);
 
@@ -83,10 +94,30 @@ const AccountInformation = () => {
       JSON.stringify({ fullName: finalName, email: finalEmail, contactNo })
     );
     if (image) {
-      const filename = image.split("/").pop();
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : `image`;
+      // Get the file extension
+      const extensionMatch = /\.(\w+)$/.exec(image.split("/").pop());
+      const extension = extensionMatch ? extensionMatch[1] : "jpg";
 
+      // Get current date-time string
+      const now = new Date();
+      const timestamp = `${now.getFullYear()}${(now.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}_${now
+        .getHours()
+        .toString()
+        .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
+        .getSeconds()
+        .toString()
+        .padStart(2, "0")}`;
+
+      // Use the user's name for the filename
+      const sanitizedUserName = finalName.replace(/\s+/g, "_"); // replace spaces with underscores
+      const filename = `${sanitizedUserName}_${timestamp}.${extension}`;
+
+      // Determine MIME type
+      const type = `image/${extension}`;
+
+      // Append to FormData
       formData.append("file", {
         uri: image,
         name: filename,
@@ -94,6 +125,7 @@ const AccountInformation = () => {
       });
     }
     const response = await userInfoUpdate(formData).unwrap();
+    refetch();
     await SecureStore.setItemAsync("userFullName", finalName);
     await SecureStore.setItemAsync("userEmail", finalEmail);
     console.log(response);
@@ -131,13 +163,19 @@ const AccountInformation = () => {
         <View style={styles.input}>
           <AntDesign name="mail" size={20} color="#555" />
           <TextInput
-            style={styles.in}
+            style={[
+              styles.in,
+              {
+                color: "#999",
+              },
+            ]}
             value={email}
             onChangeText={validateEmail} // use validation function
             placeholder="example@gmail.com"
             placeholderTextColor="#999"
             keyboardType="email-address"
             autoCapitalize="none"
+            editable={false}
           />
         </View>
         {!isEmailValid && (

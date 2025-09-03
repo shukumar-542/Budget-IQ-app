@@ -1,7 +1,8 @@
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Pressable,
   StyleSheet,
@@ -15,24 +16,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../Constants/Colors";
 import { useLocalSearchParams } from "expo-router";
 import { useCreateTransactionMutation } from "../redux/services/api";
+import { useUserGetMeQuery } from "../redux/services/api";
 const IncrementDecrementAmount = () => {
   const [createTransactions] = useCreateTransactionMutation();
   const navigation = useNavigation();
   const [amount, setAmount] = useState("-1000");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { id, name, image } = useLocalSearchParams();
-  console.log(id, name, image);
+  const { id, name, image, categoryType } = useLocalSearchParams();
+  console.log(categoryType);
+  const { data: user } = useUserGetMeQuery();
+  const userId = user?.data?._id;
   const formatDate = (d) =>
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
 
   const createTransaction = async () => {
     try {
-      await createTransactions({
+      const response = await createTransactions({
         amount,
-        date,
         categoryId: id,
+        userId,
       });
+      router.push("/(tabs)/DashboardScreen");
     } catch (error) {
       console.error("Error creating transaction:", error);
     }

@@ -11,7 +11,7 @@ import * as SecureStore from "expo-secure-store";
 import { useDispatch } from "react-redux";
 import { clearToken } from "../../redux/slices/authSlice"; // adjust the path
 import { deleteAuthData } from "../../utils/secureStore";
-
+import { useUserGetMeQuery } from "../../redux/services/api";
 const SettingScreen = () => {
   const dispatch = useDispatch();
 
@@ -19,37 +19,24 @@ const SettingScreen = () => {
   const [userImage, setUserImage] = useState(null);
   const [userFullName, setUserFullName] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
-
+  const { data, refetch  } = useUserGetMeQuery();
   const [activeItem, setActiveItem] = useState(null);
   const navigation = useNavigation();
-  useEffect(() => {
-    const loadUserImage = async () => {
-      try {
-        const storedImage = await SecureStore.getItemAsync("userImage");
-        const storedFullName = await SecureStore.getItemAsync("userFullName");
-        const storedEmail = await SecureStore.getItemAsync("userEmail");
-        console.log(storedEmail, storedFullName);
-        if (storedImage) {
-          setUserImage(storedImage);
-        }
-        if (storedFullName) {
-          setUserFullName(storedFullName);
-        }
-        if (storedEmail) {
-          setUserEmail(storedEmail);
-        }
-      } catch (error) {
-        console.log("Failed to load user image from SecureStore:", error);
-      }
-    };
-    loadUserImage();
-  }, []);
+useEffect(() => {
+  if (data?.data) {
+    setUserImage(data?.data?.profileImageUrl);
+    console.log(data?.data?.profileImageUrl);
+    setUserFullName(data?.data?.fullName);
+    setUserEmail(data?.data?.email);
+  }
+}, [data]);
+
 
   const handleLogOut = async () => {
     try {
-      deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
+      await deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
       console.log("Token removed from SecureStore only");
-      router.push("/LoginScreen");
+      router.replace("/LoginScreen");
     } catch (e) {
       console.log("from setting screen", e);
     }
@@ -144,7 +131,10 @@ const SettingScreen = () => {
         {userImage ? (
           <Avatar.Image size={48} source={{ uri: userImage }} />
         ) : (
-          <Avatar.Icon icon="account" size={48} />
+          <Avatar.Image
+            size={48}
+            source={require("../../assets/images/avater.png")}
+          />
         )}
 
         <View style={{ marginLeft: 10 }}>

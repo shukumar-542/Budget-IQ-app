@@ -94,7 +94,20 @@ export const api = createApi({
         url: "/users/get-me",
         method: "GET",
       }),
+      transformResponse: (response) => {
+        if (response.success && response.data?.profileImageUrl) {
+          return {
+            ...response,
+            data: {
+              ...response.data,
+              profileImageUrl: `http://10.10.20.72:5000${response.data.profileImageUrl}`,
+            },
+          };
+        }
+        return response;
+      },
     }),
+
     getAllMemberShipPlan: builder.query({
       query: () => ({
         url: "/membership-plan",
@@ -107,6 +120,26 @@ export const api = createApi({
         method: "POST",
       }),
     }),
+    getSpecificTransactionRecent: builder.query({
+      query: ({ type, limit }) => ({
+        url: `/transaction/recent-cost?type=${type}&limit=${limit}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => {
+        // Map through the result and prepend the server URL to categoryImage
+        const resultWithFullImage = response.result.map((tx) => ({
+          ...tx,
+          category: {
+            ...tx.category,
+            categoryImage: tx.category?.categoryImage
+              ? `http://10.10.20.72:5000${tx.category.categoryImage}`
+              : null,
+          },
+        }));
+        return { ...response, result: resultWithFullImage };
+      },
+    }),
+
     getAllCategories: builder.query({
       query: (type) => ({
         url: `/category?type=${type}`,
@@ -140,6 +173,18 @@ export const api = createApi({
         body: data,
       }),
     }),
+    getPrivacyPolicy: builder.query({
+      query: () => ({
+        url: "/policy-term/policy",
+        method: "GET",
+      }),
+    }),
+    getTermsAndConditions: builder.query({
+      query: () => ({
+        url: "/policy-term/terms",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -160,4 +205,7 @@ export const {
   useGetAllCategoriesQuery,
   useGetAllCategoriesWithSumQuery,
   useCreateTransactionMutation,
+  useGetSpecificTransactionRecentQuery,
+  useGetPrivacyPolicyQuery,
+  useGetTermsAndConditionsQuery,
 } = api;

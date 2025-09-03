@@ -7,16 +7,26 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
+import { useEffect } from "react";
 const CostEarnList = ({ data }) => {
   const router = useRouter();
+  useEffect(() => {
+    console.log("Cost/Earn List Data:", data);
+  }, [data]);
 
-  const SpecificCostItem = ({ icon, name, date, amount }) => (
+  const SpecificCostItem = ({
+    icon,
+    name,
+    date,
+    amount,
+    transactionId,
+    categoryType,
+  }) => (
     <TouchableOpacity
       onPress={() => {
         router.push({
           pathname: "/IncrementDecrementAmount",
-          params: { icon, name, date, amount },
+          params: { icon, name, date, amount, transactionId, categoryType },
         });
       }}
     >
@@ -41,10 +51,10 @@ const CostEarnList = ({ data }) => {
     <View style={styles.container}>
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.transactionId}
         renderItem={({ item }) => (
           <SpecificCostItem
-            icon={item.icon} // pass categoryImage URL
+            icon={item.icon}
             name={item.name}
             date={item.date}
             amount={item.amount}

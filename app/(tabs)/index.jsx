@@ -14,10 +14,12 @@ import logo from "../../assets/images/iq.png";
 import TotalSpentDonutChart from "../../components/Charts/TotalSpentDonutChart";
 import { Colors } from "../../Constants/Colors";
 import { Modal, TextInput } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { ScrollView } from "react-native";
 import { useIqBuddyMutation } from "../../redux/services/api";
+import * as SecureStore from "expo-secure-store";
+import { useUserGetMeQuery } from "../../redux/services/api";
 const Index = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -26,8 +28,13 @@ const Index = () => {
   const router = useRouter();
   const [iqBuddy] = useIqBuddyMutation();
   const [isTyping, setIsTyping] = useState(false);
-
-
+  const [storedImage, setStoredImage] = useState(null);
+  const { data, isSuccess } = useUserGetMeQuery();
+  useEffect(() => {
+    if (data?.data) {
+      setStoredImage(data?.data?.profileImageUrl);
+    }
+  }, [data]);
 
   const handleSend = async () => {
     const userMessage = { text: inputText, sender: "user" };
@@ -73,11 +80,19 @@ const Index = () => {
         <Image source={logo} />
 
         <Pressable onPress={() => router.push("AccountInformation")}>
-          <Avatar.Icon
-            icon="account"
-            size={40}
-            style={{ backgroundColor: Colors.primary }}
-          />
+          {storedImage ? (
+            <Image
+              source={{ uri: storedImage }}
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+              resizeMode="cover"
+            />
+          ) : (
+            <Image
+              source={require("../../assets/images/avater.png")}
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+              resizeMode="cover"
+            />
+          )}
         </Pressable>
       </View>
 

@@ -1,5 +1,6 @@
 import { Image, TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { create } from "ionicons/icons";
 const ExpenseIncome = ({ expenseData }) => {
   const router = useRouter();
 
@@ -30,12 +31,10 @@ const ExpenseIncome = ({ expenseData }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.listContainer}>
-        {expenseData.map((item) => (
-          <CategoryItem key={item.id} item={item} />
-        ))}
-      </View>
+    <View style={styles.listContainer}>
+      {expenseData.map((item) => (
+        <CategoryItem key={item.transactionId} item={item} />
+      ))}
     </View>
   );
 };

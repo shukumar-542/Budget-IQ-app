@@ -21,13 +21,13 @@ const Subscriptions = () => {
   const [getMembership, { isLoading }] = useGetMembershipMutation();
   const dispatch = useDispatch();
   const [textWidths, setTextWidths] = useState({});
-  // useEffect(() => {
-  //   // Load previous timestamp when component mounts
-  //   dispatch(loadLastViewTime());
+  useEffect(() => {
+    // Load previous timestamp when component mounts
+    dispatch(loadLastViewTime());
 
-  //   // Save current time automatically when screen is viewed
-  //   dispatch(saveCurrentViewTime());
-  // }, [dispatch]);
+    // Save current time automatically when screen is viewed
+    dispatch(saveCurrentViewTime());
+  }, [dispatch]);
   const plans = [
     {
       name: "Free-Trial",
