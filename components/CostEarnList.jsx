@@ -11,11 +11,10 @@ import { useEffect } from "react";
 const CostEarnList = ({ data }) => {
   const router = useRouter();
   useEffect(() => {}, [data]);
-
   const SpecificCostItem = ({
     icon,
     name,
-    date,
+    createdAt,
     amount,
     transactionId,
     categoryType,
@@ -27,7 +26,7 @@ const CostEarnList = ({ data }) => {
           params: {
             image: icon,
             name,
-            date,
+            createdAt,
             amount,
             transactionId,
             categoryType,
@@ -44,7 +43,7 @@ const CostEarnList = ({ data }) => {
           />
           <View>
             <Text style={styles.itemName}>{name}</Text>
-            <Text style={styles.itemDate}>{date}</Text>
+            <Text style={styles.itemDate}>{createdAt?.split("T")[0]}</Text>
           </View>
         </View>
         <Text style={styles.itemAmount}>{amount}</Text>
@@ -61,7 +60,7 @@ const CostEarnList = ({ data }) => {
           <SpecificCostItem
             icon={item.icon}
             name={item.name}
-            date={item.date?.toString()} // ensure string
+            createdAt={item.createdAt} // pass the original date
             amount={item.amount}
             transactionId={item.transactionId}
             categoryType={item.categoryType}

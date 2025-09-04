@@ -60,7 +60,7 @@ const IncrementDecrementAmount = () => {
 
       router.push("/(tabs)/DashboardScreen");
     } catch (error) {
-      
+  
     }
   };
 
@@ -99,7 +99,7 @@ const IncrementDecrementAmount = () => {
         />
       </View>
 
-      {/* Date */}
+      {/* Date
       <TouchableOpacity
         style={styles.row}
         onPress={() => setShowDatePicker(true)}
@@ -111,7 +111,7 @@ const IncrementDecrementAmount = () => {
         <Text style={[styles.valueText, { color: "#3D8B3D" }]}>
           {formatDate(date)}
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {showDatePicker && (
         <DateTimePicker

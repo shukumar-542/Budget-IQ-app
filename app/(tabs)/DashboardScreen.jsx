@@ -60,7 +60,6 @@ const DashboardScreen = () => {
             refetchCategories();
           }
         } catch (error) {
-          console.log("Error fetching saved categories:", error);
         }
       };
 
