@@ -37,23 +37,18 @@ const Index = () => {
 
   const [iqBuddy] = useIqBuddyMutation();
   const { data: userData } = useUserGetMeQuery();
-  const { data: messageData, refetch } =
-    useGetMessageWithTotalTransactionQuery();
+const { data: messageData } = useGetMessageWithTotalTransactionQuery(undefined, {
+  pollingInterval: 2000, // fetch every 2 seconds
+});
 
-  // Helper to update totals and motivational message
-  const updateMessageData = (data) => {
-    if (data?.data) {
-      setMotivationalMessage(data.data.motivationalMessage?.message || "");
-      setTotalIncome(data.data.totalIncomeAndExpenses?.totalIncome || 0);
-      setTotalExpenses(data.data.totalIncomeAndExpenses?.totalExpenses || 0);
-    }
-  };
 
-  // Initial load
-  useEffect(() => {
-    updateMessageData(messageData);
-    if (userData?.data) setStoredImage(userData.data.profileImageUrl);
-  }, [messageData, userData]);
+useEffect(() => {
+  if (messageData?.data) {
+    setMotivationalMessage(messageData.data.motivationalMessage?.message || "");
+    setTotalIncome(messageData.data.totalIncomeAndExpenses?.totalIncome || 0);
+    setTotalExpenses(messageData.data.totalIncomeAndExpenses?.totalExpenses || 0);
+  }
+}, [messageData]);
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
@@ -70,9 +65,6 @@ const Index = () => {
 
       setMessages((prev) => [...prev, replyMessage]);
 
-      // ✅ Refetch updated totals
-      const { data: updated } = await refetch();
-      updateMessageData(updated); // correctly pass the nested data
     } catch (error) {
       console.error(error);
       setMessages((prev) => [
