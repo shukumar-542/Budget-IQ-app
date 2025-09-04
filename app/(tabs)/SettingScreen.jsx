@@ -100,6 +100,7 @@ useEffect(() => {
                 dispatch(clearToken());
                 router.replace("/LoginScreen");
               } catch (e) {
+      
               }
             },
           },
