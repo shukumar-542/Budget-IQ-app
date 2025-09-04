@@ -66,7 +66,7 @@ useEffect(() => {
       setMessages((prev) => [...prev, replyMessage]);
 
     } catch (error) {
-      console.error(error);
+
       setMessages((prev) => [
         ...prev,
         { text: "Sorry, there was an error. Please try again.", sender: "bot" },

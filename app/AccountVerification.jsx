@@ -66,10 +66,8 @@ const AccountVerification = () => {
 
     try {
       const response = await resentOtp({ email }).unwrap();
-      console.log("OTP resent successfully:", response);
       Alert.alert("Success", "A new OTP has been sent to your email.");
     } catch (e) {
-      console.error("Resend OTP Error:", e);
 
       const statusCode = e?.status;
       const message = e?.data?.message || "Unable to resend OTP.";
@@ -113,7 +111,6 @@ const AccountVerification = () => {
         tokenCode: otp.join(""),
       }).unwrap();
 
-      console.log("OTP Verified:", verifyResponse);
 
       // ✅ 3. Proceed to Sign-in
       try {
@@ -122,7 +119,6 @@ const AccountVerification = () => {
           password: password,
         }).unwrap();
 
-        console.log("Sign-in successful:", signInResponse);
 
         const token = signInResponse?.data?.accessToken;
         if (token) {
@@ -132,7 +128,6 @@ const AccountVerification = () => {
           Alert.alert("Sign-in Error", "Token is missing. Please try again.");
         }
       } catch (signInError) {
-        console.error("Sign-in Error:", signInError);
 
         const statusCode = signInError?.status;
         const message =
@@ -147,7 +142,6 @@ const AccountVerification = () => {
         }
       }
     } catch (err) {
-      console.error("OTP Verification Error:", err);
 
       const statusCode = err?.status;
       const message = err?.data?.message || "Failed to verify OTP.";

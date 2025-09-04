@@ -7,29 +7,50 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import BackButton from "../components/UI/BackButton";
 import { Colors } from "../Constants/Colors";
 import { useForgetPasswordMutation } from "../redux/services/api";
+
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
   const [forgetPassword] = useForgetPasswordMutation();
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailValid = emailRegex.test(email);
+
+const validateEmail = (text) => {
+  setEmail(text);
+  // no UI errors, just updates state
+};
+
   const handleNext = async () => {
-    try {
-      const response = await forgetPassword({
-        email: email,
-      }).unwrap();
-         router.push({
-        pathname: "/Otp",
-        params: { email: email
-        },
-      });
-    } catch (e) {
-      console.log("from forgetpassword page", e);
+    if (!isEmailValid) {
+      Alert.alert("Validation Error", "Please enter a valid email address.");
+      return;
     }
-    // router.push("/Otp");
+
+    setIsLoading(true);
+
+    try {
+      const response = await forgetPassword({ email }).unwrap();
+      router.push({
+        pathname: "/Otp",
+        params: { email },
+      });
+    } catch (err) {
+      Alert.alert(
+        "Error",
+        err?.data?.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -51,12 +72,24 @@ const ForgotPassword = () => {
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={validateEmail}
           />
+          {errors.email ? (
+            <Text style={styles.errorText}>{errors.email}</Text>
+          ) : null}
         </View>
 
-        <TouchableOpacity onPress={handleNext} style={styles.verifyButton}>
-          <Text style={styles.verifyText}>Send</Text>
+        <TouchableOpacity
+          style={[
+            styles.verifyButton,
+            (!isEmailValid || isLoading) && { opacity: 0.6 },
+          ]}
+          onPress={handleNext}
+          disabled={!isEmailValid || isLoading}
+        >
+          <Text style={styles.verifyText}>
+            {isLoading ? "Sending..." : "Send"}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

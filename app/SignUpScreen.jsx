@@ -13,8 +13,49 @@ import { useSignUpMutation } from "../redux/services/api";
 import * as SecureStore from "expo-secure-store";
 import { Alert } from "react-native";
 const SignUpScreen = () => {
+  const [errors, setErrors] = useState({});
+
   const router = useRouter();
   const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const validateField = (field, value) => {
+    let errorMsg = "";
+
+    switch (field) {
+      case "fullName":
+        if (!value.trim()) errorMsg = "Full name is required.";
+        else if (value.trim().length < 3) errorMsg = "At least 3 characters.";
+        else if (/^\d+$/.test(value)) errorMsg = "Name cannot be numbers only.";
+        break;
+
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value.trim()) errorMsg = "Email is required.";
+        else if (!emailRegex.test(value)) errorMsg = "Invalid email format.";
+        break;
+
+      case "contactNo":
+        if (!value.trim()) errorMsg = "Phone number is required.";
+        else if (!/^\d+$/.test(value)) errorMsg = "Digits only.";
+        else if (value.length < 4) errorMsg = "At least 4 digits.";
+        break;
+
+      case "password":
+        if (!value) errorMsg = "Password is required.";
+        else if (value.length < 6) errorMsg = "At least 6 characters.";
+        else if (/\s/.test(value)) errorMsg = "No spaces allowed.";
+        break;
+
+      case "confirmPassword":
+        if (value !== formData.password) errorMsg = "Passwords do not match.";
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: errorMsg }));
+  };
 
   const validateEmail = (text) => {
     handleChange("email", text);
@@ -25,87 +66,113 @@ const SignUpScreen = () => {
   const [signUp, { isLoading, isError, data, error }] = useSignUpMutation();
 
   const [formData, setFormData] = useState({
-    fullName: "1",
-    email: "bebeba8801@skateru.com",
-    contactNo: "1",
-    password: "11111111",
-    confirmPassword: "11111111",
+    fullName: "",
+    email: "",
+    contactNo: "",
+    password: "",
+    confirmPassword: "",
   });
+  const validateForm = () => {
+    return (
+      Object.values(errors).every((err) => !err) &&
+      Object.values(formData).every((val) => val.trim() !== "")
+    );
+  };
 
   const handleChange = (field, value) => {
     setFormData({
       ...formData,
       [field]: value,
     });
+    validateField(field, value);
   };
 
-const handleSignUp = async () => {
-  // ✅ Basic client-side validation
-  if (!formData.fullName || !formData.email || !formData.password || !formData.contactNo) {
-    Alert.alert("Validation Error", "All fields are required.");
-    return;
-  }
-
-  if (formData.password !== formData.confirmPassword) {
-    Alert.alert("Validation Error", "Passwords do not match.");
-    return;
-  }
-
-  if (formData.password.length < 6) {
-    Alert.alert("Weak Password", "Password must be at least 6 characters long.");
-    return;
-  }
-
-  console.log("SignUp Data:", formData);
-
-  try {
-    // ✅ API call
-    const response = await signUp({
-      fullName: formData.fullName.trim(),
-      email: formData.email.trim().toLowerCase(),
-      contactNo: formData.contactNo.trim(),
-      password: formData.password,
-    }).unwrap();
-
-    // ✅ Save data securely
-    await SecureStore.setItemAsync("userFullName", formData.fullName);
-    await SecureStore.setItemAsync("userEmail", formData.email);
-    await SecureStore.setItemAsync("userContactNo", formData.contactNo);
-
-    console.log("Sign Up Success:", response);
-
-    // ✅ Navigate to verification screen
-    router.push({
-      pathname: "/AccountVerification",
-      params: {
-        email: formData.email,
-        password: formData.password,
-      },
-    });
-
-  } catch (err) {
-    console.error("Sign Up Error:", err);
-
-    // ✅ Extract error details
-    const statusCode = err?.status || err?.originalStatus;
-    const serverMessage = err?.data?.message || "";
-
-    if (statusCode === 400) {
-      Alert.alert("Sign Up Failed", serverMessage || "Invalid input. Please check your data.");
-    } else if (statusCode === 409) {
-      Alert.alert("Email Exists", "An account with this email already exists. Please log in.");
-    } else if (statusCode === 422) {
-      Alert.alert("Validation Error", "Please check your email and contact number.");
-    } else if (statusCode === 500) {
-      Alert.alert("Server Error", "Something went wrong on our end. Please try again later.");
-    } else if (err.name === "TypeError") {
-      Alert.alert("Network Error", "Please check your internet connection.");
-    } else {
-      Alert.alert("Error", serverMessage || "Sign Up failed. Please try again.");
+  const handleSignUp = async () => {
+    // ✅ Basic client-side validation
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.contactNo
+    ) {
+      Alert.alert("Validation Error", "All fields are required.");
+      return;
     }
-  }
-};
 
+    if (formData.password !== formData.confirmPassword) {
+      Alert.alert("Validation Error", "Passwords do not match.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      Alert.alert(
+        "Weak Password",
+        "Password must be at least 6 characters long."
+      );
+      return;
+    }
+
+
+    try {
+      // ✅ API call
+      const response = await signUp({
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        contactNo: formData.contactNo.trim(),
+        password: formData.password,
+      }).unwrap();
+
+      // ✅ Save data securely
+      await SecureStore.setItemAsync("userFullName", formData.fullName);
+      await SecureStore.setItemAsync("userEmail", formData.email);
+      await SecureStore.setItemAsync("userContactNo", formData.contactNo);
+
+
+      // ✅ Navigate to verification screen
+      router.push({
+        pathname: "/AccountVerification",
+        params: {
+          email: formData.email,
+          password: formData.password,
+        },
+      });
+    } catch (err) {
+
+
+      // ✅ Extract error details
+      const statusCode = err?.status || err?.originalStatus;
+      const serverMessage = err?.data?.message || "";
+
+      if (statusCode === 400) {
+        Alert.alert(
+          "Sign Up Failed",
+          serverMessage || "Invalid input. Please check your data."
+        );
+      } else if (statusCode === 409) {
+        Alert.alert(
+          "Email Exists",
+          "An account with this email already exists. Please log in."
+        );
+      } else if (statusCode === 422) {
+        Alert.alert(
+          "Validation Error",
+          "Please check your email and contact number."
+        );
+      } else if (statusCode === 500) {
+        Alert.alert(
+          "Server Error",
+          "Something went wrong on our end. Please try again later."
+        );
+      } else if (err.name === "TypeError") {
+        Alert.alert("Network Error", "Please check your internet connection.");
+      } else {
+        Alert.alert(
+          "Error",
+          serverMessage || "Sign Up failed. Please try again."
+        );
+      }
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -183,13 +250,12 @@ const handleSignUp = async () => {
       <TouchableOpacity
         style={[
           styles.signUpButton,
-          (isLoading || !isEmailValid) && { opacity: 0.6 },
+          (!validateForm() || isLoading) && { opacity: 0.6 },
         ]}
         onPress={handleSignUp}
-        disabled={isLoading || !isEmailValid}
+        disabled={!validateForm() || isLoading}
       >
         <Text style={styles.signUpButtonText}>
-          {" "}
           {isLoading ? "Signing Up..." : "Sign Up"}
         </Text>
       </TouchableOpacity>

@@ -23,7 +23,6 @@ const AccountInformation = () => {
   useEffect(() => {
     const loadImage = async () => {
       try {
-        console.log(data?.data?.profileImageUrl);
         const storedImage = data?.data?.profileImageUrl;
         const storedName = data?.data?.fullName;
         const storedEmail = data?.data?.email;
@@ -37,7 +36,6 @@ const AccountInformation = () => {
           setEmail(storedEmail);
         }
       } catch (error) {
-        console.error("Failed to load image from SecureStore", error);
       }
     };
 
@@ -128,7 +126,6 @@ const AccountInformation = () => {
     refetch();
     await SecureStore.setItemAsync("userFullName", finalName);
     await SecureStore.setItemAsync("userEmail", finalEmail);
-    console.log(response);
     router.replace("/SettingScreen");
   };
 

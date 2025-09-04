@@ -26,19 +26,19 @@ const SecondScreen = () => {
         dispatch(loadTokenFromStorage(storedToken));
         setToken(storedToken); // save to local state
       }
-      console.log("Loaded token from second screen:", storedToken);
+  
     };
     loadToken();
   }, [dispatch]);
 
   const handleNext = () => {
     const currentTime = new Date().getTime();
-    console.log("Current time:", currentTime);
+ 
     if (token) {
       router.push("/Subscriptions");
     } else {
       router.push("/LoginScreen");
-      console.log("No token, navigating to LoginScreen");
+ 
     }
   };
   return (

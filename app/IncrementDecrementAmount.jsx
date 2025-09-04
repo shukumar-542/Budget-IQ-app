@@ -28,7 +28,6 @@ const IncrementDecrementAmount = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { id, name, image, categoryType, transactionId } =
     useLocalSearchParams();
-  console.log(transactionId);
   const { data: user } = useUserGetMeQuery();
   const userId = user?.data?._id;
   const formatDate = (d) =>
@@ -41,7 +40,6 @@ const IncrementDecrementAmount = () => {
         alert("Amount must be greater than 0");
         return;
       }
-      console.log("Handling transaction with ID:", transactionId);
 
       if (transactionId) {
         // UPDATE existing transaction
@@ -49,7 +47,7 @@ const IncrementDecrementAmount = () => {
           amount: parseInt(amount),
           transactionId,
         });
-        console.log("Transaction updated", response);
+       
       } else {
         // CREATE new transaction
         const response = await createTransactions({
@@ -57,12 +55,12 @@ const IncrementDecrementAmount = () => {
           categoryId: id, // for new transaction, id is categoryId
           userId,
         });
-        console.log("Transaction created", response);
+      
       }
 
       router.push("/(tabs)/DashboardScreen");
     } catch (error) {
-      console.error("Error handling transaction:", error);
+      
     }
   };
 

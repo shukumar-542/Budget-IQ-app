@@ -25,7 +25,6 @@ const SettingScreen = () => {
 useEffect(() => {
   if (data?.data) {
     setUserImage(data?.data?.profileImageUrl);
-    console.log(data?.data?.profileImageUrl);
     setUserFullName(data?.data?.fullName);
     setUserEmail(data?.data?.email);
   }
@@ -35,10 +34,8 @@ useEffect(() => {
   const handleLogOut = async () => {
     try {
       await deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
-      console.log("Token removed from SecureStore only");
       router.replace("/LoginScreen");
     } catch (e) {
-      console.log("from setting screen", e);
     }
   };
 
@@ -101,10 +98,8 @@ useEffect(() => {
               try {
                 const response = await deleteUser({}).unwrap();
                 dispatch(clearToken());
-                console.log(response);
                 router.replace("/LoginScreen");
               } catch (e) {
-                console.log("from setting screen delete account :", e);
               }
             },
           },

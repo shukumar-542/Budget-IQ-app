@@ -44,7 +44,6 @@ const ExpensesCategories = () => {
             setSelectedCategories(validIds);
           }
         } catch (error) {
-          console.log("Error loading selected categories:", error);
         }
         setApiLoaded(true); // indicate that API + storage data is ready
       }
@@ -73,11 +72,8 @@ const ExpensesCategories = () => {
         "selectedExpenseCategories",
         JSON.stringify(selectedCategories)
       );
-      console.log("Selected Categories saved:", selectedCategories);
       router.push("/DashboardScreen");
     } catch (error) {
-      console.log("Error saving categories:", error);
-      alert("Failed to save categories. Please try again.");
     }
   };
 

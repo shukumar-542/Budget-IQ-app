@@ -41,7 +41,6 @@ const IncomeCategories = () => {
             setSelectedCategories(validIds);
           }
         } catch (error) {
-          console.log("Error loading selected categories:", error);
         }
         setApiLoaded(true);
       }
@@ -69,11 +68,8 @@ const IncomeCategories = () => {
         "selectedIncomeCategories",
         JSON.stringify(selectedCategories)
       );
-      console.log("Selected Income Categories saved:", selectedCategories);
       router.push("/DashboardScreen");
     } catch (error) {
-      console.log("Error saving categories:", error);
-      alert("Failed to save categories. Please try again.");
     }
   };
 

@@ -13,9 +13,11 @@ import { Colors } from "../Constants/Colors";
 import { useVerifyCodeMutation } from "../redux/services/api";
 import { useLocalSearchParams, useSearchParams } from "expo-router";
 import { useForgetPasswordMutation } from "../redux/services/api";
+import { Alert } from "react-native";
 const Otp = () => {
   const [otp, setOtp] = useState(["", "", "", "", ""]);
   const [countdown, setCountdown] = useState(60);
+
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const inputRefs = useRef([]);
   const router = useRouter();
@@ -40,22 +42,28 @@ const Otp = () => {
       inputRefs.current[index - 1]?.focus();
     }
   };
+
   const handleNext = async () => {
-    console.log("clicked");
+   
     try {
       const response = await oTP({
         email: email,
         tokenCode: otp.join(""),
       }).unwrap();
+
+      // If successful, navigate to NewPassword screen
       router.push({
         pathname: "/NewPassword",
         params: { email: email, tokenCode: otp.join("") },
       });
     } catch (e) {
-      console.log("from Otp page : ", e);
-    }
+      
 
-    // router.push("/NewPassword");
+      // Show alert for invalid code or other errors
+      const errorMessage =
+        e?.data?.message || "Invalid code. Please try again.";
+      Alert.alert("OTP Error", errorMessage);
+    }
   };
 
   useEffect(() => {
@@ -77,7 +85,7 @@ const Otp = () => {
         email: email,
       }).unwrap();
     } catch (e) {
-      console.log("From Otp : ", e);
+      
     }
   };
   return (
