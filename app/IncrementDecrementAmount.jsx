@@ -1,7 +1,7 @@
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Image,
   Pressable,
@@ -26,13 +26,18 @@ const IncrementDecrementAmount = () => {
   const [amount, setAmount] = useState("0");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { id, name, image, categoryType, transactionId } =
+  const { id, name, image, categoryType, transactionId, ammount } =
     useLocalSearchParams();
   const { data: user } = useUserGetMeQuery();
   const userId = user?.data?._id;
   const formatDate = (d) =>
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
-
+useEffect(()=>{
+  console.log(ammount)
+  if(ammount){
+    setAmount(ammount.toString())
+  }
+}, [ammount])
   const handleTransaction = async () => {
     try {
       // Validate amount first
@@ -47,7 +52,6 @@ const IncrementDecrementAmount = () => {
           amount: parseInt(amount),
           transactionId,
         });
-       
       } else {
         // CREATE new transaction
         const response = await createTransactions({
@@ -55,13 +59,10 @@ const IncrementDecrementAmount = () => {
           categoryId: id, // for new transaction, id is categoryId
           userId,
         });
-      
       }
 
       router.push("/(tabs)/DashboardScreen");
-    } catch (error) {
-  
-    }
+    } catch (error) {}
   };
 
   return (

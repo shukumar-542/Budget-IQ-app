@@ -27,7 +27,7 @@ const CostEarnList = ({ data }) => {
             image: icon,
             name,
             createdAt,
-            amount,
+            ammount: amount,
             transactionId,
             categoryType,
           },
