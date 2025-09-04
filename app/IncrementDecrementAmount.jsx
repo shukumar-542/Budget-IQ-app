@@ -1,45 +1,68 @@
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { router, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import {
+  Image,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../Constants/Colors";
-import { useLocalSearchParams } from "expo-router";
-import { useCreateTransactionMutation } from "../redux/services/api";
-import { useUserGetMeQuery } from "../redux/services/api";
+import {
+  useCreateTransactionMutation,
+  useUserGetMeQuery,
+  useGetUpdateTransactionMutation,
+} from "../redux/services/api";
 const IncrementDecrementAmount = () => {
+  const [updateTransaction] = useGetUpdateTransactionMutation();
+
   const [createTransactions] = useCreateTransactionMutation();
   const navigation = useNavigation();
-  const [amount, setAmount] = useState("-1000");
+  const [amount, setAmount] = useState("0");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { id, name, image, categoryType } = useLocalSearchParams();
-  console.log(categoryType);
+  const { id, name, image, categoryType, transactionId } =
+    useLocalSearchParams();
+  console.log(transactionId);
   const { data: user } = useUserGetMeQuery();
   const userId = user?.data?._id;
   const formatDate = (d) =>
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
 
-  const createTransaction = async () => {
+  const handleTransaction = async () => {
     try {
-      const response = await createTransactions({
-        amount,
-        categoryId: id,
-        userId,
-      });
+      // Validate amount first
+      if (!amount || parseInt(amount) <= 0) {
+        alert("Amount must be greater than 0");
+        return;
+      }
+      console.log("Handling transaction with ID:", transactionId);
+
+      if (transactionId) {
+        // UPDATE existing transaction
+        const response = await updateTransaction({
+          amount: parseInt(amount),
+          transactionId,
+        });
+        console.log("Transaction updated", response);
+      } else {
+        // CREATE new transaction
+        const response = await createTransactions({
+          amount: parseInt(amount),
+          categoryId: id, // for new transaction, id is categoryId
+          userId,
+        });
+        console.log("Transaction created", response);
+      }
+
       router.push("/(tabs)/DashboardScreen");
     } catch (error) {
-      console.error("Error creating transaction:", error);
+      console.error("Error handling transaction:", error);
     }
   };
 
@@ -69,7 +92,11 @@ const IncrementDecrementAmount = () => {
         <TextInput
           style={styles.input}
           value={amount}
-          onChangeText={setAmount}
+          onChangeText={(text) => {
+            // Only allow numbers and prevent empty
+            const numericValue = text.replace(/[^0-9]/g, "");
+            setAmount(numericValue);
+          }}
           keyboardType="numeric"
         />
       </View>
@@ -101,7 +128,7 @@ const IncrementDecrementAmount = () => {
       )}
 
       {/* Add Transaction Button */}
-      <TouchableOpacity style={styles.button} onPress={createTransaction}>
+      <TouchableOpacity style={styles.button} onPress={handleTransaction}>
         <Text style={styles.buttonText}>ADD TRANSACTION</Text>
       </TouchableOpacity>
     </SafeAreaView>

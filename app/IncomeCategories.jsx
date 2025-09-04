@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -11,19 +11,45 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useGetAllCategoriesQuery } from "../redux/services/api";
-import { FullWindowOverlay } from "react-native-screens";
+import * as SecureStore from "expo-secure-store";
 
 const IncomeCategories = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [apiLoaded, setApiLoaded] = useState(false);
   const router = useRouter();
 
-  // Fetch categories from API
+  // Fetch income categories from API
   const {
     data: incomeCategories,
     isLoading,
     isError,
   } = useGetAllCategoriesQuery("income");
 
+  // After API loads, fetch saved selections from SecureStore
+  useEffect(() => {
+    const loadSelections = async () => {
+      if (incomeCategories?.result?.length) {
+        try {
+          const storedCategories = await SecureStore.getItemAsync(
+            "selectedIncomeCategories"
+          );
+          if (storedCategories) {
+            const storedIds = JSON.parse(storedCategories);
+            const validIds = storedIds.filter((id) =>
+              incomeCategories.result.some((cat) => cat._id === id)
+            );
+            setSelectedCategories(validIds);
+          }
+        } catch (error) {
+          console.log("Error loading selected categories:", error);
+        }
+        setApiLoaded(true);
+      }
+    };
+    loadSelections();
+  }, [incomeCategories]);
+
+  // Toggle category selection
   const toggleCategory = (id) => {
     setSelectedCategories((prev) =>
       prev.includes(id) ? prev.filter((cat) => cat !== id) : [...prev, id]
@@ -32,27 +58,42 @@ const IncomeCategories = () => {
 
   const isSelected = (id) => selectedCategories.includes(id);
 
-  const handleSave = () => {
-    console.log("Selected Categories:", selectedCategories);
-    router.push("/DashboardScreen");
+  // Save button handler
+  const handleSave = async () => {
+    if (selectedCategories.length === 0) {
+      alert("Please select at least one category.");
+      return;
+    }
+    try {
+      await SecureStore.setItemAsync(
+        "selectedIncomeCategories",
+        JSON.stringify(selectedCategories)
+      );
+      console.log("Selected Income Categories saved:", selectedCategories);
+      router.push("/DashboardScreen");
+    } catch (error) {
+      console.log("Error saving categories:", error);
+      alert("Failed to save categories. Please try again.");
+    }
   };
 
+  // Render category item
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => {
-        toggleCategory(item._id);
-        console.log("Category toggled:", item._id);
-      }}
+      onPress={() => toggleCategory(item._id)}
       style={styles.item}
       activeOpacity={0.7}
     >
       <View style={styles.iconContainer}>
-        <Image
-          source={{ uri: item.categoryImage }}
-          onLoadStart={() => console.log("Loading image from URL:", item.categoryImage)}
-          style={{ width: "100%", height: "100%", borderRadius: 4 }}
-          resizeMode="cover"
-        />
+        {item.categoryImage ? (
+          <Image
+            source={{ uri: item.categoryImage }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        ) : (
+          <Icon name="image-off" size={24} color="#999" />
+        )}
       </View>
       <Text style={styles.label}>{item.name}</Text>
       <Icon
@@ -66,17 +107,19 @@ const IncomeCategories = () => {
     </TouchableOpacity>
   );
 
-  if (isLoading) {
+  // Loading state
+  if (isLoading || !apiLoaded) {
     return (
-      <View style={styles.container}>
+      <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#20a074" />
       </View>
     );
   }
 
-  if (isError || !incomeCategories?.result) {
+  // Error state
+  if (isError || !incomeCategories?.result?.length) {
     return (
-      <View style={styles.container}>
+      <View style={styles.centeredContainer}>
         <Text style={{ color: "#333" }}>Failed to load categories.</Text>
       </View>
     );
@@ -90,9 +133,8 @@ const IncomeCategories = () => {
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
       />
-
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveText}>SAVE CHANGE</Text>
+        <Text style={styles.saveText}>SAVE CHANGES</Text>
       </TouchableOpacity>
     </View>
   );
@@ -101,10 +143,11 @@ const IncomeCategories = () => {
 export default IncomeCategories;
 
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1, padding: 16, paddingTop: 10, backgroundColor: "#fff" },
+  centeredContainer: {
     flex: 1,
-    padding: 16,
-    paddingTop: 10,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "#fff",
   },
   item: {
@@ -123,14 +166,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 14,
   },
-  label: {
-    flex: 1,
-    fontSize: 16,
-    color: "#333",
-  },
-  checkbox: {
-    marginRight: 4,
-  },
+  image: { width: "100%", height: "100%", borderRadius: 4 },
+  label: { flex: 1, fontSize: 16, color: "#333" },
+  checkbox: { marginRight: 4 },
   saveButton: {
     backgroundColor: "#20a074",
     paddingVertical: 14,
@@ -138,9 +176,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 24,
   },
-  saveText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
+  saveText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 });

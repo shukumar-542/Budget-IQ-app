@@ -1,5 +1,5 @@
 import { useNavigation } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,64 +7,109 @@ import logo from "../../assets/images/iq.png";
 import ExpenseIncome from "../../components/Charts/ExpenseIncome";
 import CostEarnList from "../../components/CostEarnList";
 import Button from "../../components/UI/Button";
-import { useGetAllCategoriesWithSumQuery, useGetSpecificTransactionRecentQuery } from "../../redux/services/api";
+import {
+  useGetAllCategoriesWithSumQuery,
+  useGetSpecificTransactionRecentQuery,
+} from "../../redux/services/api";
+import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 
 const DashboardScreen = () => {
+  // --- STATE ---
   const [type, setType] = useState("expenses");
-  const [limit, setLimit] = useState(10);
-  const { data: allCategoriesWithSum } = useGetAllCategoriesWithSumQuery();
-  const { data: specificTransactionRecent } = useGetSpecificTransactionRecentQuery({ type, limit });
-
   const [expense, setExpense] = useState("expenses");
-  const [open, setOpen] = useState(false);
+  const [limit, setLimit] = useState(1000);
   const [value, setValue] = useState("month");
+  const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
     { label: "This Month", value: "month" },
     { label: "This Week", value: "week" },
     { label: "This Year", value: "year" },
   ]);
+  const [savedCategories, setSavedCategories] = useState([]);
 
   const navigation = useNavigation();
 
-  // Transform specificTransactionRecent for CostEarnList
-  const transformedSpecificTransactionRecent = specificTransactionRecent?.result?.map((tx) => ({
-    transactionId: tx._id,
-    name: tx.category?.name || "Unknown",
-    icon: tx.category?.categoryImage || null,
-    amount: `$${Math.abs(tx.amount)}`,
-    userId: tx.userId,
-    createdAt: tx.createdAt,
-    updatedAt: tx.updatedAt,
-    categoryType: tx.category?.type || "unknown",
-  })) || [];
+  // --- API QUERIES ---
+  const { data: allCategoriesWithSum, refetch: refetchCategories } =
+    useGetAllCategoriesWithSumQuery(
+      { type, time: value, savedCategory: savedCategories },
+      { refetchOnMountOrArgChange: true }
+    );
 
-  // Optional: Aggregate data for ExpenseIncome chart
-  const expenseData = allCategoriesWithSum?.result
-    .filter(cat => cat.type === "expenses")
-    .map(cat => ({
-      transactionId: cat._id,
-      name: cat.name,
-      icon: cat.categoryImage,
-      amount: `$${cat.totalAmount}`,
-      userId: cat.userId,
-      createdAt: cat.createdAt,
-      updatedAt: cat.updatedAt,
-      categoryType: cat.type,
+  const { data: specificTransactionRecent } =
+    useGetSpecificTransactionRecentQuery(
+      { type, limit },
+      { refetchOnMountOrArgChange: true }
+    );
+
+  // --- FETCH SAVED CATEGORIES + REFETCH ---
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSavedCategories = async () => {
+        try {
+          const storedCategories = await SecureStore.getItemAsync(
+            type === "expenses"
+              ? "selectedExpenseCategories"
+              : "selectedIncomeCategories"
+          );
+          const categories = JSON.parse(storedCategories || "[]");
+          setSavedCategories(categories);
+
+          if (refetchCategories) {
+            refetchCategories();
+          }
+        } catch (error) {
+          console.log("Error fetching saved categories:", error);
+        }
+      };
+
+      fetchSavedCategories();
+    }, [type, value])
+  );
+
+  // --- TRANSFORM DATA ---
+  const transformedSpecificTransactionRecent =
+    specificTransactionRecent?.result?.map((tx) => ({
+      transactionId: tx._id,
+      name: tx.category?.name || "Unknown",
+      icon: tx.category?.categoryImage || null,
+      amount: `$${Math.abs(tx.amount)}`,
+      userId: tx.userId,
+      createdAt: tx.createdAt,
+      updatedAt: tx.updatedAt,
+      categoryType: tx.category?.type || "unknown",
     })) || [];
 
-  const incomeData = allCategoriesWithSum?.result
-    .filter(cat => cat.type === "income")
-    .map(cat => ({
-      transactionId: cat._id,
-      name: cat.name,
-      icon: cat.categoryImage,
-      amount: `$${cat.totalAmount}`,
-      userId: cat.userId,
-      createdAt: cat.createdAt,
-      updatedAt: cat.updatedAt,
-      categoryType: cat.type,
-    })) || [];
+  const expenseData =
+    allCategoriesWithSum?.result
+      .filter((cat) => cat.type === "expenses")
+      .map((cat) => ({
+        transactionId: cat._id,
+        name: cat.name,
+        icon: cat.categoryImage,
+        amount: `$${cat.totalAmount}`,
+        userId: cat.userId,
+        createdAt: cat.createdAt,
+        updatedAt: cat.updatedAt,
+        categoryType: cat.type,
+      })) || [];
 
+  const incomeData =
+    allCategoriesWithSum?.result
+      .filter((cat) => cat.type === "income")
+      .map((cat) => ({
+        transactionId: cat._id,
+        name: cat.name,
+        icon: cat.categoryImage,
+        amount: `$${cat.totalAmount}`,
+        userId: cat.userId,
+        createdAt: cat.createdAt,
+        updatedAt: cat.updatedAt,
+        categoryType: cat.type,
+      })) || [];
+
+  // --- RENDER ---
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}

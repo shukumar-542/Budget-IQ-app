@@ -10,9 +10,7 @@ import {
 import { useEffect } from "react";
 const CostEarnList = ({ data }) => {
   const router = useRouter();
-  useEffect(() => {
-    console.log("Cost/Earn List Data:", data);
-  }, [data]);
+  useEffect(() => {}, [data]);
 
   const SpecificCostItem = ({
     icon,
@@ -26,7 +24,14 @@ const CostEarnList = ({ data }) => {
       onPress={() => {
         router.push({
           pathname: "/IncrementDecrementAmount",
-          params: { icon, name, date, amount, transactionId, categoryType },
+          params: {
+            image: icon,
+            name,
+            date,
+            amount,
+            transactionId,
+            categoryType,
+          },
         });
       }}
     >
@@ -51,13 +56,15 @@ const CostEarnList = ({ data }) => {
     <View style={styles.container}>
       <FlatList
         data={data}
-        keyExtractor={(item) => item.transactionId}
+        keyExtractor={(item) => item.transactionId.toString()}
         renderItem={({ item }) => (
           <SpecificCostItem
             icon={item.icon}
             name={item.name}
-            date={item.date}
+            date={item.date?.toString()} // ensure string
             amount={item.amount}
+            transactionId={item.transactionId}
+            categoryType={item.categoryType}
           />
         )}
       />

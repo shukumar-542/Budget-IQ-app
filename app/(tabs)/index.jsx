@@ -7,112 +7,100 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Modal,
+  TextInput,
+  ScrollView,
 } from "react-native";
-import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/images/iq.png";
 import TotalSpentDonutChart from "../../components/Charts/TotalSpentDonutChart";
 import { Colors } from "../../Constants/Colors";
-import { Modal, TextInput } from "react-native";
-import { useEffect, useState } from "react";
-import { useRef } from "react";
-import { ScrollView } from "react-native";
-import { useIqBuddyMutation } from "../../redux/services/api";
-import * as SecureStore from "expo-secure-store";
-import { useUserGetMeQuery } from "../../redux/services/api";
-import { useGetMessageWithTotalTransactionQuery } from "../../redux/services/api";
+import { useEffect, useState, useRef } from "react";
+import {
+  useIqBuddyMutation,
+  useUserGetMeQuery,
+  useGetMessageWithTotalTransactionQuery,
+} from "../../redux/services/api";
+
 const Index = () => {
+  const router = useRouter();
+  const scrollViewRef = useRef();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
-  const scrollViewRef = useRef();
-  const router = useRouter();
-  const [iqBuddy] = useIqBuddyMutation();
   const [isTyping, setIsTyping] = useState(false);
   const [storedImage, setStoredImage] = useState(null);
-  const { data, isSuccess } = useUserGetMeQuery();
-  const { data: messageData } = useGetMessageWithTotalTransactionQuery();
   const [motivationalMessage, setMotivationalMessage] = useState(null);
-  const [totalIncome, setTotalIncome] = useState(null);
-  const [totalExpenses, setTotalExpenses] = useState(null);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
 
-  useEffect(() => {
-    // Update message and transaction info when messageData changes
-    if (messageData?.data) {
-      const message = messageData.data.motivationalMessage?.message;
-      const income = messageData.data.totalIncomeAndExpenses?.totalIncome;
-      const expenses = messageData.data.totalIncomeAndExpenses?.totalExpenses;
+  const [iqBuddy] = useIqBuddyMutation();
+  const { data: userData } = useUserGetMeQuery();
+  const { data: messageData, refetch } =
+    useGetMessageWithTotalTransactionQuery();
 
-      setMotivationalMessage(message);
-      setTotalIncome(income);
-      setTotalExpenses(expenses);
-
-      console.log("Motivational Message:", message);
-      console.log("Total Income:", income);
-      console.log("Total Expenses:", expenses);
-    }
-
-    // Update profile image if user data is available
+  // Helper to update totals and motivational message
+  const updateMessageData = (data) => {
     if (data?.data) {
-      setStoredImage(data?.data?.profileImageUrl);
+      setMotivationalMessage(data.data.motivationalMessage?.message || "");
+      setTotalIncome(data.data.totalIncomeAndExpenses?.totalIncome || 0);
+      setTotalExpenses(data.data.totalIncomeAndExpenses?.totalExpenses || 0);
     }
-  }, [messageData, data]);
+  };
+
+  // Initial load
+  useEffect(() => {
+    updateMessageData(messageData);
+    if (userData?.data) setStoredImage(userData.data.profileImageUrl);
+  }, [messageData, userData]);
 
   const handleSend = async () => {
+    if (!inputText.trim()) return;
+
     const userMessage = { text: inputText, sender: "user" };
     setMessages((prev) => [...prev, userMessage]);
-    setInputText(""); // Clear input field
+    const messageToSend = inputText;
+    setInputText("");
+    setIsTyping(true);
 
     try {
-      // 1. Show typing indicator
-      setIsTyping(true);
+      const response = await iqBuddy({ message: messageToSend }).unwrap();
+      const replyMessage = { text: response.result.message, sender: "bot" };
 
-      // 2. Simulate typing delay
-      setTimeout(async () => {
-        // 3. Get the bot's response
-        const response = await iqBuddy({ message: inputText }).unwrap();
-        console.log("Bot response:", response);
+      setMessages((prev) => [...prev, replyMessage]);
 
-        const replyMessage = { text: response.result.message, sender: "bot" };
-
-        // 4. Add bot message and hide typing
-        setIsTyping(false);
-        setMessages((prev) => [...prev, replyMessage]);
-      }, 1500); // 1.5 seconds typing delay, adjust as needed
+      // ✅ Refetch updated totals
+      const { data: updated } = await refetch();
+      updateMessageData(updated); // correctly pass the nested data
     } catch (error) {
-      console.error("Error getting bot response:", error);
+      console.error(error);
+      setMessages((prev) => [
+        ...prev,
+        { text: "Sorry, there was an error. Please try again.", sender: "bot" },
+      ]);
+    } finally {
       setIsTyping(false);
-      const errorMessage = {
-        text: "Sorry, there was an error. Please try again.",
-        sender: "bot",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
     }
   };
 
   const customChartData = [
-    { category: "Groceries", value: 333, color: "#7E49FF", icon: "food" }, // Different green
-    { category: "Car", value: 333, color: "#FF2D55", icon: "car" }, // Different purple
-    { category: "Home", value: 333, color: "#1BA26E", icon: "home" }, // Different red
+    { category: "Groceries", value: 333, color: "#7E49FF", icon: "food" },
+    { category: "Car", value: 333, color: "#FF2D55", icon: "car" },
+    { category: "Home", value: 333, color: "#1BA26E", icon: "home" },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Image source={logo} />
-
         <Pressable onPress={() => router.push("AccountInformation")}>
           {storedImage ? (
-            <Image
-              source={{ uri: storedImage }}
-              style={{ width: 40, height: 40, borderRadius: 20 }}
-              resizeMode="cover"
-            />
+            <Image source={{ uri: storedImage }} style={styles.avatar} />
           ) : (
             <Image
               source={require("../../assets/images/avater.png")}
-              style={{ width: 40, height: 40, borderRadius: 20 }}
-              resizeMode="cover"
+              style={styles.avatar}
             />
           )}
         </Pressable>
@@ -131,7 +119,7 @@ const Index = () => {
           strokeWidth={60}
         />
       </View>
-      {/* Ask Button */}
+
       <TouchableOpacity
         style={styles.askButton}
         onPress={() => setModalVisible(true)}
@@ -147,7 +135,6 @@ const Index = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.popupContainer}>
-            {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>IQ Buddy</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
@@ -155,7 +142,6 @@ const Index = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Chat Content */}
             <ScrollView
               style={styles.chatContainer}
               ref={scrollViewRef}
@@ -163,9 +149,9 @@ const Index = () => {
                 scrollViewRef.current?.scrollToEnd({ animated: true })
               }
             >
-              {messages.map((msg, index) => (
+              {messages.map((msg, idx) => (
                 <View
-                  key={index}
+                  key={idx}
                   style={[
                     styles.messageBubble,
                     msg.sender === "user"
@@ -176,7 +162,6 @@ const Index = () => {
                   <Text style={styles.messageText}>{msg.text}</Text>
                 </View>
               ))}
-              {/* ✅ Add typing indicator here */}
               {isTyping && (
                 <View style={[styles.messageBubble, styles.botMessage]}>
                   <Text style={styles.messageText}>Bot is typing...</Text>
@@ -184,28 +169,17 @@ const Index = () => {
               )}
             </ScrollView>
 
-            {/* Input */}
             <View style={styles.inputContainer}>
               <TextInput
                 placeholder="Message IQ Buddy"
                 style={styles.input}
                 value={inputText}
-                onChangeText={(text) => {
-                  if (text.trim() !== "") {
-                    setInputText(text);
-                  } else {
-                    setInputText(""); // optional: allow clearing the field completely
-                  }
-                }}
+                onChangeText={setInputText}
               />
               <TouchableOpacity
                 onPress={handleSend}
                 disabled={inputText.trim() === "" || isTyping}
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 10,
-                }}
+                style={styles.sendButton}
               >
                 {isTyping ? (
                   <ActivityIndicator size="small" color="#28a745" />
@@ -231,22 +205,14 @@ const Index = () => {
 export default Index;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: "#fff",
-  },
-  chartsContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
+  container: { flex: 1, padding: 10, backgroundColor: "#fff" },
+  chartsContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+  avatar: { width: 40, height: 40, borderRadius: 20 },
   tagLine: {
     backgroundColor: "#B8E2D2",
     padding: 10,
@@ -254,15 +220,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     borderRadius: 50,
   },
-  text: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  chartContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  text: { fontSize: 16, fontWeight: "bold" },
   askButton: {
     backgroundColor: "#28a745",
     paddingVertical: 12,
@@ -271,12 +229,7 @@ const styles = StyleSheet.create({
     marginTop: "30%",
     marginLeft: "60%",
   },
-  askButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  // Modal styles
+  askButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.6)",
@@ -297,15 +250,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 12,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#fff",
-  },
-  closeText: {
-    fontSize: 18,
-    color: "#fff",
-  },
+  modalTitle: { fontSize: 18, fontWeight: "700", color: "#fff" },
+  closeText: { fontSize: 18, color: "#fff" },
   chatContainer: {
     paddingHorizontal: 15,
     paddingVertical: 20,
@@ -318,17 +264,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     maxWidth: "80%",
   },
-  userMessage: {
-    alignSelf: "flex-end",
-    backgroundColor: "#28a745",
-  },
-  botMessage: {
-    alignSelf: "flex-start",
-    backgroundColor: "#5C5C5C",
-  },
-  messageText: {
-    color: "#fff",
-  },
+  userMessage: { alignSelf: "flex-end", backgroundColor: "#28a745" },
+  botMessage: { alignSelf: "flex-start", backgroundColor: "#5C5C5C" },
+  messageText: { color: "#fff" },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -348,8 +286,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginRight: 10,
   },
-  sendIcon: {
-    fontSize: 22,
-    color: "#28a745",
-  },
+  sendButton: { justifyContent: "center", alignItems: "center", padding: 10 },
+  sendIcon: { fontSize: 22, color: "#28a745" },
 });

@@ -154,18 +154,35 @@ export const api = createApi({
       },
     }),
     getAllCategoriesWithSum: builder.query({
-      query: () => ({
-        url: "/category/with-sum",
-        method: "GET",
-      }),
+      query: ({ type, time, savedCategory } = {}) => {
+        const params = new URLSearchParams();
+        if (type) params.append("type", type);
+        if (time) params.append("time", time);
+
+        // Handle savedCategory array
+        if (savedCategory && Array.isArray(savedCategory)) {
+          // Option 1: encode as JSON string
+          params.append("savedCategory", JSON.stringify(savedCategory));
+
+          // Option 2: multiple params (uncomment if your backend expects this)
+          // savedCategory.forEach(id => params.append("savedCategory", id));
+        }
+
+        const queryString = params.toString();
+        return {
+          url: `/category/with-sum${queryString ? `?${queryString}` : ""}`,
+          method: "GET",
+        };
+      },
       transformResponse: (response) => {
         const resultWithFullImage = response.result.map((cat) => ({
           ...cat,
-          categoryImage: `http://10.10.20.72:5000${cat.categoryImage}`, // prepend server
+          categoryImage: `http://10.10.20.72:5000${cat.categoryImage}`,
         }));
         return { ...response, result: resultWithFullImage };
       },
     }),
+
     createTransaction: builder.mutation({
       query: (data) => ({
         url: "/transaction/create",
@@ -189,6 +206,13 @@ export const api = createApi({
       query: () => ({
         url: "/motivational-message/message",
         method: "GET",
+      }),
+    }),
+    getUpdateTransaction: builder.mutation({
+      query: (data) => ({
+        url: `/transaction/update`,
+        method: "PATCH",
+        body: data, // data contains { amount, transactionId }
       }),
     }),
   }),
@@ -215,4 +239,5 @@ export const {
   useGetPrivacyPolicyQuery,
   useGetTermsAndConditionsQuery,
   useGetMessageWithTotalTransactionQuery,
+  useGetUpdateTransactionMutation,
 } = api;
