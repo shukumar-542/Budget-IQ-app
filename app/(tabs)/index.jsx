@@ -37,8 +37,7 @@ const Index = () => {
 
   const [iqBuddy] = useIqBuddyMutation();
   const { data: userData } = useUserGetMeQuery();
-const { data: messageData } = useGetMessageWithTotalTransactionQuery(undefined, {
-  pollingInterval: 2000, // fetch every 2 seconds
+const { data: messageData } = useGetMessageWithTotalTransactionQuery(undefined, { // fetch every 2 seconds
 });
 
 
