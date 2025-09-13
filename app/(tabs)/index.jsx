@@ -1,25 +1,24 @@
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
+  Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
-  ActivityIndicator,
-  Modal,
-  TextInput,
-  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/images/iq.png";
 import TotalSpentDonutChart from "../../components/Charts/TotalSpentDonutChart";
-import { Colors } from "../../Constants/Colors";
-import { useEffect, useState, useRef } from "react";
 import {
+  useGetMessageWithTotalTransactionQuery,
   useIqBuddyMutation,
   useUserGetMeQuery,
-  useGetMessageWithTotalTransactionQuery,
 } from "../../redux/services/api";
 
 const Index = () => {
@@ -37,17 +36,26 @@ const Index = () => {
 
   const [iqBuddy] = useIqBuddyMutation();
   const { data: userData } = useUserGetMeQuery();
-const { data: messageData } = useGetMessageWithTotalTransactionQuery(undefined, { // fetch every 2 seconds
-});
+  const { data: messageData, refetch } =
+    useGetMessageWithTotalTransactionQuery();
 
+  useEffect(() => {
+    if (messageData?.data) {
+      setMotivationalMessage(
+        messageData.data.motivationalMessage?.message || ""
+      );
+      setTotalIncome(messageData.data.totalIncomeAndExpenses?.totalIncome || 0);
+      setTotalExpenses(
+        messageData.data.totalIncomeAndExpenses?.totalExpenses || 0
+      );
+    }
+  }, [messageData]);
 
-useEffect(() => {
-  if (messageData?.data) {
-    setMotivationalMessage(messageData.data.motivationalMessage?.message || "");
-    setTotalIncome(messageData.data.totalIncomeAndExpenses?.totalIncome || 0);
-    setTotalExpenses(messageData.data.totalIncomeAndExpenses?.totalExpenses || 0);
-  }
-}, [messageData]);
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
@@ -63,9 +71,7 @@ useEffect(() => {
       const replyMessage = { text: response.result.message, sender: "bot" };
 
       setMessages((prev) => [...prev, replyMessage]);
-
     } catch (error) {
-
       setMessages((prev) => [
         ...prev,
         { text: "Sorry, there was an error. Please try again.", sender: "bot" },

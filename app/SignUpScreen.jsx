@@ -4,6 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import {
   Alert,
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -295,7 +296,21 @@ const SignUpScreen = () => {
           <FontAwesome name="google" size={30} color="#DB4437" />
         </TouchableOpacity> */}
       </View>
-
+      {/* <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 40,
+        }}
+      >
+        <TouchableOpacity>
+          <Image source={require("../assets/images/apple.png")}></Image>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={require("../assets/images/google.png")}></Image>
+        </TouchableOpacity>
+      </View> */}
       {/* Login Link */}
       <View style={styles.loginTextContainer}>
         <Text style={styles.loginText}>I have an account? </Text>

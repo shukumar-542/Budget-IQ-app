@@ -13,7 +13,6 @@ import {
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
 import { saveAuthData } from "../utils/secureStore";
-
 const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -92,6 +91,7 @@ const LoginScreen = () => {
         onChangeText={validateEmail}
       />
 
+      <Text style={styles.label}>Password</Text>
       <View style={{ position: "relative" }}>
         <TextInput
           value={formData.password}
