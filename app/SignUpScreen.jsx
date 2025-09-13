@@ -1,6 +1,9 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -10,10 +13,11 @@ import {
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { useSignUpMutation } from "../redux/services/api";
-import * as SecureStore from "expo-secure-store";
-import { Alert } from "react-native";
+
 const SignUpScreen = () => {
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
   const [isEmailValid, setIsEmailValid] = useState(true);
@@ -112,7 +116,6 @@ const SignUpScreen = () => {
       return;
     }
 
-
     try {
       // ✅ API call
       const response = await signUp({
@@ -127,7 +130,6 @@ const SignUpScreen = () => {
       await SecureStore.setItemAsync("userEmail", formData.email);
       await SecureStore.setItemAsync("userContactNo", formData.contactNo);
 
-
       // ✅ Navigate to verification screen
       router.push({
         pathname: "/AccountVerification",
@@ -137,8 +139,6 @@ const SignUpScreen = () => {
         },
       });
     } catch (err) {
-
-
       // ✅ Extract error details
       const statusCode = err?.status || err?.originalStatus;
       const serverMessage = err?.data?.message || "";
@@ -221,27 +221,51 @@ const SignUpScreen = () => {
       {/* Password Input Group */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="********"
-          placeholderTextColor="#888"
-          secureTextEntry
-          value={formData.password}
-          onChangeText={(val) => handleChange("password", val)}
-        />
+        <View style={{ position: "relative" }}>
+          <TextInput
+            style={[styles.input, { paddingRight: 40 }]}
+            placeholder="********"
+            placeholderTextColor="#888"
+            secureTextEntry={!showPassword}
+            value={formData.password}
+            onChangeText={(val) => handleChange("password", val)}
+          />
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={{ position: "absolute", right: 10, top: 12 }}
+          >
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={22}
+              color={Colors.primary}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Confirm Password Input Group */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Confirm Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="********"
-          placeholderTextColor="#888"
-          secureTextEntry
-          value={formData.confirmPassword}
-          onChangeText={(val) => handleChange("confirmPassword", val)}
-        />
+        <View style={{ position: "relative" }}>
+          <TextInput
+            style={[styles.input, { paddingRight: 40 }]}
+            placeholder="********"
+            placeholderTextColor="#888"
+            secureTextEntry={!showConfirmPassword}
+            value={formData.confirmPassword}
+            onChangeText={(val) => handleChange("confirmPassword", val)}
+          />
+          <TouchableOpacity
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            style={{ position: "absolute", right: 10, top: 12 }}
+          >
+            <Ionicons
+              name={showConfirmPassword ? "eye-off" : "eye"}
+              size={22}
+              color={Colors.primary}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* /AccountVerification */}

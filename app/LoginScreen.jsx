@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -11,8 +13,10 @@ import {
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
 import { saveAuthData } from "../utils/secureStore";
-import { Alert } from "react-native";
+
 const LoginScreen = () => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const [isEmailValid, setIsEmailValid] = useState(true);
 
   const validateEmail = (text) => {
@@ -88,14 +92,26 @@ const LoginScreen = () => {
         onChangeText={validateEmail}
       />
 
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        value={formData.password}
-        style={styles.input}
-        placeholder="********"
-        secureTextEntry
-        onChangeText={(text) => handleChange("password", text)}
-      />
+      <View style={{ position: "relative" }}>
+        <TextInput
+          value={formData.password}
+          style={[styles.input, { paddingRight: 40 }]} // extra space for icon
+          placeholder="********"
+          secureTextEntry={!showPassword}
+          onChangeText={(text) => handleChange("password", text)}
+        />
+
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}
+          style={{ position: "absolute", right: 10, top: 12 }}
+        >
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={22}
+            color="#00794F"
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity
         style={styles.forgot}
@@ -108,9 +124,17 @@ const LoginScreen = () => {
         onPress={() => handleLogin()}
         style={[
           styles.loginButton,
-          (isLoading || !isEmailValid) && { opacity: 0.6 },
+          (isLoading ||
+            !isEmailValid ||
+            !formData.email.trim() ||
+            !formData.password.trim()) && { opacity: 0.6 },
         ]}
-        disabled={isLoading || !isEmailValid}
+        disabled={
+          isLoading ||
+          !isEmailValid ||
+          !formData.email.trim() ||
+          !formData.password.trim()
+        }
       >
         <Text style={styles.loginButtonText}>
           {isLoading ? "Signing in..." : "Sign In"}
