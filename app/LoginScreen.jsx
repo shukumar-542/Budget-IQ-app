@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
-import { saveAuthData } from "../utils/secureStore";
+import { getSubscriptionViewTime, saveAuthData } from "../utils/secureStore";
 const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -42,30 +42,30 @@ const LoginScreen = () => {
     try {
       const response = await signIn(formData).unwrap();
 
-      // ✅ Save token and email before navigation
+      // Save token and email
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response.data.accessToken, formData.email);
-      } else {
       }
 
-      router.replace("/Subscriptions");
+      // ✅ Check if the user has already visited Subscriptions
+      const subscriptionTimestamp = await getSubscriptionViewTime();
+
+      if (!subscriptionTimestamp) {
+        // First time → go to Subscriptions
+        router.replace("/Subscriptions");
+      } else {
+        // Already visited → go to main/home page
+        router.replace("/(tabs)");
+      }
     } catch (error) {
-      // ✅ Handle error properly
       const statusCode = error?.status || error?.originalStatus;
       const message = error?.data?.message || "Something went wrong";
 
       if (statusCode === 404) {
-        // ✅ User not found case
-        Alert.alert(
-          "Login Failed",
-          "User not found. Please check your email.",
-          [{ text: "OK", style: "default" }]
-        );
+        Alert.alert("Login Failed", "User not found. Please check your email.");
       } else if (statusCode === 401) {
-        // ✅ Wrong password case
         Alert.alert("Login Failed", "Incorrect password. Please try again.");
       } else {
-        // ✅ Other errors
         Alert.alert("Error", message);
       }
     }

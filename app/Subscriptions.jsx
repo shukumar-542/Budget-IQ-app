@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,6 +26,7 @@ const Subscriptions = () => {
   const [checkoutUrl, setCheckoutUrl] = useState(null);
 
   useEffect(() => {
+    console.log(allPlans);
     dispatch(loadLastViewTime());
     dispatch(saveCurrentViewTime());
   }, [dispatch]);
@@ -57,163 +57,82 @@ const Subscriptions = () => {
   };
 
   const handleSubscription = async (plan) => {
-    try {
-      const matchedPlan = allPlans.result.find(
-        (p) => p.name.toLowerCase() === plan.name.toLowerCase()
+    if (plan.name == "Monthly") {
+      setCheckoutUrl(
+        "https://checkout.stripe.com/c/pay/cs_test_a1s7EKTiFF9BY31hgePQoPOakjRxQQOa7NMEai3flqvz17aNLob8XJEhDZ#fidkdWxOYHwnPyd1blpxYHZxWjA0TWA8T1VOSE1UVWZ3fUFdUHdVf31nZFNXfWhxUFZcbTdONGxiST1XNGFKXDE0UTFfZkRDMFNJMURqY0x9MUtLNk4zSkZsckgzNnBfdUAyPX0yfExvNV1SNTVWRkp9SXBwXCcpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl"
       );
-      const selectedPlanId = matchedPlan._id;
+    } else {
+      try {
+        if (!allPlans?.result) {
+          alert("Plans are not loaded yet. Please try again.");
+          return;
+        }
 
-      // Get response from backend
-      const response = await getMembership(selectedPlanId).unwrap();
+        const matchedPlan = allPlans.result.find(
+          (p) => p.name.toLowerCase() === plan.name.toLowerCase()
+        );
 
-      console.log("Membership response:", response);
+        if (!matchedPlan) {
+          alert("Selected plan not found.");
+          return;
+        }
 
-      // Check if response has URL for Stripe checkout
-      if (response.result && response.result.url) {
-        setCheckoutUrl(response.result.url);
+        const selectedPlanId = matchedPlan._id;
+
+        // Get Stripe Checkout URL from backend
+        const response = await getMembership(selectedPlanId).unwrap();
+        if (response) {
+          router.push("/(tabs)");
+        }
+      } catch (err) {
+        console.log("Subscription error:", err);
+        alert("Something went wrong. Please try again.");
       }
-      // If no URL but success is true, navigate directly
-      else if (response.success === true) {
-        console.log("Direct subscription success");
-        Alert.alert(response.message, [
-          {
-            text: "OK",
-            onPress: () => router.push("/(tabs)"),
-          },
-        ]);
-      }
-      // Handle other response formats
-      else {
-        console.log("Unexpected response format:", response);
-        Alert.alert(response.message);
-      }
-    } catch (err) {
-      console.log("Subscription error:", err);
-      Alert.alert(err);
     }
   };
 
-  const handlePaymentSuccess = (sessionId) => {
-    console.log("Payment successful! Session ID:", sessionId);
-    setCheckoutUrl(null);
-    router.push("/(tabs)");
-  };
-
-  const handlePaymentCancel = () => {
-    console.log("Payment canceled");
-    setCheckoutUrl(null);
-  };
-
-  // ✅ Render WebView if checkout URL exists - Using Stripe's native UI
+  // ✅ Render WebView if checkout URL exists
   if (checkoutUrl) {
     return (
-      <WebView
-        source={{ uri: checkoutUrl }}
-        style={{ flex: 1 }}
-        startInLoadingState={true}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        onMessage={(event) => {
-          console.log("WebView message:", event.nativeEvent.data);
-        }}
-        onNavigationStateChange={(navState) => {
-          const url = navState.url;
-          console.log("Navigation URL:", url);
+      <View style={{ flex: 1 }}>
+        {/* Back Button */}
+        <TouchableOpacity
+          style={{
+            padding: 10,
+            backgroundColor: "#eee",
+            alignItems: "center",
+          }}
+          onPress={() => router.push("Subscriptions")} // Navigate back
+        >
+          <Text style={{ fontSize: 16 }}>Back</Text>
+        </TouchableOpacity>
 
-          // Check for success patterns
-          if (
-            url.includes("success") ||
-            url.includes("payment-success") ||
-            url.includes("checkout/success") ||
-            url.startsWith("myapp://success")
-          ) {
-            try {
-              let sessionId = null;
+        {/* WebView */}
+        <WebView
+          source={{ uri: checkoutUrl }}
+          style={{ flex: 1 }}
+          onNavigationStateChange={(navState) => {
+            const url = navState.url;
 
-              // Try to extract session_id from various URL formats
-              const urlParts = url.split("?");
-              if (urlParts.length > 1) {
-                const params = new URLSearchParams(urlParts[1]);
-                sessionId = params.get("session_id") || params.get("sessionId");
-              }
+            // Intercept success URL
+            if (url.startsWith("https://your-backend.com/payment-success")) {
+              const params = new URLSearchParams(url.split("?")[1]);
+              const sessionId = params.get("session_id");
 
-              // Also try to extract from URL path
-              if (!sessionId) {
-                const sessionMatch = url.match(/cs_[a-zA-Z0-9_]+/);
-                sessionId = sessionMatch ? sessionMatch[0] : null;
-              }
+              console.log("Payment successful! Session ID:", sessionId);
 
-              handlePaymentSuccess(sessionId);
-              return false;
-            } catch (error) {
-              console.error("Error parsing success URL:", error);
-              handlePaymentSuccess(null);
-            }
-          }
-
-          // Check for cancel patterns
-          if (
-            url.includes("cancel") ||
-            url.includes("payment-cancel") ||
-            url.includes("checkout/cancel") ||
-            url.startsWith("myapp://cancel")
-          ) {
-            handlePaymentCancel();
-            return false;
-          }
-        }}
-        onShouldStartLoadWithRequest={(request) => {
-          const url = request.url;
-          console.log("Should start load:", url);
-
-          // Handle custom schemes
-          if (url.startsWith("myapp://")) {
-            console.log("Handling custom scheme:", url);
-
-            if (url.includes("success")) {
-              try {
-                let sessionId = null;
-                const urlParts = url.split("?");
-                if (urlParts.length > 1) {
-                  const params = new URLSearchParams(urlParts[1]);
-                  sessionId =
-                    params.get("session_id") || params.get("sessionId");
-                }
-
-                // Extract session ID from URL if not in params
-                if (!sessionId) {
-                  const sessionMatch = url.match(/cs_[a-zA-Z0-9_]+/);
-                  sessionId = sessionMatch ? sessionMatch[0] : null;
-                }
-
-                handlePaymentSuccess(sessionId);
-              } catch (error) {
-                console.error("Error parsing custom success URL:", error);
-                handlePaymentSuccess(null);
-              }
-              return false;
+              setCheckoutUrl(null);
+              router.push("/(tabs)");
             }
 
-            if (url.includes("cancel")) {
-              handlePaymentCancel();
-              return false;
+            // Intercept cancel URL
+            if (url.startsWith("https://your-backend.com/payment-cancel")) {
+              console.log("Payment canceled");
+              setCheckoutUrl(null);
             }
-
-            return false; // Block all custom schemes
-          }
-
-          return true; // Allow normal web URLs
-        }}
-        onError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.error("WebView error:", nativeEvent);
-          Alert.alert("Error", "Failed to load payment page");
-        }}
-        onHttpError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.error("WebView HTTP error:", nativeEvent);
-        }}
-      />
+          }}
+        />
+      </View>
     );
   }
 

@@ -11,6 +11,7 @@ import {
   saveCurrentViewTime,
 } from "../redux/slices/SubscriptionSlice";
 import { useSelector } from "react-redux";
+
 const SecondScreen = () => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -26,19 +27,17 @@ const SecondScreen = () => {
         dispatch(loadTokenFromStorage(storedToken));
         setToken(storedToken); // save to local state
       }
-  
     };
     loadToken();
   }, [dispatch]);
 
   const handleNext = () => {
     const currentTime = new Date().getTime();
- 
+
     if (token) {
-      router.push("/Subscriptions");
+      router.push("/(tabs)");
     } else {
       router.push("/LoginScreen");
- 
     }
   };
   return (
