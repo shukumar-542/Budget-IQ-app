@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { saveAuthData, deleteAuthData } from "../../utils/secureStore";
+import { deleteAuthData, saveAuthData } from "../../utils/secureStore";
 
 
 const authSlice = createSlice({

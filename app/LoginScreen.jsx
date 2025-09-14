@@ -44,7 +44,6 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await signIn(formData).unwrap();
-      console.log(response?.data?.accessToken, formData?.email, 3)
       // Save token and email
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response?.data?.accessToken, formData?.email);
