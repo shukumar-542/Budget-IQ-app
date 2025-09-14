@@ -26,7 +26,6 @@ const Subscriptions = () => {
   const [checkoutUrl, setCheckoutUrl] = useState(null);
 
   useEffect(() => {
-    console.log(allPlans);
     dispatch(loadLastViewTime());
     dispatch(saveCurrentViewTime());
   }, [dispatch]);
@@ -98,13 +97,26 @@ const Subscriptions = () => {
         {/* Back Button */}
         <TouchableOpacity
           style={{
-            padding: 10,
-            backgroundColor: "#eee",
+            flexDirection: "row",
             alignItems: "center",
+            justifyContent: "center",
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            backgroundColor: "#4A90E2", // blue button
+            borderRadius: 12,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 3,
+            elevation: 3, // Android shadow
+            alignSelf: "flex-start", // keep it left aligned like a back button
+            margin: 10,
           }}
-          onPress={() => router.push("Subscriptions")} // Navigate back
+          onPress={() => router.push("Subscriptions")}
         >
-          <Text style={{ fontSize: 16 }}>Back</Text>
+          <Text style={{ fontSize: 16, color: "#fff", fontWeight: "600" }}>
+            ← Back
+          </Text>
         </TouchableOpacity>
 
         {/* WebView */}
