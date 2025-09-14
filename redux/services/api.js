@@ -5,6 +5,7 @@ export const api = createApi({
     baseUrl: "http://10.10.20.72:5000/api/v1",
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token; // ✅ get token from Redux
+      console.log("Preparing headers with token:", token); // Log the token
       if (token) {
         headers.set("authorization", `${token}`);
       }

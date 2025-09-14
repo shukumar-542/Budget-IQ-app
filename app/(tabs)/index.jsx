@@ -42,11 +42,11 @@ const Index = () => {
   useEffect(() => {
     if (messageData?.data) {
       setMotivationalMessage(
-        messageData.data.motivationalMessage?.message || ""
+        messageData?.data?.motivationalMessage?.message || ""
       );
-      setTotalIncome(messageData.data.totalIncomeAndExpenses?.totalIncome || 0);
+      setTotalIncome(messageData?.data?.totalIncomeAndExpenses?.totalIncome || 0);
       setTotalExpenses(
-        messageData.data.totalIncomeAndExpenses?.totalExpenses || 0
+        messageData?.data?.totalIncomeAndExpenses?.totalExpenses || 0
       );
     }
   }, [messageData]);

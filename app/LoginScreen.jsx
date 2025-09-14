@@ -10,10 +10,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useDispatch } from "react-redux";
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
+import { setToken } from "../redux/slices/authSlice";
 import { getSubscriptionViewTime, saveAuthData } from "../utils/secureStore";
 const LoginScreen = () => {
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
   const [isEmailValid, setIsEmailValid] = useState(true);
@@ -41,10 +44,12 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await signIn(formData).unwrap();
-
+      console.log(response?.data?.accessToken, formData?.email, 3)
       // Save token and email
       if (response?.data?.accessToken && formData?.email) {
-        await saveAuthData(response.data.accessToken, formData.email);
+        await saveAuthData(response?.data?.accessToken, formData?.email);
+        dispatch(setToken(response?.data?.accessToken)); // Set the token in Redux state
+        console.log("from login", response?.data?.accessToken)
       }
 
       // ✅ Check if the user has already visited Subscriptions

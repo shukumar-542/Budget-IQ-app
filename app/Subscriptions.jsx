@@ -17,19 +17,19 @@ import {
   loadLastViewTime,
   saveCurrentViewTime,
 } from "../redux/slices/SubscriptionSlice";
-
 const Subscriptions = () => {
   const { data: allPlans } = useGetAllMemberShipPlanQuery();
-  const [getMembership] = useGetMembershipMutation();
+  const [getMembership, { isLoading }] = useGetMembershipMutation();
   const dispatch = useDispatch();
   const [textWidths, setTextWidths] = useState({});
   const [checkoutUrl, setCheckoutUrl] = useState(null);
-
   useEffect(() => {
+    // Load previous timestamp when component mounts
     dispatch(loadLastViewTime());
+
+    // Save current time automatically when screen is viewed
     dispatch(saveCurrentViewTime());
   }, [dispatch]);
-
   const plans = [
     {
       name: "Free-Trial",
@@ -50,45 +50,71 @@ const Subscriptions = () => {
       buttonText: "Purchase",
     },
   ];
-
   const handleLayout = (name, width) => {
     setTextWidths((prev) => ({ ...prev, [name]: width }));
   };
 
   const handleSubscription = async (plan) => {
-    if (plan.name == "Monthly") {
+    if (plan.name.toLowerCase() === "monthly") {
       setCheckoutUrl(
         "https://checkout.stripe.com/c/pay/cs_test_a1s7EKTiFF9BY31hgePQoPOakjRxQQOa7NMEai3flqvz17aNLob8XJEhDZ#fidkdWxOYHwnPyd1blpxYHZxWjA0TWA8T1VOSE1UVWZ3fUFdUHdVf31nZFNXfWhxUFZcbTdONGxiST1XNGFKXDE0UTFfZkRDMFNJMURqY0x9MUtLNk4zSkZsckgzNnBfdUAyPX0yfExvNV1SNTVWRkp9SXBwXCcpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl"
       );
-    } else {
+    }
+    else {
       try {
-        if (!allPlans?.result) {
-          alert("Plans are not loaded yet. Please try again.");
-          return;
-        }
+        // 1️⃣ Check if plans are loaded
+        // if (!allPlans?.result || allPlans.result.length === 0) {
+        //   alert("No membership plans available. Please try again later.");
+        //   return;
+        // }
 
-        const matchedPlan = allPlans.result.find(
-          (p) => p.name.toLowerCase() === plan.name.toLowerCase()
-        );
+        // // 2️⃣ Find the plan from API that matches clicked plan name
+        // const matchedPlan = allPlans.result.find(
+        //   (p) => p.name.toLowerCase() === plan.name.toLowerCase()
+        // );
 
-        if (!matchedPlan) {
-          alert("Selected plan not found.");
-          return;
-        }
+        // if (!matchedPlan) {
+        //   alert(`The plan "${plan.name}" was not found. Please try again.`);
+        //   return;
+        // }
 
-        const selectedPlanId = matchedPlan._id;
+        // const selectedPlanId = matchedPlan._id;
 
-        // Get Stripe Checkout URL from backend
-        const response = await getMembership(selectedPlanId).unwrap();
-        if (response) {
-          router.push("/(tabs)");
-        }
+
+        // // 3️⃣ Call API to get the selected membership
+        // const response = await getMembership(selectedPlanId).unwrap();
+
+
+        // // 4️⃣ Check if response is valid
+        // if (!response || !response.result) {
+        //   alert("Failed to fetch membership details. Please try again.");
+        //   return;
+        // }
+
+        //    5️⃣ Successful subscription
+        router.push("/(tabs)");
+        alert(`Subscribed to the ${plan.name} plan successfully!`);
       } catch (err) {
-        console.log("Subscription error:", err);
-        alert("Something went wrong. Please try again.");
+        // 6️⃣ Handle known RTK Query errors
+        if (err?.status === 404) {
+          alert("Membership plan not found (404).");
+        } else if (err?.status === 401) {
+          alert("Unauthorized access. Please login again.");
+        } else if (err?.status === 500) {
+          alert("Server error. Please try again later.");
+        } else if (err?.name === "TypeError") {
+          alert("Network error. Please check your internet connection.");
+        } else if (err?.status === 429) {
+          alert("Too many requests. Please wait and try again.");
+        } else if (err?.status === 403) {
+          alert("Payment required. Please check your payment details.");
+        } else {
+          alert("An unexpected error occurred. Please try again.");
+        }
       }
     }
   };
+
 
   // ✅ Render WebView if checkout URL exists
   if (checkoutUrl) {
@@ -147,44 +173,50 @@ const Subscriptions = () => {
       </View>
     );
   }
-
-  // ✅ Render subscription plans
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Choose a Subscription Plan</Text>
+      <Text style={styles.title}></Text>
       <View style={styles.planContainer}>
-        {plans.map((plan) => (
-          <View key={plan.name} style={styles.planCard}>
-            <View style={styles.nameSection}>
-              <Text
-                style={styles.planName}
-                onLayout={(event) =>
-                  handleLayout(plan.name, event.nativeEvent.layout.width)
-                }
-              >
-                {plan.name}
+        {plans?.map((plan) => {
+          return (
+            <View key={plan?.name} style={styles.planCard}>
+              <View style={styles.nameSection}>
+                <Text
+                  style={styles.planName}
+                  onLayout={(event) =>
+                    handleLayout(plan.name, event.nativeEvent.layout.width)
+                  }
+                >
+                  {plan.name}
+                </Text>
+                <View
+                  style={[
+                    styles.divider,
+                    { width: textWidths[plan.name] || 0 },
+                  ]}
+                />
+              </View>
+              <Text style={styles.planDetails}>
+                <Text style={styles.planDuration}>{plan?.duration}</Text>
+                {plan?.price && plan.price.toLowerCase() !== "free" && (
+                  <>
+                    {" "}
+                    <Text style={styles.planPrice}>{plan.price}</Text>
+                  </>
+                )}
               </Text>
-              <View
-                style={[styles.divider, { width: textWidths[plan.name] || 0 }]}
-              />
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  handleSubscription(plan);
+                }}
+              >
+                <Text style={styles.buttonText}>{plan?.buttonText}</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.planDetails}>
-              <Text style={styles.planDuration}>{plan.duration}</Text>
-              {plan.price.toLowerCase() !== "free" && (
-                <>
-                  {" "}
-                  <Text style={styles.planPrice}>{plan.price}</Text>
-                </>
-              )}
-            </Text>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleSubscription(plan)}
-            >
-              <Text style={styles.buttonText}>{plan.buttonText}</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+          );
+        })}
       </View>
     </ScrollView>
   );
@@ -193,14 +225,20 @@ const Subscriptions = () => {
 export default Subscriptions;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f7f7f7", padding: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: "#f7f7f7",
+    padding: 20,
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 20,
   },
-  planContainer: { gap: 16 },
+  planContainer: {
+    gap: 16,
+  },
   planCard: {
     backgroundColor: "white",
     borderRadius: 12,
@@ -210,17 +248,29 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowRadius: 4,
     elevation: 2,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
   },
-  planName: { fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8 },
+  planName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
   planDuration: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#1B9E6C",
     marginBottom: 4,
   },
-  planPrice: { fontSize: 14, color: "#1B9E6C", marginBottom: 16 },
+  planPrice: {
+    fontSize: 14,
+    color: "#1B9E6C",
+    marginBottom: 16,
+  },
   button: {
     backgroundColor: "#1B9E6C",
     paddingVertical: 15,
@@ -230,8 +280,15 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  nameSection: { alignItems: "center", marginBottom: 12 },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  nameSection: {
+    alignItems: "center",
+    marginBottom: 12,
+  },
   divider: {
     height: 2,
     width: "100%",
@@ -239,5 +296,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     borderRadius: 2,
   },
-  planDetails: { padding: 12 },
+  planDetails: {
+    padding: 12,
+  },
 });

@@ -1,17 +1,14 @@
 import { AntDesign, Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors } from "../../Constants/Colors";
-import { router } from "expo-router";
-import { useDeleteUserMutation } from "../../redux/services/api";
-import * as SecureStore from "expo-secure-store";
 import { useDispatch } from "react-redux";
+import { Colors } from "../../Constants/Colors";
+import { useDeleteUserMutation, useUserGetMeQuery } from "../../redux/services/api";
 import { clearToken } from "../../redux/slices/authSlice"; // adjust the path
 import { deleteAuthData } from "../../utils/secureStore";
-import { useUserGetMeQuery } from "../../redux/services/api";
 const SettingScreen = () => {
   const dispatch = useDispatch();
 
@@ -19,21 +16,22 @@ const SettingScreen = () => {
   const [userImage, setUserImage] = useState(null);
   const [userFullName, setUserFullName] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
-  const { data, refetch  } = useUserGetMeQuery();
+  const { data, refetch } = useUserGetMeQuery();
   const [activeItem, setActiveItem] = useState(null);
   const navigation = useNavigation();
-useEffect(() => {
-  if (data?.data) {
-    setUserImage(data?.data?.profileImageUrl);
-    setUserFullName(data?.data?.fullName);
-    setUserEmail(data?.data?.email);
-  }
-}, [data]);
+  useEffect(() => {
+    if (data?.data) {
+      setUserImage(data?.data?.profileImageUrl);
+      setUserFullName(data?.data?.fullName);
+      setUserEmail(data?.data?.email);
+    }
+  }, [data]);
 
 
   const handleLogOut = async () => {
     try {
       await deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
+      dispatch(clearToken());
       router.replace("/LoginScreen");
     } catch (e) {
     }
@@ -100,7 +98,7 @@ useEffect(() => {
                 dispatch(clearToken());
                 router.replace("/LoginScreen");
               } catch (e) {
-      
+
               }
             },
           },
