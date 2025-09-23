@@ -59,37 +59,34 @@ const Subscriptions = () => {
       setCheckoutUrl(
         "https://checkout.stripe.com/c/pay/cs_test_a1s7EKTiFF9BY31hgePQoPOakjRxQQOa7NMEai3flqvz17aNLob8XJEhDZ#fidkdWxOYHwnPyd1blpxYHZxWjA0TWA8T1VOSE1UVWZ3fUFdUHdVf31nZFNXfWhxUFZcbTdONGxiST1XNGFKXDE0UTFfZkRDMFNJMURqY0x9MUtLNk4zSkZsckgzNnBfdUAyPX0yfExvNV1SNTVWRkp9SXBwXCcpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl"
       );
-    }
-    else {
+    } else {
       try {
         // 1️⃣ Check if plans are loaded
-        // if (!allPlans?.result || allPlans.result.length === 0) {
-        //   alert("No membership plans available. Please try again later.");
-        //   return;
-        // }
+        if (!allPlans?.result || allPlans.result.length === 0) {
+          alert("No membership plans available. Please try again later.");
+          return;
+        }
 
-        // // 2️⃣ Find the plan from API that matches clicked plan name
-        // const matchedPlan = allPlans.result.find(
-        //   (p) => p.name.toLowerCase() === plan.name.toLowerCase()
-        // );
+        // 2️⃣ Find the plan from API that matches clicked plan name
+        const matchedPlan = allPlans.result.find(
+          (p) => p.name.toLowerCase() === plan.name.toLowerCase()
+        );
 
-        // if (!matchedPlan) {
-        //   alert(`The plan "${plan.name}" was not found. Please try again.`);
-        //   return;
-        // }
+        if (!matchedPlan) {
+          alert(`The plan "${plan.name}" was not found. Please try again.`);
+          return;
+        }
 
-        // const selectedPlanId = matchedPlan._id;
+        const selectedPlanId = matchedPlan._id;
 
+        // 3️⃣ Call API to get the selected membership
+        const response = await getMembership(selectedPlanId).unwrap();
 
-        // // 3️⃣ Call API to get the selected membership
-        // const response = await getMembership(selectedPlanId).unwrap();
-
-
-        // // 4️⃣ Check if response is valid
-        // if (!response || !response.result) {
-        //   alert("Failed to fetch membership details. Please try again.");
-        //   return;
-        // }
+        // 4️⃣ Check if response is valid
+        if (!response || !response.result) {
+          alert("Failed to fetch membership details. Please try again.");
+          return;
+        }
 
         //    5️⃣ Successful subscription
         router.push("/(tabs)");
@@ -114,7 +111,6 @@ const Subscriptions = () => {
       }
     }
   };
-
 
   // ✅ Render WebView if checkout URL exists
   if (checkoutUrl) {
