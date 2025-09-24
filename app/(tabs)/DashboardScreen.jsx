@@ -15,6 +15,8 @@ import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 
 const DashboardScreen = () => {
+
+
   // --- STATE ---
   const [type, setType] = useState("expenses");
   const [expense, setExpense] = useState("expenses");
@@ -59,8 +61,7 @@ const DashboardScreen = () => {
           if (refetchCategories) {
             refetchCategories();
           }
-        } catch (error) {
-        }
+        } catch (error) {}
       };
 
       fetchSavedCategories();

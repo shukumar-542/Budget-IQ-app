@@ -1,6 +1,7 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,28 +9,16 @@ import {
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import { useDispatch } from "react-redux";
 import {
   useGetAllMemberShipPlanQuery,
   useGetMembershipMutation,
 } from "../redux/services/api";
-import {
-  loadLastViewTime,
-  saveCurrentViewTime,
-} from "../redux/slices/SubscriptionSlice";
 const Subscriptions = () => {
   const { data: allPlans } = useGetAllMemberShipPlanQuery();
   const [getMembership, { isLoading }] = useGetMembershipMutation();
-  const dispatch = useDispatch();
   const [textWidths, setTextWidths] = useState({});
   const [checkoutUrl, setCheckoutUrl] = useState(null);
-  useEffect(() => {
-    // Load previous timestamp when component mounts
-    dispatch(loadLastViewTime());
 
-    // Save current time automatically when screen is viewed
-    dispatch(saveCurrentViewTime());
-  }, [dispatch]);
   const plans = [
     {
       name: "Free-Trial",
@@ -55,11 +44,8 @@ const Subscriptions = () => {
   };
 
   const handleSubscription = async (plan) => {
-    if (plan.name.toLowerCase() === "monthly") {
-      setCheckoutUrl(
-        "https://checkout.stripe.com/c/pay/cs_test_a1s7EKTiFF9BY31hgePQoPOakjRxQQOa7NMEai3flqvz17aNLob8XJEhDZ#fidkdWxOYHwnPyd1blpxYHZxWjA0TWA8T1VOSE1UVWZ3fUFdUHdVf31nZFNXfWhxUFZcbTdONGxiST1XNGFKXDE0UTFfZkRDMFNJMURqY0x9MUtLNk4zSkZsckgzNnBfdUAyPX0yfExvNV1SNTVWRkp9SXBwXCcpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl"
-      );
-    } else {
+    console.log(plan);
+    if (plan.name.toLowerCase() === "free-trial") {
       try {
         // 1️⃣ Check if plans are loaded
         if (!allPlans?.result || allPlans.result.length === 0) {
@@ -92,22 +78,43 @@ const Subscriptions = () => {
         router.push("/(tabs)");
         alert(`Subscribed to the ${plan.name} plan successfully!`);
       } catch (err) {
-        // 6️⃣ Handle known RTK Query errors
-        if (err?.status === 404) {
-          alert("Membership plan not found (404).");
-        } else if (err?.status === 401) {
-          alert("Unauthorized access. Please login again.");
-        } else if (err?.status === 500) {
-          alert("Server error. Please try again later.");
-        } else if (err?.name === "TypeError") {
-          alert("Network error. Please check your internet connection.");
-        } else if (err?.status === 429) {
-          alert("Too many requests. Please wait and try again.");
-        } else if (err?.status === 403) {
-          alert("Payment required. Please check your payment details.");
-        } else {
-          alert("An unexpected error occurred. Please try again.");
+        Alert.alert(err);
+      }
+    } else {
+      try {
+        // 1️⃣ Check if plans are loaded
+        if (!allPlans?.result || allPlans.result.length === 0) {
+          alert("No membership plans available. Please try again later.");
+          return;
         }
+
+        // 2️⃣ Find the plan from API that matches clicked plan name
+        const matchedPlan = allPlans.result.find(
+          (p) => p.name.toLowerCase() === plan.name.toLowerCase()
+        );
+
+        if (!matchedPlan) {
+          alert(`The plan "${plan.name}" was not found. Please try again.`);
+          return;
+        }
+
+        const selectedPlanId = matchedPlan._id;
+
+        // 3️⃣ Call API to get the selected membership
+        const response = await getMembership(selectedPlanId).unwrap();
+        const url = response.result?.url;
+        setCheckoutUrl(url);
+        // 4️⃣ Check if response is valid
+        if (!response || !response.result) {
+          alert("Failed to fetch membership details. Please try again.");
+          return;
+        }
+
+        //    5️⃣ Successful subscription
+        router.push("/(tabs)");
+        alert(`Subscribed to the ${plan.name} plan successfully!`);
+      } catch (err) {
+        Alert.alert(err);
       }
     }
   };

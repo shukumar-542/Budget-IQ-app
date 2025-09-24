@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { use, useEffect, useRef, useState } from "react";
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -68,7 +69,6 @@ const AccountVerification = () => {
       const response = await resentOtp({ email }).unwrap();
       Alert.alert("Success", "A new OTP has been sent to your email.");
     } catch (e) {
-
       const statusCode = e?.status;
       const message = e?.data?.message || "Unable to resend OTP.";
 
@@ -106,19 +106,17 @@ const AccountVerification = () => {
 
     try {
       // ✅ 2. Verify OTP
+      console.log(email, otp);
       const verifyResponse = await oTP({
         email: email,
         tokenCode: otp.join(""),
       }).unwrap();
-
-
       // ✅ 3. Proceed to Sign-in
       try {
         const signInResponse = await signIn({
           email: email,
           password: password,
         }).unwrap();
-
 
         const token = signInResponse?.data?.accessToken;
         if (token) {
@@ -128,7 +126,6 @@ const AccountVerification = () => {
           Alert.alert("Sign-in Error", "Token is missing. Please try again.");
         }
       } catch (signInError) {
-
         const statusCode = signInError?.status;
         const message =
           signInError?.data?.message || "Sign-in failed. Please try again.";
@@ -142,23 +139,18 @@ const AccountVerification = () => {
         }
       }
     } catch (err) {
-
-      const statusCode = err?.status;
+      const statusCode = err?.data?.err?.statusCode || err?.status || 500;
       const message = err?.data?.message || "Failed to verify OTP.";
 
-      if (statusCode === 400) {
-        Alert.alert("Invalid OTP", "Please check the code and try again.");
-      } else if (statusCode === 401) {
-        Alert.alert("OTP Expired", "Please request a new OTP.");
-      } else if (statusCode === 404) {
-        Alert.alert("User Not Found", "This email is not registered.");
-      } else if (statusCode === 500) {
-        Alert.alert("Server Error", "Something went wrong. Please try again.");
-      } else if (err.name === "TypeError") {
-        Alert.alert("Network Error", "Please check your internet connection.");
-      } else {
-        Alert.alert("Error", message);
-      }
+      console.log("Error statusCode:", statusCode);
+      Alert.alert(
+        "❌ Error", // Add emoji or custom title
+        message,
+        [
+          { text: "Cancel", style: "cancel" },
+        ],
+        { cancelable: true }
+      );
     }
   };
 

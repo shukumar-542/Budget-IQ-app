@@ -48,19 +48,11 @@ const LoginScreen = () => {
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response?.data?.accessToken, formData?.email);
         dispatch(setToken(response?.data?.accessToken)); // Set the token in Redux state
-        console.log("from login", response?.data?.accessToken)
+        console.log("from login", response?.data?.accessToken);
       }
 
-      // ✅ Check if the user has already visited Subscriptions
-      const subscriptionTimestamp = await getSubscriptionViewTime();
-
-      if (!subscriptionTimestamp) {
-        // First time → go to Subscriptions
-        router.replace("/Subscriptions");
-      } else {
-        // Already visited → go to main/home page
-        router.replace("/(tabs)");
-      }
+      // Already visited → go to main/home page
+      router.replace("/(tabs)");
     } catch (error) {
       const statusCode = error?.status || error?.originalStatus;
       const message = error?.data?.message || "Something went wrong";

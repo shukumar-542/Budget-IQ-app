@@ -40,14 +40,23 @@ const Index = () => {
     useGetMessageWithTotalTransactionQuery();
 
   useEffect(() => {
+    console.log(
+      "messageData updated:",
+      messageData?.data?.motivationalMessage?.message
+    );
+
     if (messageData?.data) {
       setMotivationalMessage(
         messageData?.data?.motivationalMessage?.message || ""
       );
-      setTotalIncome(messageData?.data?.totalIncomeAndExpenses?.totalIncome || 0);
+      setTotalIncome(
+        messageData?.data?.totalIncomeAndExpenses?.totalIncome || 0
+      );
       setTotalExpenses(
         messageData?.data?.totalIncomeAndExpenses?.totalExpenses || 0
       );
+    } else {
+      router.replace("Subscriptions");
     }
   }, [messageData]);
 
