@@ -6,20 +6,15 @@ import { useDispatch } from "react-redux";
 import { loadTokenFromStorage } from "../redux/slices/authSlice";
 import { getToken } from "../utils/secureStore";
 import { useState } from "react";
-import {
-  loadLastViewTime,
-  saveCurrentViewTime,
-} from "../redux/slices/SubscriptionSlice";
-import { useSelector } from "react-redux";
+import { selectApiSuccess } from "../redux/slices/messageSlice";
 
+import { useSelector } from "react-redux";
 const SecondScreen = () => {
+  const apiSuccess = useSelector(selectApiSuccess);
   const router = useRouter();
   const dispatch = useDispatch();
   const [token, setToken] = useState(null);
-  const lastViewTime = useSelector((state) => state.subscription.lastViewTime);
   useEffect(() => {
-    // Load last view time immediately
-    dispatch(loadLastViewTime());
     // Load token
     const loadToken = async () => {
       const storedToken = await getToken();
@@ -32,8 +27,6 @@ const SecondScreen = () => {
   }, [dispatch]);
 
   const handleNext = () => {
-    const currentTime = new Date().getTime();
-
     if (token) {
       router.push("/(tabs)");
     } else {

@@ -18,13 +18,14 @@ import TotalSpentDonutChart from "../../components/Charts/TotalSpentDonutChart";
 import {
   useGetMessageWithTotalTransactionQuery,
   useIqBuddyMutation,
-  useUserGetMeQuery,
 } from "../../redux/services/api";
+import { useSelector } from "react-redux";
 
+import { selectApiSuccess } from "../../redux/slices/messageSlice";
 const Index = () => {
   const router = useRouter();
   const scrollViewRef = useRef();
-
+  const apiSuccess = useSelector(selectApiSuccess);
   const [modalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -35,17 +36,21 @@ const Index = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
 
   const [iqBuddy] = useIqBuddyMutation();
-  const { data: userData } = useUserGetMeQuery();
   const { data: messageData, refetch } =
     useGetMessageWithTotalTransactionQuery();
 
   useEffect(() => {
-    console.log(
-      "messageData updated:",
-      messageData?.data?.motivationalMessage?.message
-    );
+    console.log("apiSuccess:", apiSuccess);
 
-    if (messageData?.data) {
+    if (apiSuccess === false || apiSuccess === null) {
+      // if success is false OR still null, go to Subscriptions
+      router.replace("Subscriptions");
+    } else {
+      console.log(
+        "messageData updated:",
+        messageData?.data?.motivationalMessage?.message
+      );
+
       setMotivationalMessage(
         messageData?.data?.motivationalMessage?.message || ""
       );
@@ -55,10 +60,8 @@ const Index = () => {
       setTotalExpenses(
         messageData?.data?.totalIncomeAndExpenses?.totalExpenses || 0
       );
-    } else {
-      router.replace("Subscriptions");
     }
-  }, [messageData]);
+  }, [apiSuccess, messageData]);
 
   useFocusEffect(
     useCallback(() => {

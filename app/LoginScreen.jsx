@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
 import { setToken } from "../redux/slices/authSlice";
-import { getSubscriptionViewTime, saveAuthData } from "../utils/secureStore";
+import {  saveAuthData } from "../utils/secureStore";
 const LoginScreen = () => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);

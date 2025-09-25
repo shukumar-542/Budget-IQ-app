@@ -6,9 +6,15 @@ import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { Colors } from "../../Constants/Colors";
-import { useDeleteUserMutation, useUserGetMeQuery } from "../../redux/services/api";
+import {
+  useDeleteUserMutation,
+  useUserGetMeQuery,
+} from "../../redux/services/api";
 import { clearToken } from "../../redux/slices/authSlice"; // adjust the path
 import { deleteAuthData } from "../../utils/secureStore";
+import {
+  removeApiSuccess,
+} from "../../redux/slices/messageSlice";
 const SettingScreen = () => {
   const dispatch = useDispatch();
 
@@ -27,14 +33,13 @@ const SettingScreen = () => {
     }
   }, [data]);
 
-
   const handleLogOut = async () => {
     try {
       await deleteAuthData(); // this calls SecureStore.deleteItemAsync internally
       dispatch(clearToken());
+      dispatch(removeApiSuccess());
       router.replace("/LoginScreen");
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
   const menuItems = [
@@ -96,10 +101,9 @@ const SettingScreen = () => {
               try {
                 const response = await deleteUser({}).unwrap();
                 dispatch(clearToken());
-                router.replace("/LoginScreen");
-              } catch (e) {
-
-              }
+                dispatch(removeApiSuccess());
+                router.push("/SignUpScreen");
+              } catch (e) {}
             },
           },
         ],

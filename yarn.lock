@@ -1325,7 +1325,7 @@
   resolved "https://registry.npmjs.org/@expo/config-types/-/config-types-53.0.5.tgz"
   integrity sha512-kqZ0w44E+HEGBjy+Lpyn0BVL5UANg/tmNixxaRMLS6nf37YsDrLk2VMAmeKMMk5CKG0NmOdVv3ngeUjRQMsy9g==
 
-"@expo/config@~11.0.10", "@expo/config@~11.0.12", "@expo/config@~11.0.9":
+"@expo/config@~11.0.10", "@expo/config@~11.0.12", "@expo/config@~11.0.13", "@expo/config@~11.0.9":
   version "11.0.13"
   resolved "https://registry.npmjs.org/@expo/config/-/config-11.0.13.tgz"
   integrity sha512-TnGb4u/zUZetpav9sx/3fWK71oCPaOjZHoVED9NaEncktAd0Eonhq5NUghiJmkUGt3gGSjRAEBXiBbbY9/B1LA==
@@ -1382,14 +1382,14 @@
     resolve-from "^5.0.0"
     semver "^7.6.0"
 
-"@expo/image-utils@^0.7.4":
-  version "0.7.4"
-  resolved "https://registry.npmjs.org/@expo/image-utils/-/image-utils-0.7.4.tgz"
-  integrity sha512-LcZ82EJy/t/a1avwIboeZbO6hlw8CvsIRh2k6SWPcAOvW0RqynyKFzUJsvnjWlhUzfBEn4oI7y/Pu5Xkw3KkkA==
+"@expo/image-utils@^0.7.4", "@expo/image-utils@^0.7.6":
+  version "0.7.6"
+  resolved "https://registry.npmjs.org/@expo/image-utils/-/image-utils-0.7.6.tgz"
+  integrity sha512-GKnMqC79+mo/1AFrmAcUcGfbsXXTRqOMNS1umebuevl3aaw+ztsYEFEiuNhHZW7PQ3Xs3URNT513ZxKhznDscw==
   dependencies:
     "@expo/spawn-async" "^1.7.2"
     chalk "^4.0.0"
-    getenv "^1.0.0"
+    getenv "^2.0.0"
     jimp-compact "0.16.1"
     parse-png "^2.1.0"
     resolve-from "^5.0.0"
@@ -1471,17 +1471,17 @@
     base64-js "^1.2.3"
     xmlbuilder "^15.1.1"
 
-"@expo/prebuild-config@^9.0.6", "@expo/prebuild-config@^9.0.7":
-  version "9.0.7"
-  resolved "https://registry.npmjs.org/@expo/prebuild-config/-/prebuild-config-9.0.7.tgz"
-  integrity sha512-1w5MBp6NdF51gPGp0HsCZt0QC82hZWo37wI9HfxhdQF/sN/92Mh4t30vaY7gjHe71T5QNyab00oxZH/wP0MDgQ==
+"@expo/prebuild-config@^9.0.10", "@expo/prebuild-config@^9.0.7":
+  version "9.0.12"
+  resolved "https://registry.npmjs.org/@expo/prebuild-config/-/prebuild-config-9.0.12.tgz"
+  integrity sha512-AKH5Scf+gEMgGxZZaimrJI2wlUJlRoqzDNn7/rkhZa5gUTnO4l6slKak2YdaH+nXlOWCNfAQWa76NnpQIfmv6Q==
   dependencies:
-    "@expo/config" "~11.0.10"
-    "@expo/config-plugins" "~10.0.3"
-    "@expo/config-types" "^53.0.4"
-    "@expo/image-utils" "^0.7.4"
-    "@expo/json-file" "^9.1.4"
-    "@react-native/normalize-colors" "0.79.4"
+    "@expo/config" "~11.0.13"
+    "@expo/config-plugins" "~10.1.2"
+    "@expo/config-types" "^53.0.5"
+    "@expo/image-utils" "^0.7.6"
+    "@expo/json-file" "^9.1.5"
+    "@react-native/normalize-colors" "0.79.6"
     debug "^4.3.1"
     resolve-from "^5.0.0"
     semver "^7.6.0"
@@ -2277,6 +2277,11 @@
   version "0.79.4"
   resolved "https://registry.npmjs.org/@react-native/normalize-colors/-/normalize-colors-0.79.4.tgz"
   integrity sha512-247/8pHghbYY2wKjJpUsY6ZNbWcdUa5j5517LZMn6pXrbSSgWuj3JA4OYibNnocCHBaVrt+3R8XC3VEJqLlHFg==
+
+"@react-native/normalize-colors@0.79.6":
+  version "0.79.6"
+  resolved "https://registry.npmjs.org/@react-native/normalize-colors/-/normalize-colors-0.79.6.tgz"
+  integrity sha512-0v2/ruY7eeKun4BeKu+GcfO+SHBdl0LJn4ZFzTzjHdWES0Cn+ONqKljYaIv8p9MV2Hx/kcdEvbY4lWI34jC/mQ==
 
 "@react-native/virtualized-lists@^0.72.4":
   version "0.72.8"
@@ -5113,12 +5118,12 @@ expo-secure-store@~14.2.4:
   resolved "https://registry.npmjs.org/expo-secure-store/-/expo-secure-store-14.2.4.tgz"
   integrity sha512-ePaz4fnTitJJZjAiybaVYGfLWWyaEtepZC+vs9ZBMhQMfG5HUotIcVsDaSo3FnwpHmgwsLVPY2qFeryI6AtULw==
 
-expo-splash-screen@~0.30.9:
-  version "0.30.9"
-  resolved "https://registry.npmjs.org/expo-splash-screen/-/expo-splash-screen-0.30.9.tgz"
-  integrity sha512-curHUaZxUTZ2dWvz32ao3xPv5mJr1LBqn5V8xm/IULAehB9RGCn8iKiROMN1PYebSG+56vPMuJmBm9P+ayvJpA==
+expo-splash-screen@~0.30.10:
+  version "0.30.10"
+  resolved "https://registry.npmjs.org/expo-splash-screen/-/expo-splash-screen-0.30.10.tgz"
+  integrity sha512-Tt9va/sLENQDQYeOQ6cdLdGvTZ644KR3YG9aRlnpcs2/beYjOX1LHT510EGzVN9ljUTg+1ebEo5GGt2arYtPjw==
   dependencies:
-    "@expo/prebuild-config" "^9.0.6"
+    "@expo/prebuild-config" "^9.0.10"
 
 expo-status-bar@~2.2.3:
   version "2.2.3"
