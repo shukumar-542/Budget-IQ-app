@@ -13,15 +13,17 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
 import logo from "../../assets/images/iq.png";
 import TotalSpentDonutChart from "../../components/Charts/TotalSpentDonutChart";
 import {
+  api,
   useGetMessageWithTotalTransactionQuery,
   useIqBuddyMutation,
 } from "../../redux/services/api";
-import { useSelector } from "react-redux";
 
 import { selectApiSuccess } from "../../redux/slices/messageSlice";
+
 const Index = () => {
   const router = useRouter();
   const scrollViewRef = useRef();
@@ -38,14 +40,11 @@ const Index = () => {
   const [iqBuddy] = useIqBuddyMutation();
   const { data: messageData, refetch } =
     useGetMessageWithTotalTransactionQuery();
-
   useEffect(() => {
-    console.log("apiSuccess:", apiSuccess);
-
-    if (apiSuccess === false || apiSuccess === null) {
-      // if success is false OR still null, go to Subscriptions
-      router.replace("Subscriptions");
-    } else {
+    console.log("api", apiSuccess);
+    console.log(messageData);
+    // Wait for apiSuccess to be explicitly true or false
+    if (apiSuccess === true && messageData.success === true) {
       console.log(
         "messageData updated:",
         messageData?.data?.motivationalMessage?.message
@@ -60,6 +59,12 @@ const Index = () => {
       setTotalExpenses(
         messageData?.data?.totalIncomeAndExpenses?.totalExpenses || 0
       );
+    } else if (apiSuccess === false || apiSuccess === null) {
+      // Only route when apiSuccess is confirmed false
+      router.replace("Subscriptions");
+    } else {
+      console.log(apiSuccess)
+      router.replace("LoginScreen");
     }
   }, [apiSuccess, messageData]);
 

@@ -239,5 +239,6 @@ export const {
   useGetPrivacyPolicyQuery,
   useGetTermsAndConditionsQuery,
   useGetMessageWithTotalTransactionQuery,
+  useLazyGetMessageWithTotalTransactionQuery,
   useGetUpdateTransactionMutation,
 } = api;

@@ -16,13 +16,16 @@ import {
   useGetMembershipMutation,
 } from "../redux/services/api";
 import { saveApiSuccess } from "../redux/slices/messageSlice";
-
+import { useLazyGetMessageWithTotalTransactionQuery } from "../redux/services/api";
 const Subscriptions = () => {
   const dispatch = useDispatch();
   const { data: allPlans, isLoading: plansLoading } =
     useGetAllMemberShipPlanQuery();
   const [getMembership, { isLoading: membershipLoading }] =
     useGetMembershipMutation();
+
+  const [triggerGetMessages, { data }] =
+    useLazyGetMessageWithTotalTransactionQuery();
 
   const [textWidths, setTextWidths] = useState({});
   const [checkoutUrl, setCheckoutUrl] = useState(null);
@@ -97,15 +100,9 @@ const Subscriptions = () => {
         return;
       }
 
+      // ✅ Run your extra async function before routing
+      await runAnotherAsyncFunction();
       // 5️⃣ Save API response to Redux store
-      dispatch(
-        saveApiSuccess({
-          planName: plan.name,
-          planId: selectedPlanId,
-          response: response.result,
-          timestamp: new Date().toISOString(),
-        })
-      );
 
       // 6️⃣ Handle different plan types
       if (plan.name.toLowerCase() === "free-trial") {
@@ -147,6 +144,17 @@ const Subscriptions = () => {
       setTimeout(() => {
         setProcessingPlan(null);
       }, 1000);
+    }
+  };
+  const runAnotherAsyncFunction = async () => {
+    try {
+      const result = await triggerGetMessages().unwrap();
+      console.log("Messages after login:", result);
+
+      // ✅ Save only the `success` value to Redux
+      dispatch(saveApiSuccess(result.success));
+    } catch (error) {
+      console.error("Error fetching messages:", error);
     }
   };
 

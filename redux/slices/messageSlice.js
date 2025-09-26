@@ -13,7 +13,7 @@ const messageSlice = createSlice({
       state.success = action.payload;
     },
     removeApiSuccess(state) {
-      state.success = null; // reset to initial state
+      state.success = 1; // reset to initial state
     },
   },
 });

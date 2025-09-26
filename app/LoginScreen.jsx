@@ -14,8 +14,12 @@ import { useDispatch } from "react-redux";
 import { Colors } from "../Constants/Colors";
 import { useSignInMutation } from "../redux/services/api";
 import { setToken } from "../redux/slices/authSlice";
-import {  saveAuthData } from "../utils/secureStore";
+import { saveAuthData } from "../utils/secureStore";
+import { useLazyGetMessageWithTotalTransactionQuery } from "../redux/services/api";
+import { saveApiSuccess } from "../redux/slices/messageSlice";
 const LoginScreen = () => {
+  const [triggerGetMessages, { data }] =
+    useLazyGetMessageWithTotalTransactionQuery();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,12 +48,16 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await signIn(formData).unwrap();
+
       // Save token and email
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response?.data?.accessToken, formData?.email);
-        dispatch(setToken(response?.data?.accessToken)); // Set the token in Redux state
+        dispatch(setToken(response?.data?.accessToken));
         console.log("from login", response?.data?.accessToken);
       }
+
+      // ✅ Run your extra async function before routing
+      await runAnotherAsyncFunction();
 
       // Already visited → go to main/home page
       router.replace("/(tabs)");
@@ -64,6 +72,17 @@ const LoginScreen = () => {
       } else {
         Alert.alert("Error", message);
       }
+    }
+  };
+  const runAnotherAsyncFunction = async () => {
+    try {
+      const result = await triggerGetMessages().unwrap();
+      console.log("Messages after login:", result);
+
+      // ✅ Save only the `success` value to Redux
+      dispatch(saveApiSuccess(result.success));
+    } catch (error) {
+      console.error("Error fetching messages:", error);
     }
   };
 
