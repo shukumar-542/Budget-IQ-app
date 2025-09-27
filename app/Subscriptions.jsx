@@ -1,22 +1,23 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { useDispatch } from "react-redux";
 import {
   useGetAllMemberShipPlanQuery,
   useGetMembershipMutation,
+  useLazyGetMessageWithTotalTransactionQuery,
 } from "../redux/services/api";
 import { saveApiSuccess } from "../redux/slices/messageSlice";
-import { useLazyGetMessageWithTotalTransactionQuery } from "../redux/services/api";
+
 const Subscriptions = () => {
   const dispatch = useDispatch();
   const { data: allPlans, isLoading: plansLoading } =
@@ -61,7 +62,6 @@ const Subscriptions = () => {
     if (processingPlan) return;
 
     setProcessingPlan(plan.name);
-    console.log("Processing plan:", plan);
 
     try {
       // 1️⃣ Check if plans are loaded
@@ -130,7 +130,6 @@ const Subscriptions = () => {
         }
       }
     } catch (err) {
-      console.error("Subscription error:", err);
 
       // Handle different error types
       const errorMessage =
@@ -149,12 +148,10 @@ const Subscriptions = () => {
   const runAnotherAsyncFunction = async () => {
     try {
       const result = await triggerGetMessages().unwrap();
-      console.log("Messages after login:", result);
 
       // ✅ Save only the `success` value to Redux
       dispatch(saveApiSuccess(result.success));
     } catch (error) {
-      console.error("Error fetching messages:", error);
     }
   };
 
@@ -165,17 +162,8 @@ const Subscriptions = () => {
   };
 
   // Handle successful payment
-  const handlePaymentSuccess = (sessionId) => {
-    console.log("Payment successful! Session ID:", sessionId);
-
-    // Save payment success to Redux
-    dispatch(
-      saveApiSuccess({
-        paymentSuccess: true,
-        sessionId: sessionId,
-        timestamp: new Date().toISOString(),
-      })
-    );
+  const handlePaymentSuccess = () => {
+  
 
     setCheckoutUrl(null);
     setProcessingPlan(null);
@@ -196,7 +184,7 @@ const Subscriptions = () => {
 
   // Handle payment cancellation
   const handlePaymentCancel = () => {
-    console.log("Payment canceled");
+
     setCheckoutUrl(null);
     setProcessingPlan(null);
 
@@ -210,14 +198,6 @@ const Subscriptions = () => {
   if (checkoutUrl) {
     return (
       <View style={{ flex: 1 }}>
-        {/* Back Button */}
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBackFromWebView}
-        >
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-
         {/* WebView */}
         <WebView
           source={{ uri: checkoutUrl }}
@@ -225,24 +205,14 @@ const Subscriptions = () => {
           onNavigationStateChange={(navState) => {
             const url = navState.url;
 
-            // Intercept success URL
-            if (url.startsWith("https://your-backend.com/payment-success")) {
-              const params = new URLSearchParams(url.split("?")[1]);
-              const sessionId = params.get("session_id");
-              handlePaymentSuccess(sessionId);
+            if (url.includes("/success")) {
+              handlePaymentSuccess();
             }
-
-            // Intercept cancel URL
-            if (url.startsWith("https://your-backend.com/payment-cancel")) {
+            if (url.includes("/error")) {
               handlePaymentCancel();
             }
           }}
           onError={(error) => {
-            console.error("WebView error:", error);
-            Alert.alert(
-              "Error",
-              "Failed to load payment page. Please try again."
-            );
             handleBackFromWebView();
           }}
         />

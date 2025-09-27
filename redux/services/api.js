@@ -215,6 +215,13 @@ export const api = createApi({
         body: data, // data contains { amount, transactionId }
       }),
     }),
+    getReviewTheApp: builder.mutation({
+      query: (data) => ({
+        url: "/review/create",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -241,4 +248,5 @@ export const {
   useGetMessageWithTotalTransactionQuery,
   useLazyGetMessageWithTotalTransactionQuery,
   useGetUpdateTransactionMutation,
+  useGetReviewTheAppMutation,
 } = api;

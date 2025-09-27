@@ -12,11 +12,13 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { Colors } from "../Constants/Colors";
-import { useSignInMutation } from "../redux/services/api";
+import {
+  useLazyGetMessageWithTotalTransactionQuery,
+  useSignInMutation,
+} from "../redux/services/api";
 import { setToken } from "../redux/slices/authSlice";
-import { saveAuthData } from "../utils/secureStore";
-import { useLazyGetMessageWithTotalTransactionQuery } from "../redux/services/api";
 import { saveApiSuccess } from "../redux/slices/messageSlice";
+import { saveAuthData } from "../utils/secureStore";
 const LoginScreen = () => {
   const [triggerGetMessages, { data }] =
     useLazyGetMessageWithTotalTransactionQuery();
@@ -83,6 +85,7 @@ const LoginScreen = () => {
       dispatch(saveApiSuccess(result.success));
     } catch (error) {
       console.error("Error fetching messages:", error);
+      dispatch(saveApiSuccess(null));
     }
   };
 

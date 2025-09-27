@@ -21,6 +21,28 @@ export const deleteAuthData = async () => {
   await SecureStore.deleteItemAsync("accessToken");
 };
 
+const REVIEW_KEY = "user_review_info";
+
+// Save review info
+export const setReviewInfo = async (value) => {
+  try {
+    await SecureStore.setItemAsync(REVIEW_KEY, JSON.stringify(value));
+  } catch (e) {
+    console.error("Error saving review info:", e);
+  }
+};
+
+// Get review info
+export const getReviewInfo = async () => {
+  try {
+    const result = await SecureStore.getItemAsync(REVIEW_KEY);
+    return result ? JSON.parse(result) : null;
+  } catch (e) {
+    console.error("Error reading review info:", e);
+    return null;
+  }
+};
+
 // ===================== SUBSCRIPTION =====================
 
 // Save last subscription view time

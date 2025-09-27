@@ -30,12 +30,11 @@ export default function SplashScreenComponent() {
         if (storedToken) {
           dispatch(loadTokenFromStorage(storedToken));
         } else {
-          console.log("No token found");
         }
 
         setTokenLoaded(true); // now API call will proceed
       } catch (err) {
-        console.error("Error loading token:", err);
+      
         setTokenLoaded(true);
       }
     };
@@ -49,21 +48,21 @@ export default function SplashScreenComponent() {
 
       try {
         if (isError) {
-          console.error("API error:", error);
+        
           router.replace("/InitialScreen");
           return;
         }
 
-        console.log("API Response:", data);
+   
 
         const successValue = data?.success;
-        console.log("Saving to Redux:", successValue);
+
 
         dispatch(saveApiSuccess(successValue));
 
         router.replace("/InitialScreen"); // route after splash
       } catch (err) {
-        console.error("SplashScreen error:", err);
+      
         router.replace("/InitialScreen");
       } finally {
         await SplashScreen.hideAsync();

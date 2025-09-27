@@ -41,15 +41,8 @@ const Index = () => {
   const { data: messageData, refetch } =
     useGetMessageWithTotalTransactionQuery();
   useEffect(() => {
-    console.log("api", apiSuccess);
-    console.log(messageData);
     // Wait for apiSuccess to be explicitly true or false
     if (apiSuccess === true && messageData.success === true) {
-      console.log(
-        "messageData updated:",
-        messageData?.data?.motivationalMessage?.message
-      );
-
       setMotivationalMessage(
         messageData?.data?.motivationalMessage?.message || ""
       );
@@ -63,7 +56,6 @@ const Index = () => {
       // Only route when apiSuccess is confirmed false
       router.replace("Subscriptions");
     } else {
-      console.log(apiSuccess)
       router.replace("LoginScreen");
     }
   }, [apiSuccess, messageData]);
@@ -144,6 +136,7 @@ const Index = () => {
       <Modal
         animationType="fade"
         transparent={true}
+        statusBarTranslucent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
@@ -277,6 +270,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 10,
     maxWidth: "80%",
+    marginBottom:40
   },
   userMessage: { alignSelf: "flex-end", backgroundColor: "#28a745" },
   botMessage: { alignSelf: "flex-start", backgroundColor: "#5C5C5C" },

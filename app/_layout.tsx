@@ -36,7 +36,6 @@ const AppLayout = () => {
             headerBackVisible: false, // hides the back arrow
           }}
         />
-
         <Stack.Screen
           name="AccountInformation"
           options={{
@@ -91,6 +90,10 @@ const AppLayout = () => {
             headerShadowVisible: false,
             headerTitleAlign: "center",
           }}
+        />{" "}
+        <Stack.Screen
+          name="ReviewTheApp"
+          options={{ presentation: "modal", headerShown: false }}
         />
       </Stack>
     </>

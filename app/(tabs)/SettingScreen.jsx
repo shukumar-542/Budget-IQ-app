@@ -8,17 +8,21 @@ import { useDispatch } from "react-redux";
 import { Colors } from "../../Constants/Colors";
 import {
   useDeleteUserMutation,
+  useGetReviewTheAppMutation,
   useUserGetMeQuery,
 } from "../../redux/services/api";
 import { clearToken } from "../../redux/slices/authSlice"; // adjust the path
-import { deleteAuthData } from "../../utils/secureStore";
+import { removeApiSuccess } from "../../redux/slices/messageSlice";
 import {
-  removeApiSuccess,
-} from "../../redux/slices/messageSlice";
+  deleteAuthData,
+  getReviewInfo,
+  setReviewInfo,
+} from "../../utils/secureStore";
 const SettingScreen = () => {
   const dispatch = useDispatch();
 
   const [deleteUser] = useDeleteUserMutation();
+  const [doReview] = useGetReviewTheAppMutation();
   const [userImage, setUserImage] = useState(null);
   const [userFullName, setUserFullName] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
@@ -31,6 +35,24 @@ const SettingScreen = () => {
       setUserFullName(data?.data?.fullName);
       setUserEmail(data?.data?.email);
     }
+
+    // const review = async () => {
+    //   try {
+    //     const storedReview = await getReviewInfo();
+
+    //     if (!storedReview==false) {
+    //       router.push("ReviewTheApp");
+    //       const response = await doReview().unwrap();
+    //       await setReviewInfo({ hasReviewed: true });
+    //     } else {
+    //       console.log("Review info exists:", storedReview);
+    //     }
+    //   } catch (e) {
+    //     console.error("Error handling review info:", e);
+    //   }
+    // };
+
+    // review();
   }, [data]);
 
   const handleLogOut = async () => {
