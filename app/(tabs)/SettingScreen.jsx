@@ -8,16 +8,13 @@ import { useDispatch } from "react-redux";
 import { Colors } from "../../Constants/Colors";
 import {
   useDeleteUserMutation,
-  useGetReviewTheAppMutation,
   useUserGetMeQuery,
 } from "../../redux/services/api";
 import { clearToken } from "../../redux/slices/authSlice"; // adjust the path
+import { deleteAuthData } from "../../utils/secureStore";
 import { removeApiSuccess } from "../../redux/slices/messageSlice";
-import {
-  deleteAuthData,
-  getReviewInfo,
-  setReviewInfo,
-} from "../../utils/secureStore";
+import { getReviewInfo, setReviewInfo } from "../../utils/secureStore";
+import { useGetReviewTheAppMutation } from "../../redux/services/api";
 const SettingScreen = () => {
   const dispatch = useDispatch();
 
@@ -40,8 +37,7 @@ const SettingScreen = () => {
     //   try {
     //     const storedReview = await getReviewInfo();
 
-    //     if (!storedReview==false) {
-    //       router.push("ReviewTheApp");
+    //     if (!storedReview) {
     //       const response = await doReview().unwrap();
     //       await setReviewInfo({ hasReviewed: true });
     //     } else {

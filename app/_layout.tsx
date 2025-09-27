@@ -2,9 +2,11 @@ import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
-const AppLayout = () => {
+
+export default function RootLayout() {
   return (
-    <>
+    <Provider store={store}>
+      <StatusBar barStyle="dark-content" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="InitialScreen" options={{ headerShown: false }} />
@@ -27,22 +29,17 @@ const AppLayout = () => {
           name="Subscriptions"
           options={{
             title: "Subscriptions Plans",
-            headerTitleStyle: {
-              fontWeight: "700",
-              color: "#000",
-            },
+            headerTitleStyle: { fontWeight: "700", color: "#000" },
             headerTitleAlign: "center",
             headerShadowVisible: false,
-            headerBackVisible: false, // hides the back arrow
+            headerBackVisible: false,
           }}
         />
         <Stack.Screen
           name="AccountInformation"
           options={{
             title: "Account Information",
-            headerTitleStyle: {
-              fontWeight: "700",
-            },
+            headerTitleStyle: { fontWeight: "700" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
           }}
@@ -51,9 +48,7 @@ const AppLayout = () => {
           name="Currency"
           options={{
             title: "Currency",
-            headerTitleStyle: {
-              fontWeight: "700",
-            },
+            headerTitleStyle: { fontWeight: "700" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
           }}
@@ -62,9 +57,7 @@ const AppLayout = () => {
           name="TermsAndPolicies"
           options={{
             title: "Terms & Policies",
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
+            headerTitleStyle: { fontWeight: "600" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
           }}
@@ -73,9 +66,7 @@ const AppLayout = () => {
           name="ExpenseCategories"
           options={{
             title: "Expense Categories",
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
+            headerTitleStyle: { fontWeight: "600" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
           }}
@@ -84,29 +75,12 @@ const AppLayout = () => {
           name="IncomeCategories"
           options={{
             title: "Income Categories",
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
+            headerTitleStyle: { fontWeight: "600" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
           }}
-        />{" "}
-        <Stack.Screen
-          name="ReviewTheApp"
-          options={{ presentation: "modal", headerShown: false }}
         />
       </Stack>
-    </>
-  );
-};
-
-export default function RootLayout() {
-  return (
-    <>
-      <Provider store={store}>
-        <StatusBar barStyle={"dark-content"} />
-        <AppLayout />
-      </Provider>
-    </>
+    </Provider>
   );
 }

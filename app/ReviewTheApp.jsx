@@ -1,60 +1,38 @@
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // for star icons
 import { LinearGradient } from "expo-linear-gradient";
+;
 
-const ReviewTheApp = ({ visible, onClose }) => {
+const ReviewTheApp = () => {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
+    <LinearGradient
+      colors={["#0f2027", "#203a43", "#2c5364"]}
+      style={styles.container}
     >
-      <LinearGradient
-        colors={["#0f2027", "#203a43", "#2c5364"]}
-        style={styles.modalContainer}
-      >
-        <View style={styles.content}>
-          <Text style={styles.title}>Enjoying the App?</Text>
-          <Text style={styles.subtitle}>Tap a star to leave your rating</Text>
+      <Text style={styles.title}>Enjoying the App?</Text>
+      <Text style={styles.subtitle}>Tap a star to leave your rating</Text>
 
-          <View style={styles.starsRow}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <TouchableOpacity key={star} activeOpacity={0.7}>
-                <Ionicons
-                  name="star"
-                  size={50}
-                  color="#FFD700"
-                  style={styles.star}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <TouchableOpacity
-            style={styles.button}
-            activeOpacity={0.8}
-            onPress={onClose}
-          >
-            <Text style={styles.buttonText}>Submit Review</Text>
+      <View style={styles.starsRow}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <TouchableOpacity key={star} activeOpacity={0.7}>
+            <Ionicons name="star" size={50} color="#FFD700" style={styles.star} />
           </TouchableOpacity>
-        </View>
-      </LinearGradient>
-    </Modal>
+        ))}
+      </View>
+
+      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+        <Text style={styles.buttonText}>Submit Review</Text>
+      </TouchableOpacity>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  modalContainer: {
+  container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  content: {
-    width: "90%",
-    borderRadius: 20,
     padding: 20,
-    alignItems: "center",
   },
   title: {
     fontSize: 28,

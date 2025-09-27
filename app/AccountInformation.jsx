@@ -13,7 +13,10 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { Colors } from "../Constants/Colors";
-import { useUserGetMeQuery, useUserInfoUpdateMutation } from "../redux/services/api";
+import {
+  useUserGetMeQuery,
+  useUserInfoUpdateMutation,
+} from "../redux/services/api";
 // import {route}
 const AccountInformation = () => {
   const { data, refetch } = useUserGetMeQuery();
@@ -34,8 +37,7 @@ const AccountInformation = () => {
         if (storedEmail) {
           setEmail(storedEmail);
         }
-      } catch (error) {
-      }
+      } catch (error) {}
     };
 
     loadImage();
