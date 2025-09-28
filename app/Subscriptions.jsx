@@ -15,10 +15,13 @@ import {
   useGetAllMemberShipPlanQuery,
   useGetMembershipMutation,
   useLazyGetMessageWithTotalTransactionQuery,
+  useCurrencyMutation
 } from "../redux/services/api";
 import { saveApiSuccess } from "../redux/slices/messageSlice";
 
 const Subscriptions = () => {
+  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const { data: allPlans, isLoading: plansLoading } =
     useGetAllMemberShipPlanQuery();
@@ -114,7 +117,7 @@ const Subscriptions = () => {
             {
               text: "OK",
               onPress: () => {
-                router.push("/(tabs)");
+                router.push("Currency");
               },
             },
           ]
@@ -130,7 +133,6 @@ const Subscriptions = () => {
         }
       }
     } catch (err) {
-
       // Handle different error types
       const errorMessage =
         err?.data?.message ||
@@ -151,8 +153,7 @@ const Subscriptions = () => {
 
       // ✅ Save only the `success` value to Redux
       dispatch(saveApiSuccess(result.success));
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   // Handle back from WebView
@@ -163,28 +164,30 @@ const Subscriptions = () => {
 
   // Handle successful payment
   const handlePaymentSuccess = () => {
-  
-
     setCheckoutUrl(null);
     setProcessingPlan(null);
 
-    Alert.alert(
-      "Payment Successful",
-      "Your subscription has been activated successfully!",
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            router.push("/(tabs)");
+    // show loader for 30 seconds
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      Alert.alert(
+        "Payment Successful",
+        "Your subscription has been activated successfully!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              router.push("/(tabs)");
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    }, 30000); // 30 sec
   };
 
   // Handle payment cancellation
   const handlePaymentCancel = () => {
-
     setCheckoutUrl(null);
     setProcessingPlan(null);
 
@@ -196,6 +199,18 @@ const Subscriptions = () => {
 
   // ✅ Render WebView if checkout URL exists
   if (checkoutUrl) {
+    // ✅ Show loader when activating subscription
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1B9E6C" />
+          <Text style={styles.loadingText}>
+            Activating your subscription...
+          </Text>
+        </View>
+      );
+    }
+
     return (
       <View style={{ flex: 1 }}>
         {/* WebView */}

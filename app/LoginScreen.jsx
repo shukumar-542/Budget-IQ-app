@@ -55,7 +55,7 @@ const LoginScreen = () => {
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response?.data?.accessToken, formData?.email);
         dispatch(setToken(response?.data?.accessToken));
-        console.log("from login", response?.data?.accessToken);
+      
       }
 
       // ✅ Run your extra async function before routing
@@ -79,7 +79,7 @@ const LoginScreen = () => {
   const runAnotherAsyncFunction = async () => {
     try {
       const result = await triggerGetMessages().unwrap();
-      console.log("Messages after login:", result);
+ 
 
       // ✅ Save only the `success` value to Redux
       dispatch(saveApiSuccess(result.success));

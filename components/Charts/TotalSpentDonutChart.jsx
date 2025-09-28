@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons"; // Example icon library
 import { StyleSheet, Text, View } from "react-native";
 import Svg, { Circle, G, Path } from "react-native-svg"; // G for grouping, Path for arcs
+import { useGetMessageWithTotalTransactionQuery } from "../../redux/services/api";
 // Data structure for segments
 const chartData = [
   { category: "Car", value: 500, color: "#6A1B9A", icon: "car" }, // Purple
@@ -15,6 +16,13 @@ const TotalSpentDonutChart = ({
   totalSpent = 1300,
   changeAmount = 2000,
 }) => {
+  const currencySymbols = {
+    usd: "$",
+    gbp: "£",
+    aud: "A$",
+    nzd: "NZ$",
+    eur: "€",
+  };
   const circumference = 2 * Math.PI * radius;
   const innerRadius = radius - strokeWidth / 2; // For drawing arcs in the center of the stroke
 
@@ -54,6 +62,13 @@ const TotalSpentDonutChart = ({
       y: centerY + radius * Math.sin(angleInRadians),
     };
   };
+
+  const { data: messageData, refetch } =
+    useGetMessageWithTotalTransactionQuery();
+  const currencySymbol =
+    currencySymbols[messageData?.data?.currency?.toLowerCase()] ||
+    messageData?.data?.currency ||
+    "$";
 
   return (
     <View style={styles.container}>
@@ -122,8 +137,8 @@ const TotalSpentDonutChart = ({
         <Text style={styles.totalSpentValue}>${totalSpent}</Text>
         <Text style={styles.changeAmount}>
           {changeAmount > 0
-            ? `+$${changeAmount}`
-            : `-$${Math.abs(changeAmount)}`}
+            ? `+${currencySymbol}${changeAmount}`
+            : `-${currencySymbol}${Math.abs(changeAmount)}`}
           {changeAmount > 0 ? " ↑" : " ↓"}
         </Text>
       </View>

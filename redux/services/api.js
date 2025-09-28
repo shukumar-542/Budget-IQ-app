@@ -222,6 +222,13 @@ export const api = createApi({
         body: data,
       }),
     }),
+    currency: builder.mutation({
+      query: (data) => ({
+        url: "/users/choose-currency",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -249,4 +256,5 @@ export const {
   useLazyGetMessageWithTotalTransactionQuery,
   useGetUpdateTransactionMutation,
   useGetReviewTheAppMutation,
+  useCurrencyMutation,
 } = api;

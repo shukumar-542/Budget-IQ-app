@@ -33,7 +33,6 @@ const IncrementDecrementAmount = () => {
   const formatDate = (d) =>
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
 useEffect(()=>{
-  console.log(ammount)
   if(ammount){
     setAmount(ammount.toString())
   }

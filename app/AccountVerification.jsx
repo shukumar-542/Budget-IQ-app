@@ -105,8 +105,6 @@ const AccountVerification = () => {
     }
 
     try {
-      // ✅ 2. Verify OTP
-      console.log(email, otp);
       const verifyResponse = await oTP({
         email: email,
         tokenCode: otp.join(""),
@@ -142,7 +140,6 @@ const AccountVerification = () => {
       const statusCode = err?.data?.err?.statusCode || err?.status || 500;
       const message = err?.data?.message || "Failed to verify OTP.";
 
-      console.log("Error statusCode:", statusCode);
       Alert.alert(
         "❌ Error", // Add emoji or custom title
         message,

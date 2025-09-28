@@ -62,11 +62,6 @@ const SettingScreen = () => {
 
   const menuItems = [
     {
-      name: "Currency",
-      icon: <Entypo name="wallet" size={20} color="black" />,
-      label: "Currency",
-    },
-    {
       name: "ExpenseCategories",
       icon: <Ionicons name="git-branch-outline" size={20} color="black" />,
       label: "Expenses Categories",

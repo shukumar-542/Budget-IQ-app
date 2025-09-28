@@ -15,7 +15,13 @@ import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 
 const DashboardScreen = () => {
-
+  const currencySymbols = {
+    usd: "$",
+    gbp: "£",
+    aud: "A$",
+    nzd: "NZ$",
+    eur: "€",
+  };
 
   // --- STATE ---
   const [type, setType] = useState("expenses");
@@ -45,6 +51,8 @@ const DashboardScreen = () => {
       { refetchOnMountOrArgChange: true }
     );
 
+  const currency = specificTransactionRecent?.result?.[0]?.currency;
+
   // --- FETCH SAVED CATEGORIES + REFETCH ---
   useFocusEffect(
     useCallback(() => {
@@ -70,44 +78,53 @@ const DashboardScreen = () => {
 
   // --- TRANSFORM DATA ---
   const transformedSpecificTransactionRecent =
-    specificTransactionRecent?.result?.map((tx) => ({
-      transactionId: tx._id,
-      name: tx.category?.name || "Unknown",
-      icon: tx.category?.categoryImage || null,
-      amount: `$${Math.abs(tx.amount)}`,
-      userId: tx.userId,
-      createdAt: tx.createdAt,
-      updatedAt: tx.updatedAt,
-      categoryType: tx.category?.type || "unknown",
-    })) || [];
+    specificTransactionRecent?.result?.map((tx) => {
+      const symbol = currencySymbols[tx.currency] || "$"; // fallback to $
+      return {
+        transactionId: tx._id,
+        name: tx.category?.name || "Unknown",
+        icon: tx.category?.categoryImage || null,
+        amount: `${symbol}${Math.abs(tx.amount)}`,
+        userId: tx.userId,
+        createdAt: tx.createdAt,
+        updatedAt: tx.updatedAt,
+        categoryType: tx.category?.type || "unknown",
+      };
+    }) || [];
 
   const expenseData =
     allCategoriesWithSum?.result
       .filter((cat) => cat.type === "expenses")
-      .map((cat) => ({
-        transactionId: cat._id,
-        name: cat.name,
-        icon: cat.categoryImage,
-        amount: `$${cat.totalAmount}`,
-        userId: cat.userId,
-        createdAt: cat.createdAt,
-        updatedAt: cat.updatedAt,
-        categoryType: cat.type,
-      })) || [];
+      .map((cat) => {
+        const symbol = currencySymbols[currency] || "$";
+        return {
+          transactionId: cat._id,
+          name: cat.name,
+          icon: cat.categoryImage,
+          amount: `${symbol}${Math.abs(cat.totalAmount)}`,
+          userId: cat.userId,
+          createdAt: cat.createdAt,
+          updatedAt: cat.updatedAt,
+          categoryType: cat.type,
+        };
+      }) || [];
 
   const incomeData =
     allCategoriesWithSum?.result
       .filter((cat) => cat.type === "income")
-      .map((cat) => ({
-        transactionId: cat._id,
-        name: cat.name,
-        icon: cat.categoryImage,
-        amount: `$${cat.totalAmount}`,
-        userId: cat.userId,
-        createdAt: cat.createdAt,
-        updatedAt: cat.updatedAt,
-        categoryType: cat.type,
-      })) || [];
+      .map((cat) => {
+        const symbol = currencySymbols[currency] || "$";
+        return {
+          transactionId: cat._id,
+          name: cat.name,
+          icon: cat.categoryImage,
+          amount: `${symbol}${Math.abs(cat.totalAmount)}`,
+          userId: cat.userId,
+          createdAt: cat.createdAt,
+          updatedAt: cat.updatedAt,
+          categoryType: cat.type,
+        };
+      }) || [];
 
   // --- RENDER ---
   return (

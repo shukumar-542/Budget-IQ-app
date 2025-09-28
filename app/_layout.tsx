@@ -51,6 +51,7 @@ export default function RootLayout() {
             headerTitleStyle: { fontWeight: "700" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
+            headerBackVisible: false,
           }}
         />
         <Stack.Screen
