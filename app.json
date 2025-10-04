@@ -25,21 +25,12 @@
       "favicon": "./assets/images/welcome.png"
     },
     "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "cover",
+      "image": "./assets/images/splashscreen_logo.png",
+      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash.png",
-          "imageWidth": 200,
-          "resizeMode": "cover",
-          "backgroundColor": "#ffffff"
-        }
-      ],
       "expo-secure-store"
     ],
     "experiments": {

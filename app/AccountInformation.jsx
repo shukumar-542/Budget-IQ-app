@@ -135,7 +135,7 @@ const AccountInformation = () => {
       <View style={styles.imageWrapper}>
         <Image
           source={
-            image ? { uri: image } : require("@/assets/images/avater.png")
+            image ? { uri: image } : require("../assets/images/avater.png")
           }
           style={styles.image}
           resizeMode="cover"

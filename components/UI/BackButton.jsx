@@ -11,7 +11,7 @@ const BackButton = ({ style }) => {
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // increases tappable area
     >
       <Image
-        source={require("@/assets/images/backicon.png")}
+        source={require("../../assets/images/backicon.png")}
         style={styles.image}
         resizeMode="contain"
       />
