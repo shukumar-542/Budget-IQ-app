@@ -25,8 +25,7 @@ export default function SplashScreenComponent() {
   useEffect(() => {
     const loadTokenAndInit = async () => {
       try {
-        const storedToken = await getToken();
-
+        const storedToken = await getToken();console.log("Stored Token:", storedToken); 
         if (storedToken) {
           dispatch(loadTokenFromStorage(storedToken));
         } else {
@@ -40,6 +39,7 @@ export default function SplashScreenComponent() {
     };
 
     loadTokenAndInit();
+    console.log("Token Loaded:", tokenLoaded);
   }, [dispatch]);
 
   useEffect(() => {

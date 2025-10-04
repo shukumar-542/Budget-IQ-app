@@ -15,7 +15,7 @@ import {
   useGetAllMemberShipPlanQuery,
   useGetMembershipMutation,
   useLazyGetMessageWithTotalTransactionQuery,
-  useCurrencyMutation
+  useCurrencyMutation,
 } from "../redux/services/api";
 import { saveApiSuccess } from "../redux/slices/messageSlice";
 
@@ -55,6 +55,15 @@ const Subscriptions = () => {
       buttonText: "Purchase",
     },
   ];
+  const navigateWithCallback = (callback, delay = 1000) => {
+    const interval = setInterval(() => {
+      const ready = callback(); // run your check
+      if (ready) {
+        clearInterval(interval);
+        router.push("Currency");
+      }
+    }, delay);
+  };
 
   const handleLayout = (name, width) => {
     setTextWidths((prev) => ({ ...prev, [name]: width }));
@@ -117,7 +126,11 @@ const Subscriptions = () => {
             {
               text: "OK",
               onPress: () => {
-                router.push("Currency");
+                navigateWithCallback(() => {
+                  // put your callback condition here
+                  // return true when ready to navigate
+                  return true; // example: instantly ready, just for demo
+                }, 1000);
               },
             },
           ]
@@ -178,12 +191,15 @@ const Subscriptions = () => {
           {
             text: "OK",
             onPress: () => {
-              router.push("/(tabs)");
+              navigateWithCallback(() => {
+                // return true to stop the interval
+                return true;
+              }, 1000);
             },
           },
         ]
       );
-    }, 30000); // 30 sec
+    }, 30000); // existing 30 sec wait
   };
 
   // Handle payment cancellation

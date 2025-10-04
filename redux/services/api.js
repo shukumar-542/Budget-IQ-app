@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://10.10.20.72:5000/api/v1",
+    baseUrl: "https://budgetiq.net/api/v1",
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token; // ✅ get token from Redux
       if (token) {
@@ -100,7 +100,7 @@ export const api = createApi({
             ...response,
             data: {
               ...response.data,
-              profileImageUrl: `http://10.10.20.72:5000${response.data.profileImageUrl}`,
+              profileImageUrl: `${response.data.profileImageUrl}`,
             },
           };
         }

@@ -18,7 +18,8 @@ import {
 } from "../redux/services/api";
 import { setToken } from "../redux/slices/authSlice";
 import { saveApiSuccess } from "../redux/slices/messageSlice";
-import { saveAuthData } from "../utils/secureStore";
+import { getToken, saveAuthData } from "../utils/secureStore";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 const LoginScreen = () => {
   const [triggerGetMessages, { data }] =
     useLazyGetMessageWithTotalTransactionQuery();
@@ -50,12 +51,14 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await signIn(formData).unwrap();
-
+      console.log("Login Response:", response);
       // Save token and email
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response?.data?.accessToken, formData?.email);
         dispatch(setToken(response?.data?.accessToken));
-      
+
+        const token = await getToken(); // 👈 Fix here
+        console.log("Retrieved token:", token);
       }
 
       // ✅ Run your extra async function before routing
@@ -79,7 +82,6 @@ const LoginScreen = () => {
   const runAnotherAsyncFunction = async () => {
     try {
       const result = await triggerGetMessages().unwrap();
- 
 
       // ✅ Save only the `success` value to Redux
       dispatch(saveApiSuccess(result.success));

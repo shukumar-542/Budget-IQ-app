@@ -134,7 +134,10 @@ const TotalSpentDonutChart = ({
       {/* Center content */}
       <View style={[StyleSheet.absoluteFillObject, styles.center]}>
         <Text style={styles.totalSpentLabel}>Total Spent</Text>
-        <Text style={styles.totalSpentValue}>${totalSpent}</Text>
+        <Text style={styles.totalSpentValue}>
+          {currencySymbol}
+          {totalSpent}
+        </Text>
         <Text style={styles.changeAmount}>
           {changeAmount > 0
             ? `+${currencySymbol}${changeAmount}`

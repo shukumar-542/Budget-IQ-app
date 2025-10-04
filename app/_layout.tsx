@@ -63,6 +63,15 @@ export default function RootLayout() {
             headerTitleAlign: "center",
           }}
         />
+         <Stack.Screen
+          name="PrivacyPolicy"
+          options={{
+            title: "Privacy Policy",
+            headerTitleStyle: { fontWeight: "600" },
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
         <Stack.Screen
           name="ExpenseCategories"
           options={{

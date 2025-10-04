@@ -32,7 +32,8 @@ const TermsAndPolicies = () => {
     );
   }
 
-  const htmlContent = data?.data?.[0]?.term || "<p>No terms available</p>";
+  const htmlContent = data?.data?.[0];
+  const htmlContentMessage = data?.message || "<p>No terms available</p>";
 
   // Define styles for HTML tags
   const tagsStyles = {
@@ -103,6 +104,11 @@ const TermsAndPolicies = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <RenderHTML
+          contentWidth={width}
+          source={{ html: `<p>${htmlContentMessage}</p>` }}
+          tagsStyles={tagsStyles}
+        />
         <RenderHTML
           contentWidth={width}
           source={{ html: htmlContent }}

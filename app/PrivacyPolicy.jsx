@@ -7,7 +7,7 @@ import {
   View,
   Text,
 } from "react-native";
-import { useGetPrivacyPolicyQuery } from "../redux/services/api";
+import { useGetPrivacyPolicyQuery } from "../redux/services/api"; // Assuming the query hook is correct
 import RenderHTML from "react-native-render-html";
 
 const PrivacyPolicy = () => {
@@ -30,8 +30,11 @@ const PrivacyPolicy = () => {
     );
   }
 
-  const htmlContent = data.data[0].policy;
+  // Check if data.data is empty and provide a fallback if no privacy policy is available
+  const htmlContent = data?.data?.[0];
+  const htmlContentMessage = data?.message || "No privacy policy available.";
 
+  // Define styles for HTML tags
   const tagsStyles = {
     h1: { fontSize: 28, fontWeight: "bold", marginBottom: 12, color: "#333" },
     h2: { fontSize: 24, fontWeight: "bold", marginBottom: 10, color: "#333" },
@@ -100,6 +103,11 @@ const PrivacyPolicy = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <RenderHTML
+          contentWidth={width}
+          source={{ html: `<p>${htmlContentMessage}</p>` }}
+          tagsStyles={tagsStyles}
+        />
         <RenderHTML
           contentWidth={width}
           source={{ html: htmlContent }}
