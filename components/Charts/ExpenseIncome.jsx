@@ -14,7 +14,9 @@ const ExpenseIncome = ({ expenseData }) => {
               id: item.transactionId,
               name: item.name,
               image: item.icon,
+              fromTab: item.categoryType
             },
+
           })
         }
       >

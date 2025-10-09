@@ -24,8 +24,8 @@ const SecondScreen = () => {
       }
     };
     loadToken();
-    console.log("API Success:", apiSuccess);
-    console.log("Stored Token:", token);
+   
+  
   }, [dispatch]);
 
   const handleNext = () => {

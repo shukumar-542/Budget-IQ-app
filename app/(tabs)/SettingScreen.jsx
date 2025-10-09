@@ -29,6 +29,7 @@ const SettingScreen = () => {
   useEffect(() => {
     if (data?.data) {
       setUserImage(data?.data?.profileImageUrl);
+      console.log(data?.data?.profileImageUrl)
       setUserFullName(data?.data?.fullName);
       setUserEmail(data?.data?.email);
     }

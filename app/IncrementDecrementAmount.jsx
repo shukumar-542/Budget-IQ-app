@@ -26,43 +26,46 @@ const IncrementDecrementAmount = () => {
   const [amount, setAmount] = useState("0");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { id, name, image, categoryType, transactionId, ammount } =
+  const { id, name, image, categoryType, transactionId, ammount, fromTab } =
     useLocalSearchParams();
   const { data: user } = useUserGetMeQuery();
   const userId = user?.data?._id;
   const formatDate = (d) =>
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
-useEffect(()=>{
-  if(ammount){
-    setAmount(ammount.toString())
-  }
-}, [ammount])
+  useEffect(() => {
+    if (ammount) {
+      setAmount(ammount.toString())
+    }
+  }, [ammount])
   const handleTransaction = async () => {
     try {
-      // Validate amount first
       if (!amount || parseInt(amount) <= 0) {
         alert("Amount must be greater than 0");
         return;
       }
 
       if (transactionId) {
-        // UPDATE existing transaction
-        const response = await updateTransaction({
+        await updateTransaction({
           amount: parseInt(amount),
           transactionId,
         });
       } else {
-        // CREATE new transaction
-        const response = await createTransactions({
+        await createTransactions({
           amount: parseInt(amount),
-          categoryId: id, // for new transaction, id is categoryId
+          categoryId: id,
           userId,
         });
       }
 
-      router.push("/(tabs)/DashboardScreen");
-    } catch (error) {}
+      if (fromTab) {
+        router.push(`/(tabs)/DashboardScreen?tab=${fromTab}`);
+      } else {
+        router.push("/(tabs)/DashboardScreen");
+      }
+    } catch (error) {
+    }
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -125,10 +128,12 @@ useEffect(()=>{
         />
       )}
 
-      {/* Add Transaction Button */}
       <TouchableOpacity style={styles.button} onPress={handleTransaction}>
-        <Text style={styles.buttonText}>ADD TRANSACTION</Text>
+        <Text style={styles.buttonText}>
+          {transactionId ? "MODIFY TRANSACTION" : "ADD TRANSACTION"}
+        </Text>
       </TouchableOpacity>
+
     </SafeAreaView>
   );
 };

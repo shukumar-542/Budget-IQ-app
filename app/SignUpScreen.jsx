@@ -132,7 +132,7 @@ const SignUpScreen = () => {
         contactNo: formData.contactNo.trim(),
         password: formData.password,
       }).unwrap();
-      console.log("Sign Up Response:", response);
+  
       // ✅ Save data securely
       await SecureStore.setItemAsync("userFullName", formData.fullName);
       await SecureStore.setItemAsync("userEmail", formData.email);

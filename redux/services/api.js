@@ -132,7 +132,7 @@ export const api = createApi({
           category: {
             ...tx.category,
             categoryImage: tx.category?.categoryImage
-              ? `http://10.10.20.72:5000${tx.category.categoryImage}`
+              ? `${tx.category.categoryImage}`
               : null,
           },
         }));
@@ -148,7 +148,7 @@ export const api = createApi({
       transformResponse: (response) => {
         const resultWithFullImage = response.result.map((cat) => ({
           ...cat,
-          categoryImage: `http://10.10.20.72:5000${cat.categoryImage}`, // prepend server
+          categoryImage: `${cat.categoryImage}`, // prepend server
         }));
         return { ...response, result: resultWithFullImage };
       },
@@ -177,7 +177,7 @@ export const api = createApi({
       transformResponse: (response) => {
         const resultWithFullImage = response.result.map((cat) => ({
           ...cat,
-          categoryImage: `http://10.10.20.72:5000${cat.categoryImage}`,
+          categoryImage: `${cat.categoryImage}`,
         }));
         return { ...response, result: resultWithFullImage };
       },

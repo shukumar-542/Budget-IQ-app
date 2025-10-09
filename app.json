@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.budgetiqapp",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you select and upload images.",
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos."
+      }
     },
     "android": {
       "adaptiveIcon": {

@@ -10,7 +10,7 @@ import {
 import { useEffect } from "react";
 const CostEarnList = ({ data }) => {
   const router = useRouter();
-  useEffect(() => {}, [data]);
+  useEffect(() => { }, [data]);
   const SpecificCostItem = ({
     icon,
     name,
@@ -30,6 +30,7 @@ const CostEarnList = ({ data }) => {
             ammount: amount,
             transactionId,
             categoryType,
+            fromTab: categoryType  // 👈 add this
           },
         });
       }}

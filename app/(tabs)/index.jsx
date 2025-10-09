@@ -43,7 +43,6 @@ const Index = () => {
   useEffect(() => {
     // Wait for apiSuccess to be explicitly true or false
     if (apiSuccess === true && messageData.success === true) {
-      console.log("Message Data:", messageData);
       setMotivationalMessage(
         messageData?.message || ""
       );

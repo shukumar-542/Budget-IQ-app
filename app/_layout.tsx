@@ -12,7 +12,20 @@ export default function RootLayout() {
         <Stack.Screen name="InitialScreen" options={{ headerShown: false }} />
         <Stack.Screen name="SecondScreen" options={{ headerShown: false }} />
         <Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+        {/* FIX for (tabs) to remove title and show black back arrow on iOS */}
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+            headerTitle: "",
+            headerTintColor: "#000",
+            headerShadowVisible: false,
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
+          }}
+        />
+
         <Stack.Screen name="SignUpScreen" options={{ headerShown: false }} />
         <Stack.Screen name="ForgerPassword" options={{ headerShown: false }} />
         <Stack.Screen
@@ -33,6 +46,10 @@ export default function RootLayout() {
             headerTitleAlign: "center",
             headerShadowVisible: false,
             headerBackVisible: false,
+            headerTintColor: "#000",
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
+
           }}
         />
         <Stack.Screen
@@ -42,6 +59,10 @@ export default function RootLayout() {
             headerTitleStyle: { fontWeight: "700" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
+            headerTintColor: "#000",
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
+
           }}
         />
         <Stack.Screen
@@ -52,6 +73,9 @@ export default function RootLayout() {
             headerShadowVisible: false,
             headerTitleAlign: "center",
             headerBackVisible: false,
+            headerTintColor: "#000",
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -61,15 +85,21 @@ export default function RootLayout() {
             headerTitleStyle: { fontWeight: "600" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
+            headerTintColor: "#000",
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
           }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="PrivacyPolicy"
           options={{
             title: "Privacy Policy",
             headerTitleStyle: { fontWeight: "600" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
+            headerTintColor: "#000",
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -79,6 +109,9 @@ export default function RootLayout() {
             headerTitleStyle: { fontWeight: "600" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
+            headerTintColor: "#000",
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -88,6 +121,9 @@ export default function RootLayout() {
             headerTitleStyle: { fontWeight: "600" },
             headerShadowVisible: false,
             headerTitleAlign: "center",
+            headerTintColor: "#000",
+            headerBackTitle: "",
+            headerBackButtonDisplayMode: "minimal",
           }}
         />
       </Stack>

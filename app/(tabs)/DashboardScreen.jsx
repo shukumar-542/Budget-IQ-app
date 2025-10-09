@@ -13,8 +13,12 @@ import {
 } from "../../redux/services/api";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
-
+import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 const DashboardScreen = () => {
+
+  const { tab } = useLocalSearchParams();
+
   const currencySymbols = {
     usd: "$",
     gbp: "£",
@@ -22,6 +26,13 @@ const DashboardScreen = () => {
     nzd: "NZ$",
     eur: "€",
   };
+
+  useEffect(() => {
+    if (tab) {
+      setExpense(tab);
+      setType(tab);
+    }
+  }, [tab]);
 
   // --- STATE ---
   const [type, setType] = useState("expenses");
@@ -69,7 +80,7 @@ const DashboardScreen = () => {
           if (refetchCategories) {
             refetchCategories();
           }
-        } catch (error) {}
+        } catch (error) { }
       };
 
       fetchSavedCategories();

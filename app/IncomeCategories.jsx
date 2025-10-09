@@ -73,35 +73,38 @@ const IncomeCategories = () => {
     }
   };
 
-  // Render category item
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => toggleCategory(item._id)}
-      style={styles.item}
-      activeOpacity={0.7}
-    >
-      <View style={styles.iconContainer}>
-        {item.categoryImage ? (
-          <Image
-            source={{ uri: item.categoryImage }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        ) : (
-          <Icon name="image-off" size={24} color="#999" />
-        )}
-      </View>
-      <Text style={styles.label}>{item.name}</Text>
-      <Icon
-        name={
-          isSelected(item._id) ? "checkbox-marked" : "checkbox-blank-outline"
-        }
-        size={24}
-        color="#20a074"
-        style={styles.checkbox}
-      />
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item }) => {
+
+    return (
+      <TouchableOpacity
+        onPress={() => toggleCategory(item._id)}
+        style={styles.item}
+        activeOpacity={0.7}
+      >
+        <View style={styles.iconContainer}>
+          {item.categoryImage ? (
+            <Image
+              source={{ uri: item.categoryImage }}
+              style={styles.image}
+              resizeMode="cover"
+            />
+          ) : (
+            <Icon name="image-off" size={24} color="#999" />
+          )}
+        </View>
+        <Text style={styles.label}>{item.name}</Text>
+        <Icon
+          name={
+            isSelected(item._id) ? "checkbox-marked" : "checkbox-blank-outline"
+          }
+          size={24}
+          color="#20a074"
+          style={styles.checkbox}
+        />
+      </TouchableOpacity>
+    );
+  };
+
 
   // Loading state
   if (isLoading || !apiLoaded) {
@@ -170,7 +173,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 50,
     alignItems: "center",
-    marginTop: 24,
+    marginBottom: 30, // 👈 add this line to lift the button slightly up
   },
+
   saveText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 });

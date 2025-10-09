@@ -51,14 +51,14 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await signIn(formData).unwrap();
-      console.log("Login Response:", response);
+  
       // Save token and email
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response?.data?.accessToken, formData?.email);
         dispatch(setToken(response?.data?.accessToken));
 
         const token = await getToken(); // 👈 Fix here
-        console.log("Retrieved token:", token);
+    
       }
 
       // ✅ Run your extra async function before routing

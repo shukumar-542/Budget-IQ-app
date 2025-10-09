@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 50,
     alignItems: "center",
-    marginTop: 24,
+    marginBottom: 30, // 👈 add this line to lift the button slightly up
   },
+
   saveText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 });

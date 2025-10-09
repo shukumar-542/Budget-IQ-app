@@ -37,7 +37,7 @@ const AccountInformation = () => {
         if (storedEmail) {
           setEmail(storedEmail);
         }
-      } catch (error) {}
+      } catch (error) { }
     };
 
     loadImage();
@@ -102,12 +102,12 @@ const AccountInformation = () => {
       const timestamp = `${now.getFullYear()}${(now.getMonth() + 1)
         .toString()
         .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}_${now
-        .getHours()
-        .toString()
-        .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
-        .getSeconds()
-        .toString()
-        .padStart(2, "0")}`;
+          .getHours()
+          .toString()
+          .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
+            .getSeconds()
+            .toString()
+            .padStart(2, "0")}`;
 
       // Use the user's name for the filename
       const sanitizedUserName = finalName.replace(/\s+/g, "_"); // replace spaces with underscores
@@ -167,7 +167,7 @@ const AccountInformation = () => {
                 color: "#999",
               },
             ]}
-            value={email}
+            value={email} 
             onChangeText={validateEmail} // use validation function
             placeholder="example@gmail.com"
             placeholderTextColor="#999"
@@ -202,12 +202,14 @@ const AccountInformation = () => {
 export default AccountInformation;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+container: {
+  flex: 1,
+  backgroundColor: "#fff",
+  alignItems: "center",
+  justifyContent: "flex-start", // 👈 change from "space-between"
+  paddingTop: 40,               // optional spacing from top
+  paddingBottom: 80,            // 👈 gives room for the button
+},
   imageWrapper: {
     position: "relative",
     width: 100,
@@ -251,12 +253,17 @@ const styles = StyleSheet.create({
   in: {
     width: "100%",
   },
-  button: {
-    borderRadius: 4,
-    padding: 8,
-    backgroundColor: Colors.primary,
-    width: "100%",
-  },
+button: {
+  position: "absolute",   // 👈 add this
+  bottom: 40,             // 👈 controls lift height
+  backgroundColor: Colors.primary,
+  paddingVertical: 12,
+  borderRadius: 100,
+  alignItems: "center",
+  width: "90%",
+  alignSelf: "center",    // 👈 center horizontally
+},
+
 
   pressed: {
     opacity: 0.75,
