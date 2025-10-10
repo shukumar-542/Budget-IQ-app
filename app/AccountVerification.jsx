@@ -115,7 +115,6 @@ const AccountVerification = () => {
           email: email,
           password: password,
         }).unwrap();
-        console.log(signInResponse);
         const token = signInResponse?.data?.accessToken;
         if (token) {
           dispatch(setToken(token));

@@ -3,10 +3,13 @@ import { StatusBar } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 
+import { LogBox } from "react-native";
+
+LogBox.ignoreAllLogs(true);
 export default function RootLayout() {
   return (
     <Provider store={store}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="InitialScreen" options={{ headerShown: false }} />
@@ -49,7 +52,6 @@ export default function RootLayout() {
             headerTintColor: "#000",
             headerBackTitle: "",
             headerBackButtonDisplayMode: "minimal",
-
           }}
         />
         <Stack.Screen
@@ -62,7 +64,6 @@ export default function RootLayout() {
             headerTintColor: "#000",
             headerBackTitle: "",
             headerBackButtonDisplayMode: "minimal",
-
           }}
         />
         <Stack.Screen

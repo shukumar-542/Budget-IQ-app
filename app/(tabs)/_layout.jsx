@@ -17,7 +17,6 @@ const TabLayout = () => {
           backgroundColor: "#fff",
           borderTopWidth: 0,
         },
-
         tabBarItemStyle: {
           borderRadius: 28,
           marginHorizontal: 8,

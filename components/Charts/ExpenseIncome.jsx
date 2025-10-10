@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     width: "20%",
     alignItems: "center",
     marginBottom: 15,
+    marginHorizontal: 5,
   },
   iconContainer: {
     backgroundColor: "#E0F2E9",
