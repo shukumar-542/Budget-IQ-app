@@ -115,7 +115,7 @@ const AccountVerification = () => {
           email: email,
           password: password,
         }).unwrap();
-
+        console.log(signInResponse);
         const token = signInResponse?.data?.accessToken;
         if (token) {
           dispatch(setToken(token));
@@ -143,9 +143,7 @@ const AccountVerification = () => {
       Alert.alert(
         "❌ Error", // Add emoji or custom title
         message,
-        [
-          { text: "Cancel", style: "cancel" },
-        ],
+        [{ text: "Cancel", style: "cancel" }],
         { cancelable: true }
       );
     }
@@ -221,7 +219,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 16,
-    gap: 10,
+    gap: 5,
   },
   input: {
     width: 45,

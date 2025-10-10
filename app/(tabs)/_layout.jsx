@@ -11,12 +11,13 @@ const TabLayout = () => {
         // tabBarActiveTintColor: "#ffff",
         tabBarInactiveTintColor: "#020617",
         tabBarStyle: {
-          height: 80,
+          height: "10%",
           paddingHorizontal: 16,
           paddingVertical: 8,
           backgroundColor: "#fff",
           borderTopWidth: 0,
         },
+
         tabBarItemStyle: {
           borderRadius: 28,
           marginHorizontal: 8,
