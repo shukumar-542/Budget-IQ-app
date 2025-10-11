@@ -1,7 +1,8 @@
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router"; // ✅ correct
+import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import * as ImageManipulator from "expo-image-manipulator";
 import { useEffect, useState } from "react";
 import {
   Image,
@@ -10,6 +11,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { Colors } from "../Constants/Colors";
@@ -17,46 +19,46 @@ import {
   useUserGetMeQuery,
   useUserInfoUpdateMutation,
 } from "../redux/services/api";
-// import {route}
+
+// 🔧 Compress image before upload
+const compressImage = async (uri) => {
+  try {
+    const result = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    return result.uri;
+  } catch (error) {
+    return uri; // fallback
+  }
+};
+
 const AccountInformation = () => {
   const { data, refetch } = useUserGetMeQuery();
   const router = useRouter();
   const [image, setImage] = useState(null);
-  useEffect(() => {
-    const loadImage = async () => {
-      try {
-        const storedImage = data?.data?.profileImageUrl;
-        const storedName = data?.data?.fullName;
-        const storedEmail = data?.data?.email;
-        if (storedImage) {
-          setImage(storedImage); // use stored image
-        }
-        if (storedName) {
-          setName(storedName);
-        }
-        if (storedEmail) {
-          setEmail(storedEmail);
-        }
-      } catch (error) { }
-    };
-
-    loadImage();
-  }, [data]);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(true);
+  const [userInfoUpdate, { isLoading }] = useUserInfoUpdateMutation();
+
+  // ✅ Load existing user data
+  useEffect(() => {
+    if (data?.data) {
+      setImage(data.data.profileImageUrl || null);
+      setName(data.data.fullName || "");
+      setEmail(data.data.email || "");
+    }
+  }, [data]);
 
   const validateEmail = (text) => {
     setEmail(text);
-    // Basic email regex
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setIsEmailValid(regex.test(text));
   };
 
-  const user = useSelector((state) => state.user);
-  const [userInfoUpdate, { isLoading }] = useUserInfoUpdateMutation();
-
+  // ✅ Pick image from library
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -74,64 +76,70 @@ const AccountInformation = () => {
     if (!result.canceled) {
       const selectedUri = result.assets[0].uri;
       setImage(selectedUri);
-      await SecureStore.setItemAsync("userImage", selectedUri); // save it
+      await SecureStore.setItemAsync("userImage", selectedUri);
     }
   };
 
+  // ✅ Handle save (with compression + upload)
   const handleSaveChanges = async () => {
-    let contactNo = await SecureStore.getItemAsync("userContactNo");
+    try {
+      const contactNo = await SecureStore.getItemAsync("userContactNo");
+      const storedName = await SecureStore.getItemAsync("userFullName");
+      const storedEmail = await SecureStore.getItemAsync("userEmail");
 
-    let storedName = await SecureStore.getItemAsync("userFullName");
-    let storedEmail = await SecureStore.getItemAsync("userEmail");
+      const finalName = name || storedName || "";
+      const finalEmail = email || storedEmail || "";
 
-    const finalName = name || storedName || "";
-    const finalEmail = email || storedEmail || "";
+      const formData = new FormData();
+      formData.append(
+        "data",
+        JSON.stringify({ fullName: finalName, email: finalEmail, contactNo })
+      );
 
-    const formData = new FormData();
-    formData.append(
-      "data",
-      JSON.stringify({ fullName: finalName, email: finalEmail, contactNo })
-    );
-    if (image) {
-      // Get the file extension
-      const extensionMatch = /\.(\w+)$/.exec(image.split("/").pop());
-      const extension = extensionMatch ? extensionMatch[1] : "jpg";
+      if (image) {
+        const compressedUri = await compressImage(image);
+        const extensionMatch = /\.(\w+)$/.exec(compressedUri.split("/").pop());
+        const extension = extensionMatch ? extensionMatch[1] : "jpg";
 
-      // Get current date-time string
-      const now = new Date();
-      const timestamp = `${now.getFullYear()}${(now.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}_${now
-          .getHours()
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}${(now.getMonth() + 1)
           .toString()
-          .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
-            .getSeconds()
+          .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}_${now
+            .getHours()
             .toString()
-            .padStart(2, "0")}`;
+            .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
+              .getSeconds()
+              .toString()
+              .padStart(2, "0")}`;
 
-      // Use the user's name for the filename
-      const sanitizedUserName = finalName.replace(/\s+/g, "_"); // replace spaces with underscores
-      const filename = `${sanitizedUserName}_${timestamp}.${extension}`;
+        const sanitizedUserName = finalName.replace(/\s+/g, "_");
+        const filename = `${sanitizedUserName}_${timestamp}.${extension}`;
+        const type = `image/${extension}`;
 
-      // Determine MIME type
-      const type = `image/${extension}`;
+        formData.append("file", {
+          uri: compressedUri,
+          name: filename,
+          type,
+        });
+      }
 
-      // Append to FormData
-      formData.append("file", {
-        uri: image,
-        name: filename,
-        type,
-      });
+  
+      const response = await userInfoUpdate(formData).unwrap();
+
+
+      await SecureStore.setItemAsync("userFullName", finalName);
+      await SecureStore.setItemAsync("userEmail", finalEmail);
+      refetch();
+      router.replace("/SettingScreen");
+    } catch (err) {
+
+      Alert.alert("Upload Failed", "Please try again or use a smaller image.");
     }
-    const response = await userInfoUpdate(formData).unwrap();
-    refetch();
-    await SecureStore.setItemAsync("userFullName", finalName);
-    await SecureStore.setItemAsync("userEmail", finalEmail);
-    router.replace("/SettingScreen");
   };
 
   return (
     <View style={styles.container}>
+      {/* Profile Image */}
       <View style={styles.imageWrapper}>
         <Image
           source={
@@ -140,35 +148,33 @@ const AccountInformation = () => {
           style={styles.image}
           resizeMode="cover"
         />
-
         <TouchableOpacity style={styles.uploadIcon} onPress={pickImage}>
           <Ionicons name="camera" size={20} color="#000" />
         </TouchableOpacity>
       </View>
+
+      {/* Name Input */}
       <View style={styles.inputContainer}>
         <View style={styles.input}>
           <AntDesign name="user" size={20} color="#555" />
           <TextInput
             style={styles.in}
-            value={name} // connects to state
-            onChangeText={setName} // updates state when typing
+            value={name}
+            onChangeText={setName}
             placeholder="Name"
             placeholderTextColor="#999"
           />
         </View>
       </View>
+
+      {/* Email Input */}
       <View style={styles.inputContainer}>
         <View style={styles.input}>
           <AntDesign name="mail" size={20} color="#555" />
           <TextInput
-            style={[
-              styles.in,
-              {
-                color: "#999",
-              },
-            ]}
-            value={email} 
-            onChangeText={validateEmail} // use validation function
+            style={[styles.in, { color: "#999" }]}
+            value={email}
+            onChangeText={validateEmail}
             placeholder="example@gmail.com"
             placeholderTextColor="#999"
             keyboardType="email-address"
@@ -183,6 +189,7 @@ const AccountInformation = () => {
         )}
       </View>
 
+      {/* Save Button */}
       <TouchableOpacity
         style={[
           styles.button,
@@ -201,15 +208,16 @@ const AccountInformation = () => {
 
 export default AccountInformation;
 
+// ✅ Styles (cleaned + unified)
 const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  backgroundColor: "#fff",
-  alignItems: "center",
-  justifyContent: "flex-start", // 👈 change from "space-between"
-  paddingTop: 40,               // optional spacing from top
-  paddingBottom: 80,            // 👈 gives room for the button
-},
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingTop: 40,
+    paddingBottom: 80,
+  },
   imageWrapper: {
     position: "relative",
     width: 100,
@@ -234,6 +242,10 @@ container: {
     borderColor: Colors.primary,
     borderWidth: 1,
   },
+  inputContainer: {
+    width: "80%",
+    marginTop: 10,
+  },
   input: {
     flexDirection: "row",
     alignItems: "center",
@@ -246,38 +258,18 @@ container: {
     paddingVertical: 5,
     shadowRadius: 5,
   },
-  inputContainer: {
-    width: "80%",
-    marginTop: 10,
-  },
   in: {
     width: "100%",
   },
-button: {
-  position: "absolute",   // 👈 add this
-  bottom: 40,             // 👈 controls lift height
-  backgroundColor: Colors.primary,
-  paddingVertical: 12,
-  borderRadius: 100,
-  alignItems: "center",
-  width: "90%",
-  alignSelf: "center",    // 👈 center horizontally
-},
-
-
-  pressed: {
-    opacity: 0.75,
-    backgroundColor: Colors.primary100,
-    borderRadius: 4,
-  },
   button: {
-    marginTop: "auto",
+    position: "absolute",
+    bottom: 40,
     backgroundColor: Colors.primary,
     paddingVertical: 12,
     borderRadius: 100,
     alignItems: "center",
     width: "90%",
-    margin: 10,
+    alignSelf: "center",
   },
   buttonText: {
     color: "white",

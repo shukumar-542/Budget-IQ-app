@@ -56,7 +56,7 @@ const SettingScreen = () => {
       dispatch(removeApiSuccess());
       router.replace("/LoginScreen");
     } catch (e) {
-      console.error("Logout error:", e);
+  
     }
   };
 
@@ -110,7 +110,7 @@ const SettingScreen = () => {
                 dispatch(removeApiSuccess());
                 router.push("/SignUpScreen");
               } catch (e) {
-                console.error("Delete error:", e);
+   
               }
             },
           },
@@ -142,7 +142,7 @@ const SettingScreen = () => {
       Alert.alert("Thank you!", `You rated us ${rating} star${rating > 1 ? "s" : ""}.`);
       setIsReviewModalVisible(false);
     } catch (error) {
-      console.error("Review error:", error);
+   
       Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };

@@ -28,7 +28,7 @@ export const setReviewInfo = async (value) => {
   try {
     await SecureStore.setItemAsync(REVIEW_KEY, JSON.stringify(value));
   } catch (e) {
-    console.error("Error saving review info:", e);
+ 
   }
 };
 
@@ -38,7 +38,7 @@ export const getReviewInfo = async () => {
     const result = await SecureStore.getItemAsync(REVIEW_KEY);
     return result ? JSON.parse(result) : null;
   } catch (e) {
-    console.error("Error reading review info:", e);
+ 
     return null;
   }
 };
@@ -54,7 +54,7 @@ export const saveSubscriptionViewTime = async () => {
       timestamp.toString()
     );
   } catch (error) {
-    console.error("Error saving subscription timestamp:", error);
+
   }
 };
 
@@ -64,7 +64,6 @@ export const getSubscriptionViewTime = async () => {
     const ts = await SecureStore.getItemAsync("subscriptionTimestamp");
     return ts ? parseInt(ts, 10) : null;
   } catch (error) {
-    console.error("Error getting subscription timestamp:", error);
     return null;
   }
 };

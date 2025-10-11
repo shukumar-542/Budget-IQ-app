@@ -86,7 +86,7 @@ const LoginScreen = () => {
       // ✅ Save only the `success` value to Redux
       dispatch(saveApiSuccess(result.success));
     } catch (error) {
-      console.error("Error fetching messages:", error);
+      
       dispatch(saveApiSuccess(null));
     }
   };

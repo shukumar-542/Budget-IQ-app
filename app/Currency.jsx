@@ -49,7 +49,7 @@ const Currency = () => {
 
       router.push("/(tabs)");
     } catch (err) {
-      console.error("Currency error:", err);
+    
       Alert.alert("Error", "Something went wrong while setting currency");
     }
   };

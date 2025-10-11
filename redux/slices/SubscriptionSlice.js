@@ -22,7 +22,7 @@ export const loadLastViewTime = () => async (dispatch) => {
     const time = await getSubscriptionViewTime();
     dispatch(setLastViewTime(time));
   } catch (error) {
-    console.error("Error loading subscription time:", error);
+    
   }
 };
 
@@ -33,7 +33,7 @@ export const saveCurrentViewTime = () => async (dispatch) => {
     await saveSubscriptionViewTime(); // save current timestamp
     dispatch(setLastViewTime(now)); // update Redux state
   } catch (error) {
-    console.error("Error saving subscription time:", error);
+  
   }
 };
 
