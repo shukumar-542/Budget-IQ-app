@@ -27,9 +27,7 @@ const REVIEW_KEY = "user_review_info";
 export const setReviewInfo = async (value) => {
   try {
     await SecureStore.setItemAsync(REVIEW_KEY, JSON.stringify(value));
-  } catch (e) {
- 
-  }
+  } catch (e) {}
 };
 
 // Get review info
@@ -38,7 +36,6 @@ export const getReviewInfo = async () => {
     const result = await SecureStore.getItemAsync(REVIEW_KEY);
     return result ? JSON.parse(result) : null;
   } catch (e) {
- 
     return null;
   }
 };
@@ -53,9 +50,7 @@ export const saveSubscriptionViewTime = async () => {
       "subscriptionTimestamp",
       timestamp.toString()
     );
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };
 
 // Get last subscription view time
