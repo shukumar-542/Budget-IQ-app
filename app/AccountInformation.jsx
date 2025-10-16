@@ -13,7 +13,6 @@ import {
   View,
   Alert,
   StatusBar,
-  LayoutAnimation,
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import {

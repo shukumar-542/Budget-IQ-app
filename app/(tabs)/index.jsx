@@ -1,5 +1,6 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useUserGetMeQuery } from "../../redux/services/api";
 import {
   ActivityIndicator,
   Image,
@@ -21,6 +22,7 @@ import {
   useGetMessageWithTotalTransactionQuery,
   useIqBuddyMutation,
 } from "../../redux/services/api";
+import { Avatar } from "react-native-paper";
 
 import { selectApiSuccess } from "../../redux/slices/messageSlice";
 
@@ -36,16 +38,20 @@ const Index = () => {
   const [motivationalMessage, setMotivationalMessage] = useState(null);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
-
+  const [userImage, setUserImage] = useState(null);
   const [iqBuddy] = useIqBuddyMutation();
+  const { data } = useUserGetMeQuery();
+  useEffect(() => {
+    if (data?.data) {
+      setUserImage(data?.data?.profileImageUrl);
+    }
+  }, [data]);
   const { data: messageData, refetch } =
     useGetMessageWithTotalTransactionQuery();
   useEffect(() => {
     // Wait for apiSuccess to be explicitly true or false
     if (apiSuccess === true && messageData.success === true) {
-      setMotivationalMessage(
-        messageData?.message || ""
-      );
+      setMotivationalMessage(messageData?.message || "");
       setTotalIncome(
         messageData?.data?.totalIncomeAndExpenses?.totalIncome || 0
       );
@@ -101,12 +107,12 @@ const Index = () => {
       <View style={styles.header}>
         <Image source={logo} />
         <Pressable onPress={() => router.push("AccountInformation")}>
-          {storedImage ? (
-            <Image source={{ uri: storedImage }} style={styles.avatar} />
+          {userImage ? (
+            <Avatar.Image size={48} source={{ uri: userImage }} />
           ) : (
-            <Image
+            <Avatar.Image
+              size={48}
               source={require("../../assets/images/avater.png")}
-              style={styles.avatar}
             />
           )}
         </Pressable>
@@ -270,7 +276,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 10,
     maxWidth: "80%",
-    marginBottom:40
+    marginBottom: 40,
   },
   userMessage: { alignSelf: "flex-end", backgroundColor: "#28a745" },
   botMessage: { alignSelf: "flex-start", backgroundColor: "#5C5C5C" },
