@@ -1,4 +1,10 @@
-import { AntDesign, Entypo, FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Entypo,
+  FontAwesome,
+  Ionicons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -55,9 +61,7 @@ const SettingScreen = () => {
       dispatch(clearToken());
       dispatch(removeApiSuccess());
       router.replace("/LoginScreen");
-    } catch (e) {
-  
-    }
+    } catch (e) {}
   };
 
   const menuItems = [
@@ -73,12 +77,16 @@ const SettingScreen = () => {
     },
     {
       name: "TermsAndPolicies",
-      icon: <Ionicons name="shield-checkmark-outline" size={20} color="black" />,
+      icon: (
+        <Ionicons name="shield-checkmark-outline" size={20} color="black" />
+      ),
       label: "Terms & Policies",
     },
     {
       name: "PrivacyPolicy",
-      icon: <Ionicons name="shield-checkmark-outline" size={20} color="black" />,
+      icon: (
+        <Ionicons name="shield-checkmark-outline" size={20} color="black" />
+      ),
       label: "Privacy Policy",
     },
     {
@@ -109,9 +117,7 @@ const SettingScreen = () => {
                 dispatch(clearToken());
                 dispatch(removeApiSuccess());
                 router.push("/SignUpScreen");
-              } catch (e) {
-   
-              }
+              } catch (e) {}
             },
           },
         ],
@@ -139,10 +145,12 @@ const SettingScreen = () => {
     try {
       await doReview({ star: rating }).unwrap();
       await setReviewInfo({ hasReviewed: true });
-      Alert.alert("Thank you!", `You rated us ${rating} star${rating > 1 ? "s" : ""}.`);
+      Alert.alert(
+        "Thank you!",
+        `You rated us ${rating} star${rating > 1 ? "s" : ""}.`
+      );
       setIsReviewModalVisible(false);
     } catch (error) {
-   
       Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
@@ -170,7 +178,12 @@ const SettingScreen = () => {
           <Text style={styles.profileName}>{userFullName}</Text>
           <Text style={styles.profileEmail}>{userEmail}</Text>
         </View>
-        <AntDesign name="right" size={18} color="black" style={{ marginLeft: "auto" }} />
+        <AntDesign
+          name="right"
+          size={18}
+          color="black"
+          style={{ marginLeft: "auto" }}
+        />
       </TouchableOpacity>
 
       {/* Menu List */}
@@ -221,7 +234,10 @@ const SettingScreen = () => {
             <Text style={styles.modalTitle}>Rate the App</Text>
             <View style={styles.starContainer}>
               {[1, 2, 3, 4, 5].map((star) => (
-                <TouchableOpacity key={star} onPress={() => handleStarPress(star)}>
+                <TouchableOpacity
+                  key={star}
+                  onPress={() => handleStarPress(star)}
+                >
                   <MaterialIcons
                     name={star <= selectedRating ? "star" : "star-border"}
                     size={32}
@@ -320,7 +336,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   cancelText: {
-    color: "blue",
-    marginTop: 10,
+    color: "#1f2937", // dark gray instead of plain black
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#f3f4f6", // light gray background for a button-like look
+    overflow: "hidden", // ensures rounded corners clip content
   },
 });

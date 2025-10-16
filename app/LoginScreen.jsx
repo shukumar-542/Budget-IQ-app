@@ -51,14 +51,13 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await signIn(formData).unwrap();
-  
+
       // Save token and email
       if (response?.data?.accessToken && formData?.email) {
         await saveAuthData(response?.data?.accessToken, formData?.email);
         dispatch(setToken(response?.data?.accessToken));
 
         const token = await getToken(); // 👈 Fix here
-    
       }
 
       // ✅ Run your extra async function before routing
@@ -86,7 +85,6 @@ const LoginScreen = () => {
       // ✅ Save only the `success` value to Redux
       dispatch(saveApiSuccess(result.success));
     } catch (error) {
-      
       dispatch(saveApiSuccess(null));
     }
   };
@@ -106,6 +104,7 @@ const LoginScreen = () => {
         value={formData.email}
         style={styles.input}
         placeholder="consultme@gmail.com"
+        placeholderTextColor="#888"
         keyboardType="email-address"
         autoCapitalize="none"
         onChangeText={validateEmail}
@@ -117,6 +116,7 @@ const LoginScreen = () => {
           value={formData.password}
           style={[styles.input, { paddingRight: 40 }]} // extra space for icon
           placeholder="********"
+          placeholderTextColor="#888"
           secureTextEntry={!showPassword}
           onChangeText={(text) => handleChange("password", text)}
         />

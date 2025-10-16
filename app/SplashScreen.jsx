@@ -73,7 +73,7 @@ export default function SplashScreenComponent() {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#0f172a" barStyle="light-content" />
+      <StatusBar backgroundColor="#ffff" barStyle="dark-content" />
       <ActivityIndicator size="large" color="#00C46A" />
       <Text style={styles.text}>Loading...</Text>
     </View>

@@ -12,13 +12,18 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  StatusBar,
+  LayoutAnimation,
 } from "react-native";
-import { useSelector } from "react-redux";
 import { Colors } from "../Constants/Colors";
 import {
   useUserGetMeQuery,
   useUserInfoUpdateMutation,
 } from "../redux/services/api";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 // 🔧 Compress image before upload
 const compressImage = async (uri) => {
@@ -29,21 +34,22 @@ const compressImage = async (uri) => {
       { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
     );
     return result.uri;
-  } catch (error) {
+  } catch {
     return uri; // fallback
   }
 };
 
 const AccountInformation = () => {
-  const { data, refetch } = useUserGetMeQuery();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { data, refetch } = useUserGetMeQuery();
   const [image, setImage] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [userInfoUpdate, { isLoading }] = useUserInfoUpdateMutation();
 
-  // ✅ Load existing user data
+  // Load user data
   useEffect(() => {
     if (data?.data) {
       setImage(data.data.profileImageUrl || null);
@@ -58,7 +64,6 @@ const AccountInformation = () => {
     setIsEmailValid(regex.test(text));
   };
 
-  // ✅ Pick image from library
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -80,7 +85,6 @@ const AccountInformation = () => {
     }
   };
 
-  // ✅ Handle save (with compression + upload)
   const handleSaveChanges = async () => {
     try {
       const contactNo = await SecureStore.getItemAsync("userContactNo");
@@ -105,12 +109,12 @@ const AccountInformation = () => {
         const timestamp = `${now.getFullYear()}${(now.getMonth() + 1)
           .toString()
           .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}_${now
-            .getHours()
-            .toString()
-            .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
-              .getSeconds()
-              .toString()
-              .padStart(2, "0")}`;
+          .getHours()
+          .toString()
+          .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
+          .getSeconds()
+          .toString()
+          .padStart(2, "0")}`;
 
         const sanitizedUserName = finalName.replace(/\s+/g, "_");
         const filename = `${sanitizedUserName}_${timestamp}.${extension}`;
@@ -123,99 +127,101 @@ const AccountInformation = () => {
         });
       }
 
-  
-      const response = await userInfoUpdate(formData).unwrap();
-
-
+      await userInfoUpdate(formData).unwrap();
       await SecureStore.setItemAsync("userFullName", finalName);
       await SecureStore.setItemAsync("userEmail", finalEmail);
       refetch();
       router.replace("/SettingScreen");
-    } catch (err) {
-
+    } catch {
       Alert.alert("Upload Failed", "Please try again or use a smaller image.");
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Profile Image */}
-      <View style={styles.imageWrapper}>
-        <Image
-          source={
-            image ? { uri: image } : require("../assets/images/avater.png")
-          }
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <TouchableOpacity style={styles.uploadIcon} onPress={pickImage}>
-          <Ionicons name="camera" size={20} color="#000" />
+    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top + 10 }]}>
+      <StatusBar
+        translucent={false}
+        backgroundColor="#fff"
+        barStyle="dark-content"
+      />
+      <View style={styles.container}>
+        {/* Profile Image */}
+        <View style={styles.imageWrapper}>
+          <Image
+            source={
+              image ? { uri: image } : require("../assets/images/avater.png")
+            }
+            style={styles.image}
+            resizeMode="cover"
+          />
+          <TouchableOpacity style={styles.uploadIcon} onPress={pickImage}>
+            <Ionicons name="camera" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Name Input */}
+        <View style={styles.inputContainer}>
+          <View style={styles.input}>
+            <AntDesign name="user" size={20} color="#555" />
+            <TextInput
+              style={styles.in}
+              value={name}
+              onChangeText={setName}
+              placeholder="Name"
+              placeholderTextColor="#999"
+            />
+          </View>
+        </View>
+
+        {/* Email Input */}
+        <View style={styles.inputContainer}>
+          <View style={styles.input}>
+            <AntDesign name="mail" size={20} color="#555" />
+            <TextInput
+              style={[styles.in, { color: "#999" }]}
+              value={email}
+              onChangeText={validateEmail}
+              placeholder="example@gmail.com"
+              placeholderTextColor="#999"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={false}
+            />
+          </View>
+          {!isEmailValid && (
+            <Text style={{ color: "red", marginTop: 5 }}>
+              Please enter a valid email
+            </Text>
+          )}
+        </View>
+
+        {/* Save Button */}
+        <TouchableOpacity
+          style={[
+            styles.button,
+            (isLoading || !isEmailValid) && { opacity: 0.6 },
+          ]}
+          onPress={handleSaveChanges}
+          disabled={isLoading || !isEmailValid}
+        >
+          <Text style={styles.buttonText}>
+            {isLoading ? "Saving..." : "Save Changes"}
+          </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Name Input */}
-      <View style={styles.inputContainer}>
-        <View style={styles.input}>
-          <AntDesign name="user" size={20} color="#555" />
-          <TextInput
-            style={styles.in}
-            value={name}
-            onChangeText={setName}
-            placeholder="Name"
-            placeholderTextColor="#999"
-          />
-        </View>
-      </View>
-
-      {/* Email Input */}
-      <View style={styles.inputContainer}>
-        <View style={styles.input}>
-          <AntDesign name="mail" size={20} color="#555" />
-          <TextInput
-            style={[styles.in, { color: "#999" }]}
-            value={email}
-            onChangeText={validateEmail}
-            placeholder="example@gmail.com"
-            placeholderTextColor="#999"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            editable={false}
-          />
-        </View>
-        {!isEmailValid && (
-          <Text style={{ color: "red", marginTop: 5 }}>
-            Please enter a valid email
-          </Text>
-        )}
-      </View>
-
-      {/* Save Button */}
-      <TouchableOpacity
-        style={[
-          styles.button,
-          (isLoading || !isEmailValid) && { opacity: 0.6 },
-        ]}
-        onPress={handleSaveChanges}
-        disabled={isLoading || !isEmailValid}
-      >
-        <Text style={styles.buttonText}>
-          {isLoading ? "Saving..." : "Save Changes"}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default AccountInformation;
 
-// ✅ Styles (cleaned + unified)
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#fff" },
   container: {
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 40,
     paddingBottom: 80,
   },
   imageWrapper: {
@@ -224,6 +230,7 @@ const styles = StyleSheet.create({
     height: 100,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 20,
   },
   image: {
     width: 100,
@@ -244,7 +251,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "80%",
-    marginTop: 10,
+    marginTop: 15,
   },
   input: {
     flexDirection: "row",
@@ -253,7 +260,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 50,
     width: "100%",
-    marginTop: 10,
     paddingHorizontal: 15,
     paddingVertical: 5,
     shadowRadius: 5,

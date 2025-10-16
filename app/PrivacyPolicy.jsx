@@ -1,17 +1,22 @@
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   ActivityIndicator,
   View,
   Text,
+  StatusBar,
 } from "react-native";
-import { useGetPrivacyPolicyQuery } from "../redux/services/api"; // Assuming the query hook is correct
+import { useGetPrivacyPolicyQuery } from "../redux/services/api";
 import RenderHTML from "react-native-render-html";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 const PrivacyPolicy = () => {
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets(); // get safe area insets dynamically
   const { data, isLoading, error } = useGetPrivacyPolicyQuery();
 
   if (isLoading) {
@@ -30,27 +35,16 @@ const PrivacyPolicy = () => {
     );
   }
 
-  // Check if data.data is empty and provide a fallback if no privacy policy is available
-  const htmlContent = data?.data?.[0];
+  const htmlContent = data?.data?.[0] || "";
   const htmlContentMessage = data?.message || "No privacy policy available.";
 
-  // Define styles for HTML tags
   const tagsStyles = {
     h1: { fontSize: 28, fontWeight: "bold", marginBottom: 12, color: "#333" },
     h2: { fontSize: 24, fontWeight: "bold", marginBottom: 10, color: "#333" },
-    h3: { fontSize: 20, fontWeight: "bold", marginBottom: 8, color: "#333" },
-    h4: { fontSize: 18, fontWeight: "bold", marginBottom: 6, color: "#333" },
-    h5: { fontSize: 16, fontWeight: "bold", marginBottom: 4, color: "#333" },
-    h6: { fontSize: 14, fontWeight: "bold", marginBottom: 2, color: "#333" },
     p: { fontSize: 16, marginBottom: 8, lineHeight: 22, color: "#555" },
     a: { color: "#20a074", textDecorationLine: "underline" },
     strong: { fontWeight: "bold" },
-    b: { fontWeight: "bold" },
     em: { fontStyle: "italic" },
-    i: { fontStyle: "italic" },
-    u: { textDecorationLine: "underline" },
-    s: { textDecorationLine: "line-through" },
-    del: { textDecorationLine: "line-through" },
     blockquote: {
       borderLeftWidth: 4,
       borderLeftColor: "#ccc",
@@ -76,15 +70,6 @@ const PrivacyPolicy = () => {
     ol: { paddingLeft: 20, marginBottom: 8 },
     li: { fontSize: 16, marginBottom: 4, lineHeight: 22 },
     hr: { borderBottomWidth: 1, borderBottomColor: "#ccc", marginVertical: 12 },
-    table: { borderWidth: 1, borderColor: "#ccc", marginBottom: 12 },
-    th: {
-      fontWeight: "bold",
-      padding: 6,
-      borderWidth: 1,
-      borderColor: "#ccc",
-      backgroundColor: "#f0f0f0",
-    },
-    td: { padding: 6, borderWidth: 1, borderColor: "#ccc" },
     img: {
       width: "100%",
       height: 200,
@@ -96,12 +81,17 @@ const PrivacyPolicy = () => {
     small: { fontSize: 12 },
     sup: { fontSize: 12, lineHeight: 12 },
     sub: { fontSize: 12, lineHeight: 12 },
-    figure: { marginVertical: 8 },
-    figcaption: { fontSize: 14, textAlign: "center", color: "#666" },
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
+      {/* Make StatusBar non-translucent so SafeAreaView works correctly */}
+      <StatusBar
+        translucent={false}
+        backgroundColor="#fff"
+        barStyle="dark-content"
+      />
+
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <RenderHTML
           contentWidth={width}
@@ -121,7 +111,16 @@ const PrivacyPolicy = () => {
 export default PrivacyPolicy;
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
-  scrollViewContent: { padding: 20 },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  scrollViewContent: {
+    padding: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

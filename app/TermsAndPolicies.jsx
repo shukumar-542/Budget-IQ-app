@@ -1,17 +1,19 @@
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   ActivityIndicator,
   View,
   Text,
+  StatusBar,
 } from "react-native";
 import { useGetTermsAndConditionsQuery } from "../redux/services/api";
 import RenderHTML from "react-native-render-html";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TermsAndPolicies = () => {
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const { data, isLoading, error } = useGetTermsAndConditionsQuery();
 
   if (isLoading) {
@@ -32,10 +34,9 @@ const TermsAndPolicies = () => {
     );
   }
 
-  const htmlContent = data?.data?.[0];
+  const htmlContent = data?.data?.[0] || "<p>No terms available</p>";
   const htmlContentMessage = data?.message || "<p>No terms available</p>";
 
-  // Define styles for HTML tags
   const tagsStyles = {
     h1: { fontSize: 28, fontWeight: "bold", marginBottom: 12, color: "#333" },
     h2: { fontSize: 24, fontWeight: "bold", marginBottom: 10, color: "#333" },
@@ -102,7 +103,8 @@ const TermsAndPolicies = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
+      <StatusBar translucent={false} backgroundColor="#fff" barStyle="dark-content" />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <RenderHTML
           contentWidth={width}

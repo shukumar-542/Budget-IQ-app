@@ -1,13 +1,26 @@
-import { useRouter } from 'expo-router';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Colors } from '../Constants/Colors';
+import { useRouter } from "expo-router";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  StatusBar,
+} from "react-native";
+import { Colors } from "../Constants/Colors";
 
 const InitialScreen = () => {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <View style={styles.container}>
+      <StatusBar
+        backgroundColor="transparent" // Makes the status bar see-through
+        barStyle="dark-content" // Dark icons/text for visibility
+        translucent={true} // Lets content show behind the bar
+      />
+
       <Image
-        source={require('../assets/images/trust.png')}
+        source={require("../assets/images/trust.png")}
         style={styles.image}
         resizeMode="contain"
       />
@@ -20,7 +33,10 @@ const InitialScreen = () => {
         Connect instantly with savings experts — right from your phone.
       </Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push("SecondScreen")}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("SecondScreen")}
+      >
         <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>
 
@@ -37,25 +53,25 @@ export default InitialScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 24,
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 250,
   },
   heading: {
     fontSize: 20,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: '#000',
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#000",
   },
   description: {
     fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
     marginTop: 10,
   },
   button: {
@@ -63,17 +79,17 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 8,
-    width: '100%',
+    width: "100%",
     marginTop: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    textAlign: 'center',
-    fontWeight: '600',
+    textAlign: "center",
+    fontWeight: "600",
   },
   pagination: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 20,
     gap: 8,
   },
@@ -81,9 +97,9 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
   },
   activeDot: {
-    backgroundColor: '#00C46A',
+    backgroundColor: "#00C46A",
   },
 });
