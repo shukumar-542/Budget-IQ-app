@@ -2,7 +2,13 @@
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+} from "react-native";
 import { useDispatch } from "react-redux";
 import { useGetMessageWithTotalTransactionQuery } from "../redux/services/api";
 import { loadTokenFromStorage } from "../redux/slices/authSlice";
@@ -25,7 +31,7 @@ export default function SplashScreenComponent() {
   useEffect(() => {
     const loadTokenAndInit = async () => {
       try {
-        const storedToken = await getToken(); 
+        const storedToken = await getToken();
         if (storedToken) {
           dispatch(loadTokenFromStorage(storedToken));
         } else {
@@ -33,13 +39,11 @@ export default function SplashScreenComponent() {
 
         setTokenLoaded(true); // now API call will proceed
       } catch (err) {
-      
         setTokenLoaded(true);
       }
     };
 
     loadTokenAndInit();
-
   }, [dispatch]);
 
   useEffect(() => {
@@ -48,21 +52,16 @@ export default function SplashScreenComponent() {
 
       try {
         if (isError) {
-        
           router.replace("/InitialScreen");
           return;
         }
 
-   
-
         const successValue = data?.success;
-
 
         dispatch(saveApiSuccess(successValue));
 
         router.replace("/InitialScreen"); // route after splash
       } catch (err) {
-      
         router.replace("/InitialScreen");
       } finally {
         await SplashScreen.hideAsync();
@@ -74,6 +73,7 @@ export default function SplashScreenComponent() {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="#0f172a" barStyle="light-content" />
       <ActivityIndicator size="large" color="#00C46A" />
       <Text style={styles.text}>Loading...</Text>
     </View>

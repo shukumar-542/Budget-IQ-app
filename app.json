@@ -15,6 +15,11 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you select and upload images.",
         "NSCameraUsageDescription": "This app needs access to your camera to take photos."
+      },
+      "androidStatusBar": {
+        "barStyle": "dark-content",
+        "backgroundColor": "#ffffff",
+        "translucent": false
       }
     },
     "android": {
@@ -23,7 +28,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.budgetiqapp"
+      "package": "Budget IQ"
     },
     "web": {
       "bundler": "metro",
