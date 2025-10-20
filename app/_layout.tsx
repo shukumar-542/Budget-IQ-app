@@ -25,7 +25,6 @@ export default function RootLayout() {
             headerTintColor: "#000",
             headerShadowVisible: false,
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
 
@@ -51,7 +50,6 @@ export default function RootLayout() {
             headerBackVisible: false,
             headerTintColor: "#000",
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -63,7 +61,6 @@ export default function RootLayout() {
             headerTitleAlign: "center",
             headerTintColor: "#000",
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -76,7 +73,6 @@ export default function RootLayout() {
             headerBackVisible: false,
             headerTintColor: "#000",
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -88,7 +84,6 @@ export default function RootLayout() {
             headerTitleAlign: "center",
             headerTintColor: "#000",
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -100,7 +95,6 @@ export default function RootLayout() {
             headerTitleAlign: "center",
             headerTintColor: "#000",
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -112,7 +106,6 @@ export default function RootLayout() {
             headerTitleAlign: "center",
             headerTintColor: "#000",
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
         <Stack.Screen
@@ -124,7 +117,6 @@ export default function RootLayout() {
             headerTitleAlign: "center",
             headerTintColor: "#000",
             headerBackTitle: "",
-            headerBackButtonDisplayMode: "minimal",
           }}
         />
       </Stack>

@@ -3,42 +3,41 @@
     "name": "Budget IQ",
     "slug": "budget-iq-app",
     "owner": "ayonghosh",
-    "version": "1.0.0",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/welcome.png",
     "scheme": "budgetiqapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splashscreen_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.budgetiqapp",
+      "buildNumber": "1.0.2",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you select and upload images.",
         "NSCameraUsageDescription": "This app needs access to your camera to take photos."
-      },
-      "androidStatusBar": {
-        "barStyle": "dark-content",
-        "backgroundColor": "#ffffff",
-        "translucent": false
       }
     },
     "android": {
+      "package": "com.anonymous.budgetiqapp",
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/welcome.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [],
       "edgeToEdgeEnabled": true,
-      "package": "Budget IQ"
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/welcome.png"
-    },
-    "splash": {
-      "image": "./assets/images/splashscreen_logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
     },
     "plugins": [
       "expo-router",
@@ -50,7 +49,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "c1988251-3ddc-4a82-b9ee-c8273b227442"
+        "projectId": "c8af978e-2bda-4eb9-b80b-fb2ce9a1b0e1"
       }
     }
   }
