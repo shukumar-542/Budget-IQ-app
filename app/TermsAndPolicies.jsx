@@ -103,7 +103,7 @@ const TermsAndPolicies = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <SafeAreaView style={[styles.safeArea]}>
       <StatusBar translucent={false} backgroundColor="#fff" barStyle="dark-content" />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <RenderHTML

@@ -9,6 +9,8 @@ import {
   View,
   Alert,
 } from "react-native";
+ import { KeyboardAvoidingView, Platform } from "react-native";
+
 import BackButton from "../components/UI/BackButton";
 import { Colors } from "../Constants/Colors";
 import { useForgetPasswordMutation } from "../redux/services/api";
@@ -55,6 +57,14 @@ const validateEmail = (text) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+  style={{ flex: 1 }}
+  behavior={Platform.OS === "ios" ? "padding" : "height"}
+  keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+>
+
+
+
       <BackButton style={styles.backButton} />
       <View style={styles.content}>
         <Text style={styles.title}>Forgot Password</Text>
@@ -92,6 +102,7 @@ const validateEmail = (text) => {
           </Text>
         </TouchableOpacity>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

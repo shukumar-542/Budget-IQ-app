@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import BackButton from "../components/UI/BackButton";
 import { Colors } from "../Constants/Colors";
 import { useVerifyCodeMutation } from "../redux/services/api";
@@ -44,7 +45,6 @@ const Otp = () => {
   };
 
   const handleNext = async () => {
-   
     try {
       const response = await oTP({
         email: email,
@@ -57,8 +57,6 @@ const Otp = () => {
         params: { email: email, tokenCode: otp.join("") },
       });
     } catch (e) {
-      
-
       // Show alert for invalid code or other errors
       const errorMessage =
         e?.data?.message || "Invalid code. Please try again.";
@@ -84,58 +82,65 @@ const Otp = () => {
       const response = await forgetPassword({
         email: email,
       }).unwrap();
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   };
   return (
-    <SafeAreaView style={styles.container}>
-      <BackButton style={styles.backButton} />
-      <Text style={styles.title}>OTP</Text>
-      <Text style={styles.subTitle}>
-        To reset you account, please enter the verification code you get on your
-        e-mail.
-      </Text>
-
-      <View style={styles.inputContainer}>
-        {[0, 1, 2, 3, 4].map((index) => (
-          <TextInput
-            key={index}
-            ref={(ref) => (inputRefs.current[index] = ref)}
-            style={styles.input}
-            keyboardType="numeric"
-            maxLength={1}
-            value={otp[index]}
-            onChangeText={(text) => handleOtpChange(index, text)}
-            onKeyPress={({ nativeEvent: { key } }) =>
-              handleKeyPress(index, key)
-            }
-            selectTextOnFocus
-          />
-        ))}
-      </View>
-
-      <TouchableOpacity
-        onPress={() => handleNext()}
-        style={styles.verifyButton}
-      >
-        <Text style={styles.verifyText}>Send</Text>
-      </TouchableOpacity>
-
-      <View style={styles.resendCode}>
-        <Text>
-          {isResendDisabled
-            ? `Resend OTP in ${countdown}s`
-            : "Didn't get code?"}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+    >
+      <SafeAreaView style={styles.container}>
+        <BackButton style={styles.backButton} />
+        <Text style={styles.title}>OTP</Text>
+        <Text style={styles.subTitle}>
+          To reset you account, please enter the verification code you get on
+          your e-mail.
         </Text>
 
-        <TouchableOpacity onPress={handleResendOtp} disabled={isResendDisabled}>
-          <Text style={{ color: isResendDisabled ? "gray" : "#1BA26E" }}>
-            Resend OTP
-          </Text>
+        <View style={styles.inputContainer}>
+          {[0, 1, 2, 3, 4].map((index) => (
+            <TextInput
+              key={index}
+              ref={(ref) => (inputRefs.current[index] = ref)}
+              style={styles.input}
+              keyboardType="numeric"
+              maxLength={1}
+              value={otp[index]}
+              onChangeText={(text) => handleOtpChange(index, text)}
+              onKeyPress={({ nativeEvent: { key } }) =>
+                handleKeyPress(index, key)
+              }
+              selectTextOnFocus
+            />
+          ))}
+        </View>
+
+        <TouchableOpacity
+          onPress={() => handleNext()}
+          style={styles.verifyButton}
+        >
+          <Text style={styles.verifyText}>Send</Text>
         </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+
+        <View style={styles.resendCode}>
+          <Text>
+            {isResendDisabled
+              ? `Resend OTP in ${countdown}s`
+              : "Didn't get code?"}
+          </Text>
+
+          <TouchableOpacity
+            onPress={handleResendOtp}
+            disabled={isResendDisabled}
+          >
+            <Text style={{ color: isResendDisabled ? "gray" : "#1BA26E" }}>
+              Resend OTP
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

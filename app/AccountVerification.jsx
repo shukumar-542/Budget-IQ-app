@@ -15,6 +15,7 @@ import { setToken } from "../redux/slices/authSlice"; //
 
 import { useSignInMutation } from "../redux/services/api";
 import { useResentOtpMutation } from "../redux/services/api";
+import { KeyboardAvoidingView, Platform } from "react-native";
 const AccountVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(60);
@@ -149,49 +150,58 @@ const AccountVerification = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Account Verification</Text>
-      <Text style={styles.subTitle}>
-        To verify you account, please enter the verification code that you have
-        received in your email {email}
-      </Text>
-
-      <View style={styles.inputContainer}>
-        {[0, 1, 2, 3, 4, 5].map((index) => (
-          <TextInput
-            key={index}
-            ref={(ref) => (inputRefs.current[index] = ref)}
-            style={styles.input}
-            keyboardType="numeric"
-            maxLength={1}
-            value={otp[index]}
-            onChangeText={(text) => handleOtpChange(index, text)}
-            onKeyPress={({ nativeEvent: { key } }) =>
-              handleKeyPress(index, key)
-            }
-            selectTextOnFocus
-          />
-        ))}
-      </View>
-
-      <TouchableOpacity style={styles.verifyButton} onPress={handleVerify}>
-        <Text style={styles.verifyText}>Send</Text>
-      </TouchableOpacity>
-
-      <View style={styles.resendCode}>
-        <Text>
-          {isResendDisabled
-            ? `Resend OTP in ${countdown}s`
-            : "Didn't get code?"}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Account Verification</Text>
+        <Text style={styles.subTitle}>
+          To verify you account, please enter the verification code that you
+          have received in your email {email}
         </Text>
 
-        <TouchableOpacity onPress={handleResendOtp} disabled={isResendDisabled}>
-          <Text style={{ color: isResendDisabled ? "gray" : "#1BA26E" }}>
-            Resend OTP
-          </Text>
+        <View style={styles.inputContainer}>
+          {[0, 1, 2, 3, 4, 5].map((index) => (
+            <TextInput
+              key={index}
+              ref={(ref) => (inputRefs.current[index] = ref)}
+              style={styles.input}
+              keyboardType="numeric"
+              maxLength={1}
+              value={otp[index]}
+              onChangeText={(text) => handleOtpChange(index, text)}
+              onKeyPress={({ nativeEvent: { key } }) =>
+                handleKeyPress(index, key)
+              }
+              selectTextOnFocus
+            />
+          ))}
+        </View>
+
+        <TouchableOpacity style={styles.verifyButton} onPress={handleVerify}>
+          <Text style={styles.verifyText}>Send</Text>
         </TouchableOpacity>
+
+        <View style={styles.resendCode}>
+          <Text>
+            {isResendDisabled
+              ? `Resend OTP in ${countdown}s`
+              : "Didn't get code?"}
+          </Text>
+
+          <TouchableOpacity
+            onPress={handleResendOtp}
+            disabled={isResendDisabled}
+          >
+            <Text style={{ color: isResendDisabled ? "gray" : "#1BA26E" }}>
+              Resend OTP
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

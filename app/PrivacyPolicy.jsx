@@ -84,7 +84,7 @@ const PrivacyPolicy = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <SafeAreaView style={[styles.safeArea]}>
       {/* Make StatusBar non-translucent so SafeAreaView works correctly */}
       <StatusBar
         translucent={false}

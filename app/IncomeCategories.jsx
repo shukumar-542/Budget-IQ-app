@@ -121,7 +121,7 @@ const IncomeCategories = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top + 10 }]}>
+    <SafeAreaView style={[styles.safeArea]}>
       <StatusBar
         translucent={false}
         backgroundColor="#fff"
