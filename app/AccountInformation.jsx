@@ -19,6 +19,7 @@ import {
   useUserGetMeQuery,
   useUserInfoUpdateMutation,
 } from "../redux/services/api";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -143,71 +144,76 @@ const AccountInformation = () => {
         backgroundColor="#fff"
         barStyle="dark-content"
       />
-      <View style={styles.container}>
-        {/* Profile Image */}
-        <View style={styles.imageWrapper}>
-          <Image
-            source={
-              image ? { uri: image } : require("../assets/images/avater.png")
-            }
-            style={styles.image}
-            resizeMode="cover"
-          />
-          <TouchableOpacity style={styles.uploadIcon} onPress={pickImage}>
-            <Ionicons name="camera" size={20} color="#000" />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.container}>
+          {/* Profile Image */}
+          <View style={styles.imageWrapper}>
+            <Image
+              source={
+                image ? { uri: image } : require("../assets/images/avater.png")
+              }
+              style={styles.image}
+              resizeMode="cover"
+            />
+            <TouchableOpacity style={styles.uploadIcon} onPress={pickImage}>
+              <Ionicons name="camera" size={20} color="#000" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Name Input */}
+          <View style={styles.inputContainer}>
+            <View style={styles.input}>
+              <AntDesign name="user" size={20} color="#555" />
+              <TextInput
+                style={styles.in}
+                value={name}
+                onChangeText={setName}
+                placeholder="Name"
+                placeholderTextColor="#999"
+              />
+            </View>
+          </View>
+
+          {/* Email Input */}
+          <View style={styles.inputContainer}>
+            <View style={styles.input}>
+              <AntDesign name="mail" size={20} color="#555" />
+              <TextInput
+                style={[styles.in, { color: "#999" }]}
+                value={email}
+                onChangeText={validateEmail}
+                placeholder="example@gmail.com"
+                placeholderTextColor="#999"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                editable={false}
+              />
+            </View>
+            {!isEmailValid && (
+              <Text style={{ color: "red", marginTop: 5 }}>
+                Please enter a valid email
+              </Text>
+            )}
+          </View>
+
+          {/* Save Button */}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              (isLoading || !isEmailValid) && { opacity: 0.6 },
+            ]}
+            onPress={handleSaveChanges}
+            disabled={isLoading || !isEmailValid}
+          >
+            <Text style={styles.buttonText}>
+              {isLoading ? "Saving..." : "Save Changes"}
+            </Text>
           </TouchableOpacity>
         </View>
-
-        {/* Name Input */}
-        <View style={styles.inputContainer}>
-          <View style={styles.input}>
-            <AntDesign name="user" size={20} color="#555" />
-            <TextInput
-              style={styles.in}
-              value={name}
-              onChangeText={setName}
-              placeholder="Name"
-              placeholderTextColor="#999"
-            />
-          </View>
-        </View>
-
-        {/* Email Input */}
-        <View style={styles.inputContainer}>
-          <View style={styles.input}>
-            <AntDesign name="mail" size={20} color="#555" />
-            <TextInput
-              style={[styles.in, { color: "#999" }]}
-              value={email}
-              onChangeText={validateEmail}
-              placeholder="example@gmail.com"
-              placeholderTextColor="#999"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              editable={false}
-            />
-          </View>
-          {!isEmailValid && (
-            <Text style={{ color: "red", marginTop: 5 }}>
-              Please enter a valid email
-            </Text>
-          )}
-        </View>
-
-        {/* Save Button */}
-        <TouchableOpacity
-          style={[
-            styles.button,
-            (isLoading || !isEmailValid) && { opacity: 0.6 },
-          ]}
-          onPress={handleSaveChanges}
-          disabled={isLoading || !isEmailValid}
-        >
-          <Text style={styles.buttonText}>
-            {isLoading ? "Saving..." : "Save Changes"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

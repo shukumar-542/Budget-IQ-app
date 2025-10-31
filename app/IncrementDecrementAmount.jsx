@@ -10,6 +10,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../Constants/Colors";
@@ -34,9 +36,9 @@ const IncrementDecrementAmount = () => {
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
   useEffect(() => {
     if (ammount) {
-      setAmount(ammount.toString())
+      setAmount(ammount.toString());
     }
-  }, [ammount])
+  }, [ammount]);
   const handleTransaction = async () => {
     try {
       if (!amount || parseInt(amount) <= 0) {
@@ -62,47 +64,49 @@ const IncrementDecrementAmount = () => {
       } else {
         router.push("/(tabs)/DashboardScreen");
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </Pressable>
-        <View style={styles.headerButtonText}>
-          <Image
-            source={{ uri: image }}
-            resizeMode="cover"
-            style={styles.iconImage}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Pressable onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </Pressable>
+          <View style={styles.headerButtonText}>
+            <Image
+              source={{ uri: image }}
+              resizeMode="cover"
+              style={styles.iconImage}
+            />
+            <Text style={styles.headerText}>{name}</Text>
+          </View>
+        </View>
+
+        {/* Amount */}
+        <View style={styles.row}>
+          <View style={styles.label}>
+            <FontAwesome5 name="money-bill-wave" size={16} />
+            <Text style={styles.labelText}> Amount</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            value={amount}
+            onChangeText={(text) => {
+              // Only allow numbers and prevent empty
+              const numericValue = text.replace(/[^0-9]/g, "");
+              setAmount(numericValue);
+            }}
+            keyboardType="numeric"
           />
-          <Text style={styles.headerText}>{name}</Text>
         </View>
-      </View>
 
-      {/* Amount */}
-      <View style={styles.row}>
-        <View style={styles.label}>
-          <FontAwesome5 name="money-bill-wave" size={16} />
-          <Text style={styles.labelText}> Amount</Text>
-        </View>
-        <TextInput
-          style={styles.input}
-          value={amount}
-          onChangeText={(text) => {
-            // Only allow numbers and prevent empty
-            const numericValue = text.replace(/[^0-9]/g, "");
-            setAmount(numericValue);
-          }}
-          keyboardType="numeric"
-        />
-      </View>
-
-      {/* Date
+        {/* Date
       <TouchableOpacity
         style={styles.row}
         onPress={() => setShowDatePicker(true)}
@@ -116,24 +120,24 @@ const IncrementDecrementAmount = () => {
         </Text>
       </TouchableOpacity> */}
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDate(selectedDate);
-          }}
-        />
-      )}
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) setDate(selectedDate);
+            }}
+          />
+        )}
 
-      <TouchableOpacity style={styles.button} onPress={handleTransaction}>
-        <Text style={styles.buttonText}>
-          {transactionId ? "MODIFY TRANSACTION" : "ADD TRANSACTION"}
-        </Text>
-      </TouchableOpacity>
-
+        <TouchableOpacity style={styles.button} onPress={handleTransaction}>
+          <Text style={styles.buttonText}>
+            {transactionId ? "MODIFY TRANSACTION" : "ADD TRANSACTION"}
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

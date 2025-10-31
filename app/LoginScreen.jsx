@@ -10,6 +10,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Platform } from "react-native";
+import { KeyboardAvoidingView } from "react-native";
 import { useDispatch } from "react-redux";
 import { Colors } from "../Constants/Colors";
 import {
@@ -90,84 +93,91 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Log In</Text>
+    <SafeAreaProvider>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.container}>
+          <Text style={styles.title}>Log In</Text>
 
-      <Image
-        source={require("../assets/images/welcome.png")}
-        style={styles.logo}
-      />
-      <Text style={styles.logoText}>BUDGET{"\n"}IQ</Text>
-
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        value={formData.email}
-        style={styles.input}
-        placeholder="consultme@gmail.com"
-        placeholderTextColor="#888"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        onChangeText={validateEmail}
-      />
-
-      <Text style={styles.label}>Password</Text>
-      <View style={{ position: "relative" }}>
-        <TextInput
-          value={formData.password}
-          style={[styles.input, { paddingRight: 40 }]} // extra space for icon
-          placeholder="********"
-          placeholderTextColor="#888"
-          secureTextEntry={!showPassword}
-          onChangeText={(text) => handleChange("password", text)}
-        />
-
-        <TouchableOpacity
-          onPress={() => setShowPassword(!showPassword)}
-          style={{ position: "absolute", right: 10, top: 12 }}
-        >
-          <Ionicons
-            name={showPassword ? "eye-off" : "eye"}
-            size={22}
-            color="#00794F"
+          <Image
+            source={require("../assets/images/welcome.png")}
+            style={styles.logo}
           />
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.logoText}>BUDGET{"\n"}IQ</Text>
 
-      <TouchableOpacity
-        style={styles.forgot}
-        onPress={() => navigation.navigate("ForgerPassword")}
-      >
-        <Text style={styles.forgotText}>Forgot password?</Text>
-      </TouchableOpacity>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            value={formData.email}
+            style={styles.input}
+            placeholder="consultme@gmail.com"
+            placeholderTextColor="#888"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            onChangeText={validateEmail}
+          />
 
-      <TouchableOpacity
-        onPress={() => handleLogin()}
-        style={[
-          styles.loginButton,
-          (isLoading ||
-            !isEmailValid ||
-            !formData.email.trim() ||
-            !formData.password.trim()) && { opacity: 0.6 },
-        ]}
-        disabled={
-          isLoading ||
-          !isEmailValid ||
-          !formData.email.trim() ||
-          !formData.password.trim()
-        }
-      >
-        <Text style={styles.loginButtonText}>
-          {isLoading ? "Signing in..." : "Sign In"}
-        </Text>
-      </TouchableOpacity>
+          <Text style={styles.label}>Password</Text>
+          <View style={{ position: "relative" }}>
+            <TextInput
+              value={formData.password}
+              style={[styles.input, { paddingRight: 40 }]} // extra space for icon
+              placeholder="********"
+              placeholderTextColor="#888"
+              secureTextEntry={!showPassword}
+              onChangeText={(text) => handleChange("password", text)}
+            />
 
-      <View style={styles.signupContainer}>
-        <Text>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => router.push("/SignUpScreen")}>
-          <Text style={styles.signupText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={{ position: "absolute", right: 10, top: 12 }}
+            >
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={22}
+                color="#00794F"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.forgot}
+            onPress={() => navigation.navigate("ForgerPassword")}
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => handleLogin()}
+            style={[
+              styles.loginButton,
+              (isLoading ||
+                !isEmailValid ||
+                !formData.email.trim() ||
+                !formData.password.trim()) && { opacity: 0.6 },
+            ]}
+            disabled={
+              isLoading ||
+              !isEmailValid ||
+              !formData.email.trim() ||
+              !formData.password.trim()
+            }
+          >
+            <Text style={styles.loginButtonText}>
+              {isLoading ? "Signing in..." : "Sign In"}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.signupContainer}>
+            <Text>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => router.push("/SignUpScreen")}>
+              <Text style={styles.signupText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaProvider>
   );
 };
 
