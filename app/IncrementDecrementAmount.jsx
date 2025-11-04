@@ -13,6 +13,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
+import RemoteSvg from "../components/RemoteSvg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../Constants/Colors";
 import {
@@ -20,25 +21,27 @@ import {
   useUserGetMeQuery,
   useGetUpdateTransactionMutation,
 } from "../redux/services/api";
+
 const IncrementDecrementAmount = () => {
   const [updateTransaction] = useGetUpdateTransactionMutation();
-
   const [createTransactions] = useCreateTransactionMutation();
   const navigation = useNavigation();
   const [amount, setAmount] = useState("0");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { id, name, image, categoryType, transactionId, ammount, fromTab } =
-    useLocalSearchParams();
+  const { id, name, image, categoryType, transactionId, ammount, fromTab } = useLocalSearchParams();
   const { data: user } = useUserGetMeQuery();
   const userId = user?.data?._id;
+
   const formatDate = (d) =>
     d.toDateString() === new Date().toDateString() ? "Today" : d.toDateString();
+
   useEffect(() => {
     if (ammount) {
       setAmount(ammount.toString());
     }
   }, [ammount]);
+
   const handleTransaction = async () => {
     try {
       if (!amount || parseInt(amount) <= 0) {
@@ -64,26 +67,28 @@ const IncrementDecrementAmount = () => {
       } else {
         router.push("/(tabs)/DashboardScreen");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </Pressable>
+          {console.log(image)}
           <View style={styles.headerButtonText}>
-            <Image
-              source={{ uri: image }}
-              resizeMode="cover"
-              style={styles.iconImage}
-            />
+            <View style={{ marginRight: 8 }}>
+              {image?.endsWith(".svg") ? (
+                <RemoteSvg uri={image} width={40} height={40} />
+              ) : (
+                <Image source={{ uri: image }} resizeMode="cover" style={styles.iconImage} />
+              )}
+            </View>
             <Text style={styles.headerText}>{name}</Text>
           </View>
         </View>
@@ -98,7 +103,6 @@ const IncrementDecrementAmount = () => {
             style={styles.input}
             value={amount}
             onChangeText={(text) => {
-              // Only allow numbers and prevent empty
               const numericValue = text.replace(/[^0-9]/g, "");
               setAmount(numericValue);
             }}
@@ -106,20 +110,7 @@ const IncrementDecrementAmount = () => {
           />
         </View>
 
-        {/* Date
-      <TouchableOpacity
-        style={styles.row}
-        onPress={() => setShowDatePicker(true)}
-      >
-        <View style={styles.label}>
-          <FontAwesome5 name="calendar" size={16} />
-          <Text style={styles.labelText}> Date</Text>
-        </View>
-        <Text style={[styles.valueText, { color: "#3D8B3D" }]}>
-          {formatDate(date)}
-        </Text>
-      </TouchableOpacity> */}
-
+        {/* Date */}
         {showDatePicker && (
           <DateTimePicker
             value={date}
@@ -133,9 +124,7 @@ const IncrementDecrementAmount = () => {
         )}
 
         <TouchableOpacity style={styles.button} onPress={handleTransaction}>
-          <Text style={styles.buttonText}>
-            {transactionId ? "MODIFY TRANSACTION" : "ADD TRANSACTION"}
-          </Text>
+          <Text style={styles.buttonText}>{transactionId ? "MODIFY TRANSACTION" : "ADD TRANSACTION"}</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -186,10 +175,6 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 15,
   },
-  valueText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
   button: {
     marginTop: "auto",
     backgroundColor: Colors.primary,
@@ -213,7 +198,6 @@ const styles = StyleSheet.create({
   iconImage: {
     width: 40,
     height: 40,
-    // makes it round (optional)
-    marginRight: 8, // spacing between image and name
+    marginRight: 8,
   },
 });

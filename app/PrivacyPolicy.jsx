@@ -35,9 +35,8 @@ const PrivacyPolicy = () => {
     );
   }
 
-  const htmlContent = data?.data?.[0] || "";
+  const htmlContent = data?.data?.[0]?.policy || "";
   const htmlContentMessage = data?.message || "No privacy policy available.";
-
   const tagsStyles = {
     h1: { fontSize: 28, fontWeight: "bold", marginBottom: 12, color: "#333" },
     h2: { fontSize: 24, fontWeight: "bold", marginBottom: 10, color: "#333" },
@@ -84,7 +83,7 @@ const PrivacyPolicy = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea]}>
+    <SafeAreaView style={[styles.safeArea]} >
       {/* Make StatusBar non-translucent so SafeAreaView works correctly */}
       <StatusBar
         translucent={false}
@@ -93,11 +92,7 @@ const PrivacyPolicy = () => {
       />
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <RenderHTML
-          contentWidth={width}
-          source={{ html: `<p>${htmlContentMessage}</p>` }}
-          tagsStyles={tagsStyles}
-        />
+
         <RenderHTML
           contentWidth={width}
           source={{ html: htmlContent }}
@@ -112,6 +107,7 @@ export default PrivacyPolicy;
 
 const styles = StyleSheet.create({
   safeArea: {
+    top: 0,
     flex: 1,
     backgroundColor: "#fff",
   },

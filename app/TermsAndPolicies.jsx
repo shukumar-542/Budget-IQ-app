@@ -16,6 +16,7 @@ const TermsAndPolicies = () => {
   const insets = useSafeAreaInsets();
   const { data, isLoading, error } = useGetTermsAndConditionsQuery();
 
+
   if (isLoading) {
     return (
       <View style={styles.centered}>
@@ -34,8 +35,8 @@ const TermsAndPolicies = () => {
     );
   }
 
-  const htmlContent = data?.data?.[0] || "<p>No terms available</p>";
-  const htmlContentMessage = data?.message || "<p>No terms available</p>";
+  // IMPORTANT: Access the `term` property which contains the HTML string
+  const htmlContent = data?.data?.[0]?.term || "<p>No terms available</p>";
 
   const tagsStyles = {
     h1: { fontSize: 28, fontWeight: "bold", marginBottom: 12, color: "#333" },
@@ -103,14 +104,13 @@ const TermsAndPolicies = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea]}>
-      <StatusBar translucent={false} backgroundColor="#fff" barStyle="dark-content" />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar
+        translucent={false}
+        backgroundColor="#fff"
+        barStyle="dark-content"
+      />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <RenderHTML
-          contentWidth={width}
-          source={{ html: `<p>${htmlContentMessage}</p>` }}
-          tagsStyles={tagsStyles}
-        />
         <RenderHTML
           contentWidth={width}
           source={{ html: htmlContent }}
@@ -124,7 +124,16 @@ const TermsAndPolicies = () => {
 export default TermsAndPolicies;
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
-  scrollViewContent: { padding: 20 },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  scrollViewContent: {
+    padding: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

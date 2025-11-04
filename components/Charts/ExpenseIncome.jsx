@@ -1,6 +1,7 @@
 import { Image, TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { create } from "ionicons/icons";
+import RemoteSvg from "../RemoteSvg";
 const ExpenseIncome = ({ expenseData }) => {
   const router = useRouter();
 
@@ -14,18 +15,21 @@ const ExpenseIncome = ({ expenseData }) => {
               id: item.transactionId,
               name: item.name,
               image: item.icon,
-              fromTab: item.categoryType
+              fromTab: item.categoryType,
             },
-
           })
         }
       >
         <View style={styles.iconContainer}>
+           {item.icon?.endsWith(".svg") ? (
+          <RemoteSvg uri={item.icon} width={60} height={60} />
+        ) : (
           <Image
-            source={{ uri: item?.icon }}
+            source={{ uri: item.icon }}
             style={styles.iconImage}
-            resizeMode="cover" // make image fill container
+            resizeMode="cover"
           />
+        )}
         </View>
         <Text style={styles.amountText}>{item?.amount}</Text>
       </TouchableOpacity>

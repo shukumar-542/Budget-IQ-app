@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import RemoteSvg from "./RemoteSvg";
 import { useEffect } from "react";
 const CostEarnList = ({ data }) => {
   const router = useRouter();
@@ -37,14 +38,22 @@ const CostEarnList = ({ data }) => {
     >
       <View style={styles.itemContainer}>
         <View style={styles.iconAndText}>
-          {/* Replace Ionicons with Image */}
-          <Image
-            source={{ uri: icon }} // icon is now categoryImage URL
-            style={styles.iconImage}
+          {icon ? (
+          <RemoteSvg uri={icon} width={40} height={40} />
+        ) : (
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              backgroundColor: "#eee",
+              borderRadius: 8,
+              marginRight: 15,
+            }}
           />
+        )}
           <View>
-            <Text style={styles.itemName}>{name}</Text>
-            <Text style={styles.itemDate}>{createdAt?.split("T")[0]}</Text>
+            <Text style={styles.itemName}>  {name}</Text>
+            <Text style={styles.itemDate}>  {createdAt?.split("T")[0]}</Text>
           </View>
         </View>
         <Text style={styles.itemAmount}>{amount}</Text>

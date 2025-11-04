@@ -11,6 +11,7 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
+import RemoteSvg from "../components/RemoteSvg";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useGetAllCategoriesQuery } from "../redux/services/api";
 import * as SecureStore from "expo-secure-store";
@@ -85,11 +86,7 @@ const ExpensesCategories = () => {
     >
       <View style={styles.iconContainer}>
         {item.categoryImage ? (
-          <Image
-            source={{ uri: item.categoryImage }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <RemoteSvg uri={item.categoryImage} width={40} height={40} />
         ) : (
           <Icon name="image-off" size={24} color="#999" />
         )}
