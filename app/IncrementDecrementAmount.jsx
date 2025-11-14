@@ -29,7 +29,8 @@ const IncrementDecrementAmount = () => {
   const [amount, setAmount] = useState("0");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { id, name, image, categoryType, transactionId, ammount, fromTab } = useLocalSearchParams();
+  const { id, name, image, categoryType, transactionId, ammount, fromTab } =
+    useLocalSearchParams();
   const { data: user } = useUserGetMeQuery();
   const userId = user?.data?._id;
 
@@ -74,7 +75,10 @@ const IncrementDecrementAmount = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => navigation.goBack()}>
@@ -82,11 +86,15 @@ const IncrementDecrementAmount = () => {
           </Pressable>
           {console.log(image)}
           <View style={styles.headerButtonText}>
-            <View style={{ marginRight: 8 }}>
+            <View style={{ marginRight: 8, backgroundColor: "#E0F2E9" }}>
               {image?.endsWith(".svg") ? (
                 <RemoteSvg uri={image} width={40} height={40} />
               ) : (
-                <Image source={{ uri: image }} resizeMode="cover" style={styles.iconImage} />
+                <Image
+                  source={{ uri: image }}
+                  resizeMode="cover"
+                  style={styles.iconImage}
+                />
               )}
             </View>
             <Text style={styles.headerText}>{name}</Text>
@@ -124,7 +132,9 @@ const IncrementDecrementAmount = () => {
         )}
 
         <TouchableOpacity style={styles.button} onPress={handleTransaction}>
-          <Text style={styles.buttonText}>{transactionId ? "MODIFY TRANSACTION" : "ADD TRANSACTION"}</Text>
+          <Text style={styles.buttonText}>
+            {transactionId ? "MODIFY TRANSACTION" : "ADD TRANSACTION"}
+          </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>

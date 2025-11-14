@@ -266,8 +266,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 15,
     overflow: "hidden",
-    maxHeight: "80%", // ✅ keeps modal fully visible
-    minHeight: "60%",
   },
 
   modalHeader: {

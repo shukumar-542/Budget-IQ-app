@@ -1,6 +1,5 @@
 import { Image, TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { create } from "ionicons/icons";
 import RemoteSvg from "../RemoteSvg";
 const ExpenseIncome = ({ expenseData }) => {
   const router = useRouter();
@@ -21,15 +20,15 @@ const ExpenseIncome = ({ expenseData }) => {
         }
       >
         <View style={styles.iconContainer}>
-           {item.icon?.endsWith(".svg") ? (
-          <RemoteSvg uri={item.icon} width={60} height={60} />
-        ) : (
-          <Image
-            source={{ uri: item.icon }}
-            style={styles.iconImage}
-            resizeMode="cover"
-          />
-        )}
+          {item.icon?.endsWith(".svg") ? (
+            <RemoteSvg uri={item.icon} width={60} height={60} />
+          ) : (
+            <Image
+              source={{ uri: item.icon }}
+              style={styles.iconImage}
+              resizeMode="cover"
+            />
+          )}
         </View>
         <Text style={styles.amountText}>{item?.amount}</Text>
       </TouchableOpacity>
@@ -54,6 +53,8 @@ const styles = StyleSheet.create({
   listContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
   },
   categoryItem: {
     width: "20%",
@@ -64,10 +65,10 @@ const styles = StyleSheet.create({
   iconContainer: {
     backgroundColor: "#E0F2E9",
     borderRadius: 10,
-    padding: 0, // remove padding to allow full fill
-    width: 60, // container width
-    height: 60, // container height
-    overflow: "hidden", // ensures image doesn't spill out
+    padding: 0,
+    width: 60,
+    height: 60,
+    overflow: "hidden",
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
