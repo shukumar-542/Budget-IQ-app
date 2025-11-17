@@ -20,7 +20,8 @@
       "buildNumber": "1.0.2",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you select and upload images.",
-        "NSCameraUsageDescription": "This app needs access to your camera to take photos."
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -49,7 +50,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "c8af978e-2bda-4eb9-b80b-fb2ce9a1b0e1"
+        "projectId": "d03cd681-a4ab-425f-9195-6b422d88a26a"
       }
     }
   }
