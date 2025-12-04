@@ -196,7 +196,7 @@ const Subscriptions = () => {
                     handleLayout(plan.name, event.nativeEvent.layout.width)
                   }
                 >
-                  {plan.label || plan.name} {/* Display the label or name */}
+                  {plan.label || plan.name} 
                 </Text>
                 <View
                   style={[styles.divider, { width: textWidths[plan.name] || 0 }]}
@@ -204,7 +204,7 @@ const Subscriptions = () => {
               </View>
 
               <Text style={styles.planDetails}>
-                <Text style={styles.planDuration}>{plan.label}</Text> {/* Display the plan label */}
+                <Text style={styles.planDuration}>{plan.label}</Text> 
               </Text>
 
               <TouchableOpacity
