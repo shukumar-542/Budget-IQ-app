@@ -22,7 +22,7 @@
     "@react-navigation/stack": "^7.4.8",
     "@reduxjs/toolkit": "^2.8.2",
     "d3-shape": "^3.2.0",
-    "eas-cli": "^16.23.0",
+    "eas-cli": "^16.28.0",
     "expo": "~53.0.12",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.6",
