@@ -3,7 +3,7 @@
     "name": "Budget IQ",
     "slug": "budget-iq-app",
     "owner": "ayonghosh",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/welcome.png",
     "scheme": "budgetiqapp",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.budgetiqapp",
-      "buildNumber": "1.0.0",
+      "buildNumber": "2.0.0",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you select and upload images.",
         "NSCameraUsageDescription": "This app needs access to your camera to take photos.",
@@ -48,7 +48,10 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "d03cd681-a4ab-425f-9195-6b422d88a26a"
+      }
     }
   }
 }
